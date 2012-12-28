@@ -20,8 +20,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.UUID;
-
 /**
  * User: porter
  * Date: 04/05/2012
@@ -47,7 +45,6 @@ public class BaseResourceTst extends JerseyTest {
         TEST_USER.setFirstName(FIRST_NAME);
         TEST_USER.setLastName(LAST_NAME);
         TEST_USER.setEmailAddress(EMAIL_ADDRESS);
-        TEST_USER.setSessionToken(UUID.randomUUID().toString());
         TEST_USER.setRole(Role.authenticated);
     }
 

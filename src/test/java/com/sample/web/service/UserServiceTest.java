@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -82,15 +83,16 @@ public class UserServiceTest  extends BaseServiceTest {
     public void validLoginWithUsername() throws Exception {
         CreateUserRequest request = getDefaultCreateUserRequest();
         User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessionToken();
+        String sessionToken = createdUser.getSessions().first().getToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
         User loggedInUser = userService.login(loginRequest);
         assertThat(loggedInUser.getUuid().toString(), is(createdUser.getUuid().toString()));
-        assertThat(loggedInUser.getSessionToken(), is(notNullValue()));
+        assertThat(loggedInUser.getSessions().first(), is(notNullValue()));
         //check that a new token was issued
-        assertThat(loggedInUser.getSessionToken(), is(sessionToken));
+        assertThat(loggedInUser.getSessions().first().getToken(), is(not(sessionToken)));
+        assertThat(loggedInUser.getSessions().last().getToken(), is(sessionToken));
         assertThat(loggedInUser.isVerified(), is(false));
     }
 
@@ -98,31 +100,31 @@ public class UserServiceTest  extends BaseServiceTest {
     public void validLoginWithEmailAddress() throws Exception {
         CreateUserRequest request = getDefaultCreateUserRequest();
         User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessionToken();
+        String sessionToken = createdUser.getSessions().first().getToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
         User loggedInUser = userService.login(loginRequest);
         assertThat(loggedInUser.getUuid().toString(), is(createdUser.getUuid().toString()));
-        assertThat(loggedInUser.getSessionToken(), is(notNullValue()));
+        assertThat(loggedInUser.getSessions().first(), is(notNullValue()));
         //check that a new token was issued
-        assertThat(loggedInUser.getSessionToken(), is(sessionToken));
+        assertThat(loggedInUser.getSessions().first().getToken(), is(not(sessionToken)));
         assertThat(loggedInUser.isVerified(), is(false));
 
     }
 
     @Test
-    public void multipleLoginsGetSameSessionToken() {
+    public void multipleLoginsGetDifferentSessionToken() {
         CreateUserRequest request = getDefaultCreateUserRequest();
         User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessionToken();
+        String sessionToken = createdUser.getSessions().first().getToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        String session1 = userService.login(loginRequest).getSessionToken();
-        String session2 =  userService.login(loginRequest).getSessionToken();
+        String session1 = userService.login(loginRequest).getSessions().first().getToken();
+        String session2 =  userService.login(loginRequest).getSessions().first().getToken();
 
-        assertThat(session1, is(session2));
+        assertThat(session1, is(not(session2)));
     }
 
     @Test(expected = ValidationException.class)
@@ -235,8 +237,8 @@ public class UserServiceTest  extends BaseServiceTest {
         assertThat(user, is(notNullValue()));
         User foundUser = userRepository.findByUuid(user.getUuid().toString());
         assertThat(foundUser, is(notNullValue()));
-        assertThat(foundUser.getSessionToken(), is(notNullValue()));
-        assertThat(foundUser.getSessionToken(), is(user.getSessionToken()));
+        assertThat(foundUser.getSessions().last().getToken(), is(notNullValue()));
+        assertThat(foundUser.getSessions().last(), is(user.getSessions().last()));
         assertThat(foundUser.hasRole(Role.anonymous), is(false));
         assertThat(foundUser.hasRole(Role.authenticated), is(true));
         assertThat(foundUser.isVerified(), is(false));

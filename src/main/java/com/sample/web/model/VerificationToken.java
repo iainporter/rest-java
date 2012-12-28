@@ -16,7 +16,7 @@ import java.util.UUID;
  * @since 10/09/2012
  */
 @Entity
-@Table(name = "loyalty_verification_token")
+@Table(name = "rest_verification_token")
 public class VerificationToken extends BaseEntity {
 
     private static final int DEFAULT_EXPIRY_TIME_IN_MINS = 60 * 24; //24 hours

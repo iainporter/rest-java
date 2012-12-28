@@ -22,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Service for managing User accounts and Cards
@@ -74,7 +72,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public User createUser(Role role) {
         User user = new User();
-        user.setSessionToken(UUID.randomUUID().toString());
         user.setRole(role);
         userRepository.save(user);
         return user;
@@ -98,6 +95,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             throw new AuthenticationException();
         }
         if (user.hashPassword(request.getPassword()).equals(user.getHashedPassword())) {
+            user.addSessionToken();
             return user;
         } else {
             throw new AuthenticationException();
@@ -188,16 +186,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private User createNewUser(CreateUserRequest request, Role role) {
         User userToSave = new User(request.getUser());
         userToSave.setHashedPassword(userToSave.hashPassword(request.getPassword().getPassword()));
-        userToSave.setSessionToken(UUID.randomUUID().toString());
         userToSave.setRole(role);
         return userRepository.save(userToSave);
     }
 
     private void updateUserFromProfile(Connection<?> connection, User user) {
-        //only update sessionId if it is the first time
-        if(user.getSessionToken() == null) {
-            user.setSessionToken(UUID.randomUUID().toString());
-        }
         UserProfile profile = connection.fetchUserProfile();
         user.setEmailAddress(profile.getEmail());
         user.setFirstName(profile.getFirstName());

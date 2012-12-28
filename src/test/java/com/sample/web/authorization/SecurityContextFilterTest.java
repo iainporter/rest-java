@@ -8,8 +8,6 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.UUID;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,10 +31,9 @@ public class SecurityContextFilterTest {
     @Test
     public void validAuthorization() {
         User user = new User();
-        user.setSessionToken(UUID.randomUUID().toString());
         UserRepository userRepository = mock(UserRepository.class);
         when(containerRequest.getHeaderValue("Authorization")).thenReturn(user.getUuid().toString() + ":foo");
-        when(containerRequest.getHeaderValue("x-goloco-date")).thenReturn(DateUtil.getCurrentDateAsIso8061String());
+        when(containerRequest.getHeaderValue("x-rest-sample-date")).thenReturn(DateUtil.getCurrentDateAsIso8061String());
         when(containerRequest.getPath()).thenReturn("foo");
         when(containerRequest.getMethod()).thenReturn("GET");
         AuthorizationRequest authRequest = new AuthorizationRequest(user, containerRequest.getPath(), containerRequest.getMethod(), DateUtil.getCurrentDateAsIso8061String(), "foo");

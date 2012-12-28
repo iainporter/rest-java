@@ -23,7 +23,6 @@ public class ExternalUser {
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private String qrCode;
     private boolean isVerified;
 
     @Deprecated
@@ -79,10 +78,6 @@ public class ExternalUser {
 
     public List<SocialProfile> getSocialProfiles() {
         return socialProfiles;
-    }
-
-    public String getQrCode() {
-        return qrCode;
     }
 
     public String getId() {

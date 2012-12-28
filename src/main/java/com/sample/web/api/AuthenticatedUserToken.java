@@ -17,7 +17,7 @@ public class AuthenticatedUserToken {
 
     public AuthenticatedUserToken(User user) {
         this.userId = user.getUuid().toString();
-        this.token = user.getSessionToken();
+        this.token = user.getSessions().last().getToken();
     }
 
     public String getUserId() {

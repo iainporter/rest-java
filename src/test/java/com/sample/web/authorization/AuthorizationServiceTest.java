@@ -35,10 +35,6 @@ public class AuthorizationServiceTest {
 
     private static final User USER = new User();
 
-    {
-        USER.setSessionToken(SESSION_TOKEN);
-    }
-
     @Autowired
     private AuthorizationService authorziationService;
 
@@ -63,7 +59,7 @@ public class AuthorizationServiceTest {
     @Test
     public void authorizeUser() throws Exception {
         String dateString = DateUtil.getCurrentDateAsIso8061String();
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":hash123,123,POST," + dateString)));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString)));
         boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, hashedToken, "hash123,123", dateString));
         assertThat(isAuthorized, is(true));
     }
@@ -72,7 +68,6 @@ public class AuthorizationServiceTest {
     public void invalidUnencodedRequest() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":hash123,123")));
         User user = new User();
-        user.setSessionToken(SESSION_TOKEN);
         boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, hashedToken, "hash123,1234"));
         assertThat(isAuthorized, is(false));
     }

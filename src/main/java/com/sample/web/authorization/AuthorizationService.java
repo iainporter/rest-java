@@ -1,12 +1,14 @@
 package com.sample.web.authorization;
 
-import com.sample.web.model.User;
+import com.sample.web.model.SessionToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.util.SortedSet;
 
 /**
  * Service to Authorize User requests
@@ -42,23 +44,27 @@ public class AuthorizationService {
         Assert.notNull(authorizationRequest.getUser());
         Assert.notNull(authorizationRequest.getHashedToken());
         String unEncodedString =  composeUnEncodedRequest(authorizationRequest);
-        String userTokenHash = encodeAuthToken(authorizationRequest.getUser(), unEncodedString);
-        if(!authorizationRequest.getHashedToken().equals(userTokenHash)) {
-            log.error("Hash check failed for hashed token: {} for the following request: {} for user: {}",
-                    new Object[]{authorizationRequest.getHashedToken(), unEncodedString, authorizationRequest.getUser().getUuid().toString()} );
-            return false;
+        SortedSet<SessionToken> sessionTokens = authorizationRequest.getUser().getSessions();
+        String userTokenHash = null;
+        for(SessionToken token: sessionTokens) {
+            userTokenHash = encodeAuthToken(token, unEncodedString);
+            if(authorizationRequest.getHashedToken().equals(userTokenHash)) {
+                return true;
+            }
         }
-         return true;
+        log.error("Hash check failed for hashed token: {} for the following request: {} for user: {}",
+                    new Object[]{authorizationRequest.getHashedToken(), unEncodedString, authorizationRequest.getUser().getUuid().toString()} );
+        return false;
     }
 
     /**
      * Encode the token by prefixing it with the User's Session Token
      *
-     * @param user
+     * @param token
      * @return encoded token
      */
-    private String encodeAuthToken(User user, String unencodedRequest) {
-        byte[] digest = DigestUtils.sha256(user.getSessionToken() + ":" + unencodedRequest);
+    private String encodeAuthToken(SessionToken token, String unencodedRequest) {
+        byte[] digest = DigestUtils.sha256(token.getToken() + ":" + unencodedRequest);
         return new String(Base64.encodeBase64(digest));
 
     }

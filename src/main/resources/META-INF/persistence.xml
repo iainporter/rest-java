@@ -6,6 +6,7 @@
        <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>com.sample.web.model.User</class>
         <class>com.sample.web.model.SocialUser</class>
+        <class>com.sample.web.model.SessionToken</class>
         <class>com.sample.web.model.VerificationToken</class>
        <properties>
            <!-- value="create" to build a new database on each run; value="update" to modify an existing database; value="create-drop" means the same as "create" but also drops tables when Hibernate closes; value="validate" makes no changes to the database -->

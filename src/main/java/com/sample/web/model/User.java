@@ -4,6 +4,8 @@ import com.sample.web.api.ExternalUser;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -12,14 +14,12 @@ import java.util.*;
 
 
 /**
-* Created by IntelliJ IDEA.
 * User: porter
 * Date: 09/03/2012
 * Time: 18:56
-* To change this template use File | Settings | File Templates.
 */
 @Entity
-@Table(name="loyalty_user")
+@Table(name="rest_user")
 public class User extends BaseEntity implements Principal {
 
      /**
@@ -31,7 +31,6 @@ public class User extends BaseEntity implements Principal {
     private String lastName;
     private String emailAddress;
     private String hashedPassword;
-    private String sessionToken;
     private boolean isVerified;
 
     @Enumerated(EnumType.STRING)
@@ -46,6 +45,13 @@ public class User extends BaseEntity implements Principal {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<VerificationToken> verificationTokens = new ArrayList<VerificationToken>();
 
+    @OneToMany(mappedBy="user",
+                 targetEntity=SessionToken.class,
+                 cascade= CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<SessionToken> sessions = Collections.synchronizedSortedSet(new TreeSet<SessionToken>(Collections.<SessionToken>reverseOrder()));
+
     public User() {
         this(UUID.randomUUID());
     }
@@ -53,6 +59,7 @@ public class User extends BaseEntity implements Principal {
     public User(UUID uuid) {
         super(uuid);
         setRole(Role.anonymous); //all users are anonymous until credentials are proved
+        addSessionToken();
     }
 
     public User(ExternalUser externalUser) {
@@ -92,14 +99,6 @@ public class User extends BaseEntity implements Principal {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public String getSessionToken() {
-        return sessionToken;
-    }
-
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
     }
 
     public Role getRole() {
@@ -163,6 +162,18 @@ public class User extends BaseEntity implements Principal {
 
     public synchronized List<VerificationToken> getVerificationTokens() {
         return Collections.unmodifiableList(this.verificationTokens);
+    }
+
+    public void addSessionToken() {
+        this.sessions.add(new SessionToken(this));
+    }
+
+    public SortedSet<SessionToken> getSessions() {
+        return Collections.unmodifiableSortedSet(this.sessions);
+    }
+
+    public void removeSession(SessionToken session) {
+        this.sessions.remove(session);
     }
 
     /**
