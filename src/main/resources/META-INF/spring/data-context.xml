@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	    http://www.springframework.org/schema/integration/jdbc
+	    http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc.xsd
+        http://www.springframework.org/schema/tx
+	    http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="samplePersistenceUnit"/>
+        <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+        </property>
+
+    </bean>
+
+    <jpa:repositories base-package="com.sample.web.repository" />
+
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager"
+          id="transactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+    </bean>
+
+    <tx:annotation-driven/>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+        <constructor-arg ref="database"/>
+    </bean>
+
+    <beans profile="dev">
+
+        <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+            <property name="driverClassName" value="org.h2.Driver"/>
+            <property name="url" value="jdbc:h2:mem:loyaltyDB"/>
+            <property name="username" value="sa"/>
+            <property name="password" value=""/>
+        </bean>
+
+    </beans>
+
+    <beans profile="local">
+
+        <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+            <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+            <property name="url" value="jdbc:mysql://localhost:3306/com.sample.web"/>
+            <property name="username" value="root"/>
+            <property name="password" value="password"/>
+            <property name="initialSize" value="10"/>
+            <property name="maxActive" value="100"/>
+            <property name="maxIdle" value="50"/>
+            <property name="minIdle" value="10"/>
+            <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+            <property name="minEvictableIdleTimeMillis" value="6000"/>
+            <!--<property name="validationQuery" value="SELECT 1 FROM DUAL"/>-->
+        </bean>
+
+
+    </beans>
+
+<beans profile="staging">
+
+        <!-- staging database-->
+
+
+    </beans>
+
+    <beans profile="production">
+
+        <!-- production database -->
+
+
+    </beans>
+
+
+</beans>

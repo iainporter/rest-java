@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	    http://www.springframework.org/schema/integration/spring-integration.xsd
+	    http://www.springframework.org/schema/integration/jdbc
+	    http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <int:gateway id="emailServicesGateway" service-interface="com.sample.web.gateway.EmailServicesGateway"
+                 default-reply-timeout="3000">
+        <int:method name="sendVerificationToken" request-channel="emailVerificationRouterChannel" request-timeout="3000"/>
+
+    </int:gateway>
+
+    <int:channel id="emailVerificationRouterChannel">
+        <int:queue capacity="1000" message-store="emailVerificationMessageStore"/>
+    </int:channel>
+
+    <int:router id="emailVerificationRouter" input-channel="emailVerificationRouterChannel" expression="payload.getTokenType()" >
+         <int:poller fixed-rate="2000">
+            <int:transactional/>
+        </int:poller>
+        <int:mapping value="emailVerification" channel="emailVerificationTokenSendChannel"/>
+        <int:mapping value="emailRegistration" channel="emailRegistrationTokenSendChannel"/>
+        <int:mapping value="lostPassword" channel="emailLostPasswordTokenSendChannel"/>
+    </int:router>
+
+    <int:channel id="emailRegistrationTokenSendChannel"/>
+    <int:service-activator id="emailVerficationMailSenderService" input-channel="emailVerificationTokenSendChannel"
+                           output-channel="nullChannel" ref="mailSenderService"
+                           method="sendVerificationEmail">
+    </int:service-activator>
+
+    <int:channel id="emailVerificationTokenSendChannel"/>
+    <int:service-activator id="emailRegistrationMailSenderService" input-channel="emailRegistrationTokenSendChannel"
+                           output-channel="nullChannel" ref="mailSenderService"
+                           method="sendRegistrationEmail">
+    </int:service-activator>
+
+    <int:channel id="emailLostPasswordTokenSendChannel"/>
+    <int:service-activator id="emailLostPasswordSenderService" input-channel="emailLostPasswordTokenSendChannel"
+                           output-channel="nullChannel" ref="mailSenderService"
+                           method="sendLostPasswordEmail">
+    </int:service-activator>
+
+    <int:logging-channel-adapter id="emailVerificationLoggingChannel" level="DEBUG">
+
+    </int:logging-channel-adapter>
+
+
+    <beans profile="dev, local">
+        <bean id="emailVerificationMessageStore" class="org.springframework.integration.store.SimpleMessageStore"/>
+
+    </beans>
+    <beans profile="production, staging">
+
+        <int-jdbc:message-store id="emailVerificationMessageStore" data-source="dataSource" region="emailVerification"/>
+    </beans>
+
+
+</beans>

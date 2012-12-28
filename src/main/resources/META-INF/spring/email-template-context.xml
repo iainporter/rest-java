@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+     <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+
+    <beans profile="production, staging">
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+      <!-- Email provider here-->
+
+        <property name="javaMailProperties">
+          <props>
+           <prop key="mail.debug">false</prop>
+           <prop key="mail.smtp.auth">true</prop>
+           <prop key="mail.smtp.starttls.enable">true</prop>
+          </props>
+        </property>
+   </bean>
+
+   </beans>
+
+
+    <beans profile="dev, local">
+
+      <bean id="mailSender" class="com.sample.web.service.MockJavaMailSender">
+
+   </bean>
+   </beans>
+
+</beans>

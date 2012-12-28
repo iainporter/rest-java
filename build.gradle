@@ -1,0 +1,268 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'jaxb'
+apply plugin: 'tomcat'
+apply plugin: 'war'
+apply plugin: 'cargo'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'jetty'
+
+
+
+springVersion = "3.2.0.RC2"
+h2Version = "1.3.155"
+springDataVersion = "1.1.0.RELEASE"
+springSocialVersion = "1.0.2.RELEASE"
+springSocialFacebookVersion =  "1.0.1.RELEASE"
+springSocialTwitterVersion =  "1.0.2.RELEASE"
+springSecurity = "3.1.2.RELEASE"
+springIntegrationVersion = "2.2.0.RC3"
+aspectjrtVersion = "1.6.11"
+jacksonVersion = "1.9.3"
+commonsIoVersion = "1.4"
+jerseyVersion="1.9.1"
+hibernateVersion="3.6.7.Final"
+h2Version="1.3.154"
+slf4jVersion="1.6.1"
+logbackVersion="1.0.1"
+velocityVersion="1.7"
+groovyVersion="2.0.0"
+iTextVersion="2.1.7"
+environmentBase = 'src/main/config/'
+env = "ci"
+
+
+def properties = new Properties()
+    file(environmentBase + env + '/gradle.properties').withReader {
+    properties.load(it)
+    properties.each { String name, value -> project.setProperty(name, value) }
+}
+
+    configurations {
+       emma
+    }
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+
+        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
+            name = 'GitHub'
+            addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
+        }
+
+    }
+    dependencies {
+        classpath 'no.entitas.gradle:gradle-jaxb-plugin:1.5',
+                'bmuschko:gradle-tomcat-plugin:0.8.2',
+                'bmuschko:gradle-cargo-plugin:0.3'
+                'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://maven.springframework.org/milestone"
+        }
+}
+
+// A list of all of our project dependencies.
+dependencies {
+    jaxb 'com.sun.xml.bind:jaxb-xjc:2.1.12'
+
+    // Pull in all of the Spring dependencies
+    compile "org.hibernate:hibernate-core:$hibernateVersion",
+            "org.hibernate:hibernate-entitymanager:$hibernateVersion",
+            "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.0.Final",
+            "org.hibernate:hibernate-validator:4.1.0.Final",
+            "org.springframework.data:spring-data-jpa:$springDataVersion",
+            "com.h2database:h2:$h2Version",
+            "mysql:mysql-connector-java:5.1.16",
+            "commons-dbcp:commons-dbcp:1.3",
+            "commons-codec:commons-codec:1.6",
+            "org.springframework.social:spring-social-core:$springSocialVersion",
+            "org.springframework.social:spring-social-facebook:$springSocialFacebookVersion",
+            "org.springframework.social:spring-social-twitter:$springSocialTwitterVersion",
+            "org.springframework.social:spring-social-web:$springSocialVersion",
+            "org.springframework.social:spring-social-test:$springSocialVersion",
+            "org.springframework.security:spring-security-core:$springSecurity",
+
+            "org.aspectj:aspectjrt:$aspectjrtVersion",
+            "org.codehaus.jackson:jackson-core-asl:$jacksonVersion",
+            "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion",
+            "org.codehaus.jackson:jackson-xc:$jacksonVersion",
+			"commons-io:commons-io:$commonsIoVersion",
+            "javax.ws.rs:jsr311-api:1.1",
+            "javax.annotation:jsr250-api:1.0",
+			"com.sun.jersey:jersey-core:$jerseyVersion",
+			"com.sun.jersey:jersey-server:$jerseyVersion",
+			"com.sun.jersey:jersey-json:$jerseyVersion",
+			"com.sun.jersey.contribs:jersey-spring:$jerseyVersion",
+			"org.springframework:spring-core:$springVersion",
+			"org.springframework:spring-beans:$springVersion",
+			"org.springframework:spring-context:$springVersion",
+			"org.springframework:spring-web:$springVersion",
+			"org.springframework:spring-aop:$springVersion",
+            "org.springframework:spring-webmvc:$springVersion",
+            "org.springframework:spring-tx:$springVersion",
+            "org.springframework:spring-orm:$springVersion",
+            "org.springframework:spring-jdbc:$springVersion",
+            "org.springframework:spring-aspects:$springVersion",
+			"org.aspectj:aspectjweaver:1.5.4",
+			"cglib:cglib:2.2",
+
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion",
+            "org.mockito:mockito-all:1.8.5",
+
+            "com.google.zxing:core:2.0",
+            "com.google.zxing:javase:2.0",
+            "com.lowagie:itext:$iTextVersion",
+
+            "org.springframework.integration:spring-integration-core:$springIntegrationVersion",
+			"org.springframework.integration:spring-integration-jdbc:$springIntegrationVersion",
+            "org.springframework.integration:spring-integration-mail:$springIntegrationVersion",
+            "org.springframework.integration:spring-integration-http:$springIntegrationVersion",
+            "org.apache.velocity:velocity:$velocityVersion",
+            "javax.mail:mail:1.4.5",
+            "joda-time:joda-time:2.1",
+            "commons-lang:commons-lang:2.6",
+            "commons-cli:commons-cli:1.2"
+
+    // Pull in test-time dependencies.
+    testCompile "junit:junit:4.8.2",
+            "org.springframework:spring-test:$springVersion",
+            //"org.codehaus.groovy.modules.http-builder:http-builder:0.5.2",
+            //"org.codehaus.groovy:groovy-all:$groovyVersion",
+            "org.hamcrest:hamcrest-all:1.1",
+
+
+
+			"com.sun.jersey:jersey-test-framework:$jerseyVersion",
+            "com.sun.jersey.jersey-test-framework:jersey-test-framework-grizzly2:$jerseyVersion",
+            	"com.sun.jersey.jersey-test-framework:jersey-test-framework-core:$jerseyVersion",
+            	"com.sun.jersey:jersey-grizzly2:$jerseyVersion",
+            		"org.glassfish.grizzly:grizzly-http:2.1.2",
+						"org.glassfish.gmbal:gmbal-api-only:3.0.0-b023",
+							"org.glassfish.external:management-api:3.0.0-b012",
+					"org.glassfish.grizzly:grizzly-http-server:2.1.2",
+						"org.glassfish.grizzly:grizzly-rcm:2.1.2",
+					"org.glassfish.grizzly:grizzly-http-servlet:2.1.2",
+					"org.glassfish:javax.servlet:3.1",
+			"com.sun.jersey:jersey-client:$jerseyVersion"
+
+    testCompile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
+        exclude group: 'org.codehaus.groovy'
+    }
+
+
+
+    providedCompile "javax.servlet:servlet-api:2.5"
+
+    cargo "org.codehaus.cargo:cargo-core-uberjar:1.1.1",
+            "org.codehaus.cargo:cargo-ant:1.1.1",
+            "jaxen:jaxen:1.1.1"
+
+
+    // Pull in tomcat dependencies
+    def tomcatVersion = '7.0.25'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
+    tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
+        exclude group: "org.eclipse.jdt.core.compiler", module: "ecj"
+    }
+
+    groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+    emma "emma:emma:2.1.5320"
+    emma "emma:emma_ant:2.1.5320"
+
+}
+
+war {
+    baseName = "sample-web"
+}
+
+cargo {
+    containerId = tomcatContainerId
+    port = Integer.parseInt(tomcatPort)
+    //context = 'mycontext' set the name of context or default of war name will be used
+    context = tomcatContext
+    remote {
+        hostname = tomcatHostname
+        username = tomcatUsername
+        password = tomcatPassword
+    }
+}
+
+
+test {
+    exclude("**/*IntegrationTest*")
+        jvmArgs "-XX:-UseSplitVerifier", "-Demma.coverage.out.file=$buildDir/tmp/emma/metadata.emma", "-Demma.coverage.out.merge=true"
+
+        doFirst {
+           println "Instrumenting the classes at " + sourceSets.main.output.classesDir.absolutePath
+           // define the custom EMMA ant tasks
+           ant.taskdef( resource:"emma_ant.properties", classpath: configurations.emma.asPath)
+
+           ant.path(id:"run.classpath") {
+              pathelement(location:sourceSets.main.output.classesDir.absolutePath)
+           }
+           def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma/instr")
+           emmaInstDir.mkdirs()
+           println "Creating $emmaInstDir to instrument from " +       sourceSets.main.output.classesDir.absolutePath
+           // instruct our compiled classes and store them at $buildDir/tmp/emma/instr
+           ant.emma(enabled: 'true', verbosity:'trace1'){
+              instr(filter: "-com.incept5.com.sample.web.command.*", merge:"true", destdir: emmaInstDir.absolutePath, instrpathref:"run.classpath",
+                    metadatafile: new File(emmaInstDir, '/metadata.emma').absolutePath) {
+                 instrpath {
+                 fileset(dir:sourceSets.main.output.classesDir.absolutePath, includes:"**/*.class")
+                 }
+              }
+           }
+           setClasspath(files("$buildDir/tmp/emma/instr") + configurations.emma +    getClasspath())
+        }
+
+        doLast {
+           def srcDir = sourceSets.main.java.srcDirs.toArray()[0]
+           println "Creating test coverage reports for classes " + srcDir
+           def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma")
+           ant.emma(enabled:"true", verbosity:'trace1'){
+              new File("$buildDir/reports/emma").mkdirs()
+              report(sourcepath: srcDir){
+                 fileset(dir: emmaInstDir.absolutePath){
+                    include(name:"**/*.emma")
+                 }
+                 txt(outfile:"$buildDir/reports/emma/coverage.txt")
+                 html(outfile:"$buildDir/reports/emma/coverage.html")
+                 xml(outfile:"$buildDir/reports/emma/coverage.xml")
+              }
+           }
+           println "Test coverage reports available at $buildDir/reports/emma."
+           println "txt: $buildDir/reports/emma/coverage.txt"
+           println "Test $buildDir/reports/emma/coverage.html"
+           println "Test $buildDir/reports/emma/coverage.xml"
+        }
+    }
+
+
+[jettyRun, jettyRunWar, jettyStop]*.stopPort = 8081
+[jettyRun, jettyRunWar, jettyStop]*.stopKey = 'stopKey'
+
+task integrationTest(type: Test, depends: test) {
+    include '**/*IntegrationTest*.*'
+    doFirst {
+        jettyRun.daemon = true
+        jettyRun.execute()
+    }
+    doLast {
+        jettyStop.execute()
+    }
+
+}
+
+
