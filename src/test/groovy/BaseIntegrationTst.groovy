@@ -36,7 +36,7 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
        def path = "user/" + userToGet
        def authToken = calculateAuthToken(sessionToken, path + ",GET")
        def userResponse = getRestClient().get(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': requestingUserId + ":" + authToken, "x-date": DATE_STRING])
+               headers: ['Authorization': requestingUserId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
        return userResponse
    }
 
@@ -44,29 +44,14 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
         def path =  "user/"  + userId;
        def authToken = calculateAuthToken(userToken, path +",PUT")
         return getRestClient().put(path: path, contentType: ContentType.JSON, body: updateRequest,
-                headers: ['Authorization': userId + ":" + authToken, "x-date": DATE_STRING])
-    }
-
-
-    /**
-     *
-     * @param createUserRequest
-     * @param userId
-     * @param sessionToken
-     * @param merchantId
-     * @return Response
-     */
-    public Object httpAddUserByMerchant(String emailAddress, String userId, String sessionToken, String merchantId) {
-        def authToken = calculateAuthToken(sessionToken, "merchant/" + merchantId + "/users,POST");
-        return getRestClient().post(path: "merchant/" + merchantId + "/users", contentType: ContentType.JSON, body:getEmailAddressRequest(emailAddress) ,
-               headers: ['Authorization': userId + ":" + authToken, "x-goloco-date": DATE_STRING])
+                headers: ['Authorization': userId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
     }
 
     protected Object httpDeleteUser(def userId, def sessionToken) {
        def path = "user/" + userId
        def authToken = calculateAuthToken(sessionToken, path + ",DELETE")
        def response = getRestClient().delete(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': userId + ":" + authToken, "x-date": DATE_STRING])
+               headers: ['Authorization': userId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
        return response
    }
 

@@ -26,6 +26,8 @@ public class SessionToken extends AbstractPersistable<Long> implements Comparabl
     @JoinColumn(name = "user_id")
     private User user;
 
+    public SessionToken() {}
+
     public SessionToken(User user) {
         this.token = UUID.randomUUID().toString();
         this.user = user;
