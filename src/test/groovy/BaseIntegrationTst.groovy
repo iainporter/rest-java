@@ -12,9 +12,9 @@ import org.apache.commons.lang.RandomStringUtils
 abstract class BaseIntegrationTst extends GroovyTestCase {
 
 
-    protected static final String DATE_STRING = com.sample.web.util.DateUtil.currentDateAsIso8061String;
+    protected static final String DATE_STRING = com.incept5.rest.util.DateUtil.currentDateAsIso8061String;
 
-    private static final BASE_URL = "http://localhost:" + System.getProperty("tomcatPort", "8080") + "/sample-web/";
+    private static final BASE_URL = "http://localhost:" + System.getProperty("tomcatPort", "8080") + "/incept5-rest/";
 
 
 
@@ -36,7 +36,7 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
        def path = "user/" + userToGet
        def authToken = calculateAuthToken(sessionToken, path + ",GET")
        def userResponse = getRestClient().get(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': requestingUserId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
+               headers: ['Authorization': requestingUserId + ":" + authToken, "x-rest-incept5-date": DATE_STRING])
        return userResponse
    }
 
@@ -44,14 +44,14 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
         def path =  "user/"  + userId;
        def authToken = calculateAuthToken(userToken, path +",PUT")
         return getRestClient().put(path: path, contentType: ContentType.JSON, body: updateRequest,
-                headers: ['Authorization': userId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
+                headers: ['Authorization': userId + ":" + authToken, "x-rest-incept5-date": DATE_STRING])
     }
 
     protected Object httpDeleteUser(def userId, def sessionToken) {
        def path = "user/" + userId
        def authToken = calculateAuthToken(sessionToken, path + ",DELETE")
        def response = getRestClient().delete(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': userId + ":" + authToken, "x-rest-sample-date": DATE_STRING])
+               headers: ['Authorization': userId + ":" + authToken, "x-rest-incept5-date": DATE_STRING])
        return response
    }
 

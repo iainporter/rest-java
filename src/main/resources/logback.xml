@@ -6,7 +6,7 @@
             </Pattern>
         </layout>
     </appender>
-    <logger name="com.sample.web" level="DEBUG"/>
+    <logger name="com.incept5.rest" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

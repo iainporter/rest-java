@@ -86,7 +86,6 @@ dependencies {
             "org.springframework.social:spring-social-core:$springSocialVersion",
             "org.springframework.social:spring-social-facebook:$springSocialFacebookVersion",
             "org.springframework.social:spring-social-twitter:$springSocialTwitterVersion",
-            "org.springframework.social:spring-social-web:$springSocialVersion",
             "org.springframework.social:spring-social-test:$springSocialVersion",
             "org.springframework.security:spring-security-core:$springSecurity",
 
@@ -104,7 +103,6 @@ dependencies {
 			"org.springframework:spring-core:$springVersion",
 			"org.springframework:spring-beans:$springVersion",
 			"org.springframework:spring-context:$springVersion",
-			"org.springframework:spring-web:$springVersion",
 			"org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-webmvc:$springVersion",
             "org.springframework:spring-tx:$springVersion",
@@ -184,7 +182,7 @@ dependencies {
 }
 
 war {
-    baseName = "sample-web"
+    baseName = "incept5-rest"
 }
 
 cargo {
@@ -217,7 +215,7 @@ test {
            println "Creating $emmaInstDir to instrument from " +       sourceSets.main.output.classesDir.absolutePath
            // instruct our compiled classes and store them at $buildDir/tmp/emma/instr
            ant.emma(enabled: 'true', verbosity:'trace1'){
-              instr(filter: "-com.incept5.com.sample.web.command.*", merge:"true", destdir: emmaInstDir.absolutePath, instrpathref:"run.classpath",
+              instr(filter: "-com.incept5.com.incept5.rest.command.*", merge:"true", destdir: emmaInstDir.absolutePath, instrpathref:"run.classpath",
                     metadatafile: new File(emmaInstDir, '/metadata.emma').absolutePath) {
                  instrpath {
                  fileset(dir:sourceSets.main.output.classesDir.absolutePath, includes:"**/*.class")

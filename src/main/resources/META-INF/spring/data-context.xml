@@ -23,7 +23,7 @@
 
     </bean>
 
-    <jpa:repositories base-package="com.sample.web.repository" />
+    <jpa:repositories base-package="com.incept5.rest.repository" />
 
     <bean class="org.springframework.orm.jpa.JpaTransactionManager"
           id="transactionManager">
@@ -54,7 +54,7 @@
 
         <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-            <property name="url" value="jdbc:mysql://localhost:3306/com.sample.web"/>
+            <property name="url" value="jdbc:mysql://localhost:3306/com.incept5.rest"/>
             <property name="username" value="root"/>
             <property name="password" value="password"/>
             <property name="initialSize" value="10"/>

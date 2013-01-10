@@ -32,7 +32,7 @@
 
     <beans profile="dev, local">
 
-      <bean id="mailSender" class="com.sample.web.service.MockJavaMailSender">
+      <bean id="mailSender" class="com.incept5.rest.service.MockJavaMailSender">
 
    </bean>
    </beans>

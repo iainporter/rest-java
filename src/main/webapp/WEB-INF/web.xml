@@ -27,7 +27,7 @@
         <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>com.sample.web.resource</param-value>
+            <param-value>com.incept5.rest.resource</param-value>
         </init-param>
 
         <init-param>
@@ -36,7 +36,7 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
-            <param-value>com.sample.web.filter.ResourceFilterFactory</param-value>
+            <param-value>com.incept5.rest.filter.ResourceFilterFactory</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.JSPTemplatesBasePath</param-name>
