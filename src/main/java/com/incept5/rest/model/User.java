@@ -234,6 +234,16 @@ public class User extends BaseEntity {
         }
     }
 
+    public void removeExpiredSessions(Date expiryDate) {
+        Iterator<SessionToken> it = sessions.iterator();
+        while(it.hasNext()) {
+            SessionToken token = it.next();
+            if(token.getLastUpdated().before(expiryDate)) {
+                it.remove();
+            }
+        }
+    }
+
     /**
      * Hash the password using salt values
      *

@@ -35,7 +35,7 @@ public class AuthorizationService {
      * the User's session token + the relative request Url + the Http Verb + the Date as ISO 8061 String
      * <code>
      *     Example:
-     *      9fbc6f9a-af1b-4767-a492-c8462fd2a4d9:user/2e2ce9e8-798e-42b6-9326-fd2e56aef7aa/cards,POST,2012-06-30T12:00:00+01:00
+     *      9fbc6f9a-af1b-4767-a492-c8462fd2a4d9:user/2e2ce9e8-798e-42b6-9326-fd2e56aef7aa,GET,2012-06-30T12:00:00+01:00
      *
      * </code>
      *

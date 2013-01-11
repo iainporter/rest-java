@@ -49,11 +49,5 @@ public class SocialConfig {
         return usersConnectionRepository;
     }
 
-//    @Bean
-//    @Scope(value="request", proxyMode= ScopedProxyMode.INTERFACES)
-//    public ConnectionRepository connectionRepository() {
-//
-//        return usersConnectionRepository().createConnectionRepository(authentication.getName());
-//    }
 
 }

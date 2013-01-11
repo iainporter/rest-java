@@ -13,6 +13,7 @@ import com.incept5.rest.service.exception.AuthorizationException;
 import com.incept5.rest.service.exception.DuplicateUserException;
 import com.incept5.rest.service.exception.ValidationException;
 import com.incept5.rest.social.JpaUsersConnectionRepository;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import org.springframework.util.Assert;
 import java.util.List;
 
 /**
- * Service for managing User accounts and Cards
+ * Service for managing User accounts
  *
  * @author: Iain Porter
  */
@@ -181,6 +182,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
         userRepository.save(user);
         return new ExternalUser(user);
+    }
+
+    public Integer deleteExpiredSessions(int timeSinceLastUpdatedInMinutes) {
+        DateTime date = new DateTime();
+        date = date.minusMinutes(timeSinceLastUpdatedInMinutes);
+        List<User> expiredUserSessions = userRepository.findByExpiredSession(date.toDate());
+        int count = expiredUserSessions.size();
+        for(User user : expiredUserSessions) {
+            user.removeExpiredSessions(date.toDate());
+        }
+        userRepository.save(expiredUserSessions);
+        return count;
     }
 
     public void saveUserSession(ExternalUser externalUser) {

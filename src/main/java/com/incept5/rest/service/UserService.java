@@ -82,4 +82,12 @@ public interface UserService {
      */
     public void saveUserSession(ExternalUser user);
 
+    /**
+     * Delete all SessionToken objects that have not been accessed within the duration specified by the argument timeSinceLastUpdatedInMinutes
+     *
+     * @param timeSinceLastUpdatedInMinutes
+     * @return the number of sessions removed
+     */
+    public Integer deleteExpiredSessions(int timeSinceLastUpdatedInMinutes);
+
 }

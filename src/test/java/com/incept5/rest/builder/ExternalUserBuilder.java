@@ -3,11 +3,9 @@ package com.incept5.rest.builder;
 import com.incept5.rest.api.ExternalUser;
 
 /**
- * Created by IntelliJ IDEA.
  * User: porter
  * Date: 12/03/2012
  * Time: 14:32
- * To change this template use File | Settings | File Templates.
  */
 public class ExternalUserBuilder {
 

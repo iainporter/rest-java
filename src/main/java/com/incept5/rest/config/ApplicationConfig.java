@@ -16,6 +16,8 @@ public class ApplicationConfig {
 
     private final static String HOSTNAME_PROPERTY = "hostNameUrl";
 
+    private final static String SESSION_EXPIRY_DURATION = "session.timeToLive.inMinutes";
+
     @Autowired
     protected Environment environment;
 
@@ -29,6 +31,10 @@ public class ApplicationConfig {
 
     public String getFacebookClientSecret() {
         return environment.getProperty("facebook.clientSecret");
+    }
+
+    public int getSessionExpiryTimeInMinutes() {
+        return Integer.parseInt(environment.getProperty(SESSION_EXPIRY_DURATION));
     }
 
 }

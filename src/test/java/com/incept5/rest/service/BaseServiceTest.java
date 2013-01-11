@@ -29,7 +29,6 @@ public class BaseServiceTest {
     @Autowired
     UserRepository userRepository;
 
-
     @Autowired
     ApplicationConfig applicationConfig;
 
