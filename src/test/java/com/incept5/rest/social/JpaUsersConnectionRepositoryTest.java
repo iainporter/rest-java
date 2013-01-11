@@ -17,6 +17,7 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -75,13 +76,13 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName("Tom").setLastName("Tucker").setEmail("tt@example.com").setUsername("ttucker").build();
         when(connection.fetchUserProfile()).thenReturn(profile);
-        User user = userService.socialLogin(connection);
+        ExternalUser user = userService.socialLogin(connection);
         assertThat(user, is(notNullValue()));
         assertThat(user.getEmailAddress(), is("tt@example.com"));
         assertThat(user.getFirstName(), is("Tom"));
         assertThat(user.getLastName(), is("Tucker"));
         assertThat(user.isVerified(), is(true));
-        assertThat(user.hasRole(Role.authenticated), is(true));
+        assertThat(user.getRole().equalsIgnoreCase(Role.authenticated.toString()), is(true));
     }
 
      /**
@@ -95,15 +96,15 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         ((UserServiceImpl) userService).setUserRepository(userRepository);
         //create email account
         CreateUserRequest request = getCreateUserRequest(RandomStringUtils.randomAlphabetic(8) + "@example.com");
-        User createdUser = userService.createUser(request, Role.authenticated);
+        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
 
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName(user.getFirstName()).setLastName(user.getLastName()).setEmail(user.getEmailAddress()).setUsername("jsmith.12").build();
         when(connection.fetchUserProfile()).thenReturn(profile);
-        when(userRepository.findByEmailAddress(any(String.class))).thenReturn(createdUser);
-        when(userRepository.findByUuid(any(String.class))).thenReturn(createdUser);
-        User socialLoginUser = userService.socialLogin(connection);
-        assertThat(createdUser.getUuid(), is(socialLoginUser.getUuid()));
+        when(userRepository.findByEmailAddress(any(String.class))).thenReturn(new User(UUID.fromString(createdUser.getId())));
+        when(userRepository.findByUuid(any(String.class))).thenReturn(new User(UUID.fromString(createdUser.getId())));
+        ExternalUser socialLoginUser = userService.socialLogin(connection);
+        assertThat(createdUser.getId(), is(socialLoginUser.getId()));
         assertThat(socialLoginUser.isVerified(), is(true));
     }
 //

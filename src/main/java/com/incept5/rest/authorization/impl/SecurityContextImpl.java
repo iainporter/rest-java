@@ -1,8 +1,7 @@
 package com.incept5.rest.authorization.impl;
 
-import com.incept5.rest.authorization.UserSession;
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
 import com.incept5.rest.service.exception.InvalidAuthorizationHeaderException;
 
 import javax.ws.rs.core.SecurityContext;
@@ -17,17 +16,13 @@ import java.security.Principal;
  */
 public class SecurityContextImpl implements SecurityContext {
 
-    private final UserSession session;
+    private final ExternalUser user;
 
-    public SecurityContextImpl(UserSession session) {
-        this.session = session;
+    public SecurityContextImpl(ExternalUser user) {
+        this.user = user;
     }
 
     public Principal getUserPrincipal() {
-        User user = null;
-        if(session != null) {
-            user = session.getUser();
-        }
         return user;
     }
 
@@ -35,10 +30,10 @@ public class SecurityContextImpl implements SecurityContext {
         if(role.equalsIgnoreCase(Role.anonymous.name())) {
              return true;
         }
-        if(session == null || session.isAuthenticationFailure()) {
+        if(user == null || user.getActiveSession() == null) {
             throw new InvalidAuthorizationHeaderException();
         }
-        return session.getUser().getRole().name().equalsIgnoreCase(role);
+        return user.getRole().equalsIgnoreCase(role);
     }
 
     public boolean isSecure() {

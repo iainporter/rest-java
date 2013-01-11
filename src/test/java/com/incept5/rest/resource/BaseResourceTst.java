@@ -8,6 +8,7 @@ import com.incept5.rest.builder.ExternalUserBuilder;
 import com.incept5.rest.gateway.EmailServicesGateway;
 import com.incept5.rest.mock.AppMockConfiguration;
 import com.incept5.rest.model.Role;
+import com.incept5.rest.model.SessionToken;
 import com.incept5.rest.model.User;
 import com.incept5.rest.service.UserService;
 import com.incept5.rest.service.VerificationTokenService;
@@ -51,6 +52,12 @@ public class BaseResourceTst extends JerseyTest {
     {
         PASSWORD_REQUEST = new PasswordRequest();
         PASSWORD_REQUEST.setPassword(PASSWORD);
+    }
+
+    protected static SessionToken ACTIVE_SESSION;
+    {
+        TEST_USER.addSessionToken();
+        ACTIVE_SESSION = TEST_USER.getSessions().first();
     }
 
     protected static ApplicationContext appCtx;

@@ -1,10 +1,10 @@
 package com.incept5.rest.service;
 
 import com.incept5.rest.api.CreateUserRequest;
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.api.LoginRequest;
 import com.incept5.rest.api.UpdateUserRequest;
 import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
 import org.springframework.social.connect.Connection;
 
 /**
@@ -22,7 +22,7 @@ public interface UserService {
      * @param role
      * @return User
      */
-    public User createUser(CreateUserRequest request, Role role);
+    public ExternalUser createUser(CreateUserRequest request, Role role);
 
 
     /**
@@ -31,7 +31,7 @@ public interface UserService {
      * @param role
      * @return User
      */
-    public User createUser(Role role);
+    public ExternalUser createUser(Role role);
 
     /**
      * Login a User
@@ -39,7 +39,7 @@ public interface UserService {
      * @param request
      * @return AuthenticatedUserToken
      */
-    public User login(LoginRequest request);
+    public ExternalUser login(LoginRequest request);
 
     /**
      * Log in a User using Connection details from an authorized request from the User's supported Social provider
@@ -48,17 +48,17 @@ public interface UserService {
      * @param connection containing the details of the authorized user account form the Social provider
      * @return the User account linked to the {@link com.incept5.rest.model.SocialUser} account
      */
-    public User socialLogin(Connection<?> connection);
+    public ExternalUser socialLogin(Connection<?> connection);
 
     /**
      * Get a User based on a unique identifier
      *
-     * Identifiers supported are uuid, emailAddress and anonymousToken
+     * Identifiers supported are uuid, emailAddress
      *
      * @param userIdentifier
      * @return  User
      */
-    public User getUser(User requestingUser, String userIdentifier);
+    public ExternalUser getUser(ExternalUser requestingUser, String userIdentifier);
 
     /**
      * Delete user, only authenticated user accounts can be deleted
@@ -66,7 +66,7 @@ public interface UserService {
      * @param userMakingRequest the user authorized to delete the user
      * @param userId the id of the user to delete
      */
-    public void deleteUser(User userMakingRequest, String userId);
+    public void deleteUser(ExternalUser userMakingRequest, String userId);
 
     /**
      * Save User
@@ -74,6 +74,12 @@ public interface UserService {
      * @param userId
      * @param request
      */
-    public User saveUser(String userId, UpdateUserRequest request);
+    public ExternalUser saveUser(String userId, UpdateUserRequest request);
+
+    /**
+     * Save the active session state of the externalUser
+     * @param user
+     */
+    public void saveUserSession(ExternalUser user);
 
 }

@@ -85,7 +85,7 @@ class UserIntegrationTest extends BaseIntegrationTst {
         def userToken = userResponse.responseData["token"]
         def getUserResponse = httpGetUser(userToken, userId, userId)
         assertEquals(200, getUserResponse.status)
-        def user = getUserResponse.responseData["user"]
+        def user = getUserResponse.responseData
         assertThat(user.verified, is(false))
     }
 
@@ -100,7 +100,7 @@ class UserIntegrationTest extends BaseIntegrationTst {
         assertEquals(200, updateUserResponse.status)
         def getUserResponse = httpGetUser(userToken, userId, userId)
         assertEquals(200, getUserResponse.status)
-        def user = getUserResponse.responseData["user"]
+        def user = getUserResponse.responseData
         assertThat(user.verified, is(false))
         assertThat(user.firstName, is("FOO"))
         assertThat(user.lastName, is("BAR"))

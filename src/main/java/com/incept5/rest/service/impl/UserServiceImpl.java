@@ -2,6 +2,7 @@ package com.incept5.rest.service.impl;
 
 
 import com.incept5.rest.api.CreateUserRequest;
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.api.LoginRequest;
 import com.incept5.rest.api.UpdateUserRequest;
 import com.incept5.rest.model.Role;
@@ -56,7 +57,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      *
      */
     @Transactional
-    public User createUser(CreateUserRequest request, Role role) {
+    public ExternalUser createUser(CreateUserRequest request, Role role) {
         if (!request.validate()) {
             throw new ValidationException();
         }
@@ -66,15 +67,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
 
         User savedUser = createNewUser(request, role);
-        return savedUser;
+        return new ExternalUser(savedUser, savedUser.getSessions().first());
     }
 
     @Transactional
-    public User createUser(Role role) {
+    public ExternalUser createUser(Role role) {
         User user = new User();
         user.setRole(role);
         userRepository.save(user);
-        return user;
+        return new ExternalUser(user, user.getSessions().first());
     }
 
     /**
@@ -85,7 +86,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      *  and compared to the persisted password for the User account.
      */
     @Transactional
-    public User login(LoginRequest request) {
+    public ExternalUser login(LoginRequest request) {
         if (!request.validate()) {
             throw new ValidationException();
         }
@@ -96,7 +97,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
         if (user.hashPassword(request.getPassword()).equals(user.getHashedPassword())) {
             user.addSessionToken();
-            return user;
+            return new ExternalUser(user, user.getSessions().first());
         } else {
             throw new AuthenticationException();
         }
@@ -114,7 +115,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      *
      */
     @Transactional
-    public User socialLogin(Connection<?> connection) {
+    public ExternalUser socialLogin(Connection<?> connection) {
 
         List<String> userUuids = jpaUsersConnectionRepository.findUserIdsWithConnection(connection);
         if(userUuids.size() == 0) {
@@ -125,7 +126,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             throw new AuthenticationException();
         }
         updateUserFromProfile(connection, user);
-        return user;
+        return new ExternalUser(user);
 
     }
 
@@ -137,23 +138,23 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      * @return user
      */
     @Transactional
-    public User getUser(User requestingUser, String userIdentifier) {
+    public ExternalUser getUser(ExternalUser requestingUser, String userIdentifier) {
         Assert.notNull(requestingUser);
         Assert.notNull(userIdentifier);
         User user = ensureUserIsLoaded(userIdentifier);
-        if(!requestingUser.getUuid().equals(user.getUuid()) && !requestingUser.hasRole(Role.administrator))  {
+        if(!requestingUser.getId().equals(user.getUuid().toString()) && !requestingUser.getRole().equalsIgnoreCase(Role.administrator.toString()))  {
            throw new AuthorizationException("User not authorized to load profile");
         }
-        return user;
+        return new ExternalUser(user);
     }
 
 
     @Transactional
-    public void deleteUser(User userMakingRequest, String userId) {
+    public void deleteUser(ExternalUser userMakingRequest, String userId) {
         Assert.notNull(userMakingRequest);
         Assert.notNull(userId);
         User userToDelete = ensureUserIsLoaded(userId);
-        if (userMakingRequest.hasRole(Role.administrator) && (userToDelete.hasRole(Role.anonymous) || userToDelete.hasRole(Role.authenticated))) {
+        if (userMakingRequest.getRole().equalsIgnoreCase(Role.administrator.toString()) && (userToDelete.hasRole(Role.anonymous) || userToDelete.hasRole(Role.authenticated))) {
             userRepository.delete(userToDelete);
         } else {
             throw new AuthorizationException("User cannot be deleted. Only users with anonymous or authenticated role can be deleted.");
@@ -161,7 +162,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Transactional
-    public User saveUser(String userId, UpdateUserRequest request) {
+    public ExternalUser saveUser(String userId, UpdateUserRequest request) {
         if (!request.validate()) {
             throw new ValidationException();
         }
@@ -179,9 +180,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             }
         }
         userRepository.save(user);
-        return user;
+        return new ExternalUser(user);
     }
 
+    public void saveUserSession(ExternalUser externalUser) {
+        User user = ensureUserIsLoaded(externalUser.getId());
+        user.setActiveSession(externalUser.getActiveSession());
+        userRepository.save(user);
+    }
 
     private User createNewUser(CreateUserRequest request, Role role) {
         User userToSave = new User(request.getUser());

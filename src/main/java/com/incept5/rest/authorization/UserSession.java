@@ -1,6 +1,6 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.model.User;
+import com.incept5.rest.model.SessionToken;
 
 import javax.persistence.Cacheable;
 import java.io.Serializable;
@@ -15,48 +15,34 @@ import java.util.Date;
 @Cacheable
 public class UserSession implements Serializable {
 
-    private final User user;
-
-    private final Date createTime = new Date();
+    private Date createTime;
 
     private Date lastUpdated;
 
+    private String sessionToken;
+
     private boolean authenticationFailure = false;
 
-    public UserSession(User user) {
-        this.user = user;
+    public UserSession(){}
+
+    public UserSession(SessionToken token) {
+        this.createTime = token.getTimeCreated();
+        this.lastUpdated = token.getLastUpdated();
+        this.sessionToken = token.getToken();
     }
 
-    /**
-     * Date that the last request by this User was made
-     */
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    /**
-     * The User for the session
-     */
-    public User getUser() {
-        return user;
-    }
-
-    /**
-     * Date that the session was created
-     */
     public Date getCreateTime() {
         return createTime;
     }
 
-    /**
-     * Did the current request fail authorization
-     *
-     * @return true if the request is not authorized
-     */
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public String getSessionToken() {
+        return sessionToken;
+    }
+
     public boolean isAuthenticationFailure() {
         return authenticationFailure;
     }

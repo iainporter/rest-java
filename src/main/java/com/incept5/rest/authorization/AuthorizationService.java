@@ -1,14 +1,16 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.model.SessionToken;
+import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.service.UserService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.SortedSet;
+import java.util.List;
 
 /**
  * Service to Authorize User requests
@@ -19,6 +21,13 @@ import java.util.SortedSet;
 public class AuthorizationService {
 
     Logger log = LoggerFactory.getLogger(AuthorizationService.class);
+
+    private UserService userService;
+
+    @Autowired
+    public AuthorizationService(UserService userService) {
+         this.userService = userService;
+    }
 
     /**
      * Authorize a hashed token against a request string
@@ -44,17 +53,23 @@ public class AuthorizationService {
         Assert.notNull(authorizationRequest.getUser());
         Assert.notNull(authorizationRequest.getHashedToken());
         String unEncodedString =  composeUnEncodedRequest(authorizationRequest);
-        SortedSet<SessionToken> sessionTokens = authorizationRequest.getUser().getSessions();
+        List<UserSession> sessionTokens = authorizationRequest.getUser().getSessions();
         String userTokenHash = null;
-        for(SessionToken token: sessionTokens) {
-            userTokenHash = encodeAuthToken(token, unEncodedString);
+        for(UserSession token: sessionTokens) {
+            userTokenHash = encodeAuthToken(token.getSessionToken(), unEncodedString);
             if(authorizationRequest.getHashedToken().equals(userTokenHash)) {
+                authorizationRequest.getUser().setActiveSession(token);
+                persistUser(authorizationRequest.getUser());
                 return true;
             }
         }
         log.error("Hash check failed for hashed token: {} for the following request: {} for user: {}",
-                    new Object[]{authorizationRequest.getHashedToken(), unEncodedString, authorizationRequest.getUser().getUuid().toString()} );
+                    new Object[]{authorizationRequest.getHashedToken(), unEncodedString, authorizationRequest.getUser().getId()} );
         return false;
+    }
+
+    private void persistUser(ExternalUser user) {
+        userService.saveUserSession(user);
     }
 
     /**
@@ -63,8 +78,8 @@ public class AuthorizationService {
      * @param token
      * @return encoded token
      */
-    private String encodeAuthToken(SessionToken token, String unencodedRequest) {
-        byte[] digest = DigestUtils.sha256(token.getToken() + ":" + unencodedRequest);
+    private String encodeAuthToken(String token, String unencodedRequest) {
+        byte[] digest = DigestUtils.sha256(token + ":" + unencodedRequest);
         return new String(Base64.encodeBase64(digest));
 
     }

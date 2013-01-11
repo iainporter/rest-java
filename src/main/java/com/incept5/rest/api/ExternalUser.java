@@ -1,10 +1,14 @@
 package com.incept5.rest.api;
 
+import com.incept5.rest.authorization.UserSession;
+import com.incept5.rest.model.SessionToken;
 import com.incept5.rest.model.SocialUser;
 import com.incept5.rest.model.User;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.util.StringUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +21,7 @@ import static com.incept5.rest.util.StringUtil.validEmail;
  * @author: Iain Porter
  */
 @XmlRootElement
-public class ExternalUser {
+public class ExternalUser implements Principal {
 
     private String id;
     private String firstName;
@@ -25,10 +29,16 @@ public class ExternalUser {
     private String emailAddress;
     private boolean isVerified;
 
-    @Deprecated
-    private String username;
+    @JsonIgnore
+    private List<UserSession> sessions = new ArrayList<UserSession>();
 
-    private List<SocialProfile> socialProfiles;
+    @JsonIgnore
+    private UserSession activeSession;
+
+    @JsonIgnore
+    private String role;
+
+    private List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
 
     public ExternalUser() {}
 
@@ -38,7 +48,6 @@ public class ExternalUser {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.isVerified = user.isVerified();
-        List<SocialProfile> profiles = new ArrayList<SocialProfile>();
         for(SocialUser socialUser: user.getSocialUsers()) {
             SocialProfile profile = new SocialProfile();
             profile.setDisplayName(socialUser.getDisplayName());
@@ -46,9 +55,17 @@ public class ExternalUser {
             profile.setProfileUrl(socialUser.getProfileUrl());
             profile.setProvider(socialUser.getProviderId());
             profile.setProviderUserId(socialUser.getProviderUserId());
-            profiles.add(profile);
+            socialProfiles.add(profile);
         }
-        this.socialProfiles = profiles;
+        for(SessionToken session : user.getSessions()) {
+             sessions.add(new UserSession(session));
+        }
+        role = user.getRole().toString();
+    }
+
+    public ExternalUser(User user, SessionToken activeSession) {
+        this(user);
+        this.activeSession = new UserSession(activeSession);
     }
 
 
@@ -88,6 +105,18 @@ public class ExternalUser {
         return isVerified;
     }
 
+    public List<UserSession> getSessions() {
+        return sessions;
+    }
+
+    public UserSession getActiveSession() {
+        return activeSession;
+    }
+
+    public void setActiveSession(UserSession activeSession) {
+        this.activeSession = activeSession;
+    }
+
     public boolean validate() {
         try {
             validEmail(emailAddress);
@@ -103,4 +132,11 @@ public class ExternalUser {
         }
     }
 
+    public String getName() {
+        return emailAddress;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }

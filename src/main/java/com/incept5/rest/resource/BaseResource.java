@@ -1,18 +1,17 @@
 package com.incept5.rest.resource;
 
-import com.incept5.rest.api.*;
+import com.incept5.rest.api.AuthenticatedUserToken;
+import com.incept5.rest.api.CreateUserRequest;
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
-import com.incept5.rest.service.*;
-import com.incept5.rest.service.exception.AuthorizationException;
-import com.incept5.rest.api.CreateUserRequest;
 import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
+import com.incept5.rest.service.UserService;
+import com.incept5.rest.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
@@ -40,18 +39,10 @@ public class BaseResource {
 
 
     protected Response signUpUser(CreateUserRequest request, Role role) {
-        User user = userService.createUser(request, role);
-        verificationTokenService.sendEmailRegistrationToken(user);
-        URI location = uriInfo.getAbsolutePathBuilder().path(user.getUuid().toString()).build();
+        ExternalUser user = userService.createUser(request, role);
+        verificationTokenService.sendEmailRegistrationToken(user.getId());
+        URI location = uriInfo.getAbsolutePathBuilder().path(user.getId()).build();
         return Response.created(location).entity(new AuthenticatedUserToken(user)).build();
-    }
-
-    protected User getUserThatMatchesSecurityContext(SecurityContext sc, String userId) {
-        User userMakingRequest = (User) sc.getUserPrincipal();
-        if(!userMakingRequest.getUuid().toString().equals(userId)) {
-           throw new AuthorizationException("User not authorized to make that request");
-        }
-        return userMakingRequest;
     }
 
 }

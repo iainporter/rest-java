@@ -1,7 +1,9 @@
 package com.incept5.rest.authorization;
 
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.model.User;
 import com.incept5.rest.repository.UserRepository;
+import com.incept5.rest.service.UserService;
 import com.incept5.rest.util.DateUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -50,7 +52,7 @@ public class AuthorizationServiceTest {
 
         @Bean
         public AuthorizationService authorizationService() {
-            AuthorizationService svc = new AuthorizationService();
+            AuthorizationService svc = new AuthorizationService(mock(UserService.class));
             return svc;
         }
 
@@ -60,7 +62,7 @@ public class AuthorizationServiceTest {
     public void authorizeUser() throws Exception {
         String dateString = DateUtil.getCurrentDateAsIso8061String();
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString)));
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, hashedToken, "hash123,123", dateString));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,123", dateString));
         assertThat(isAuthorized, is(true));
     }
 
@@ -68,14 +70,14 @@ public class AuthorizationServiceTest {
     public void invalidUnencodedRequest() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":hash123,123")));
         User user = new User();
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, hashedToken, "hash123,1234"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,1234"));
         assertThat(isAuthorized, is(false));
     }
 
     @Test
     public void invalidSessionToken() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256("INVALID-SESSION-TOKEN:abcdef")));
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, hashedToken, "abcdef"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "abcdef"));
         assertThat(isAuthorized, is(false));
     }
 
@@ -87,14 +89,14 @@ public class AuthorizationServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void nullSessionToken() {
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(USER, null,  "abcdef"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), null,  "abcdef"));
     }
 
-    private AuthorizationRequest getAuthorizationRequest(User user, String hashedToken, String requestString) {
+    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString) {
         return getAuthorizationRequest(user, hashedToken, requestString, DateUtil.getCurrentDateAsIso8061String());
     }
 
-    private AuthorizationRequest getAuthorizationRequest(User user, String hashedToken, String requestString, String dateString) {
+    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString, String dateString) {
         AuthorizationRequest authRequest = new AuthorizationRequest(user, requestString, "POST", dateString,
                 hashedToken);
         return authRequest;

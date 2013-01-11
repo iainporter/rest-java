@@ -1,20 +1,20 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.model.User;
+import com.incept5.rest.api.ExternalUser;
 
 /**
  * @author: Iain Porter
  */
 public class AuthorizationRequest {
 
-    private final User user;
+    private final ExternalUser user;
     private final String requestUrl;
     private final String httpMethod;
     private final String requestDateString;
     private final String hashedToken;
 
 
-    public AuthorizationRequest(User user, String requestUrl, String httpMethod, String requestDateString, String hashedToken) {
+    public AuthorizationRequest(ExternalUser user, String requestUrl, String httpMethod, String requestDateString, String hashedToken) {
         this.user = user;
         this.requestUrl = requestUrl;
         this.httpMethod = httpMethod;
@@ -22,7 +22,7 @@ public class AuthorizationRequest {
         this.hashedToken = hashedToken;
     }
 
-    public User getUser() {
+    public ExternalUser getUser() {
         return user;
     }
 
@@ -41,4 +41,5 @@ public class AuthorizationRequest {
     public String getHashedToken() {
         return hashedToken;
     }
+
 }

@@ -61,11 +61,12 @@ public class JpaUsersConnectionRepository implements UsersConnectionRepository {
         }
         //First time connected so create a User account or find one that is already created with the email address
         User user = findUserFromSocialProfile(connection);
+        String userId;
         if(user == null) {
-          user = userService.createUser(Role.authenticated);
+          userId = userService.createUser(Role.authenticated).getId();
+        } else {
+           userId = user.getUuid().toString();
         }
-        String userId = user.getUuid().toString();
-
         //persist the Connection
         createConnectionRepository(userId).addConnection(connection);
         userIds.add(userId);

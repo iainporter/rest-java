@@ -1,7 +1,5 @@
 package com.incept5.rest.api;
 
-import com.incept5.rest.model.User;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -15,9 +13,9 @@ public class AuthenticatedUserToken {
 
     public AuthenticatedUserToken(){}
 
-    public AuthenticatedUserToken(User user) {
-        this.userId = user.getUuid().toString();
-        this.token = user.getSessions().last().getToken();
+    public AuthenticatedUserToken(ExternalUser user) {
+        this.userId = user.getId();
+        this.token = user.getActiveSession().getSessionToken();
     }
 
     public String getUserId() {

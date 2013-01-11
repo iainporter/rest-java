@@ -1,6 +1,7 @@
 package com.incept5.rest.model;
 
 import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.authorization.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -9,7 +10,6 @@ import org.hibernate.annotations.SortType;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
-import java.security.Principal;
 import java.util.*;
 
 
@@ -20,7 +20,7 @@ import java.util.*;
 */
 @Entity
 @Table(name="rest_user")
-public class User extends BaseEntity implements Principal {
+public class User extends BaseEntity {
 
      /**
      * Add additional salt to password hashing
@@ -224,6 +224,14 @@ public class User extends BaseEntity implements Principal {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public void setActiveSession(UserSession session) {
+        for(SessionToken token : getSessions()) {
+             if(token.getToken().equals(session.getSessionToken())) {
+                 token.setLastUpdated(new Date());
+             }
+        }
     }
 
     /**

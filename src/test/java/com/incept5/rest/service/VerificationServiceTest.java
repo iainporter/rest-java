@@ -121,7 +121,8 @@ public class VerificationServiceTest {
     @Test
     public void sendEmailToken() {
         User user = generateTestUser();
-        VerificationToken token = verificationTokenService.sendEmailVerificationToken(user);
+        when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
+        VerificationToken token = verificationTokenService.sendEmailVerificationToken(user.getUuid().toString());
         assertThat(user.getVerificationTokens().size(), is(1));
         assertThat(token, is(not(Matchers.<Object>nullValue())));
         assertThat(tokens.size(), is(1));
@@ -134,7 +135,8 @@ public class VerificationServiceTest {
     @Test
     public void sendRegistrationToken() {
         User user = generateTestUser();
-        VerificationToken token = verificationTokenService.sendEmailRegistrationToken(user);
+        when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
+        VerificationToken token = verificationTokenService.sendEmailRegistrationToken(user.getUuid().toString());
         assertThat(user.getVerificationTokens().size(), is(1));
         assertThat(token, is(not(Matchers.<Object>nullValue())));
         assertThat(tokens.size(), is(1));
@@ -148,7 +150,8 @@ public class VerificationServiceTest {
     public void verifyValidToken() {
         User user = generateTestUser();
         when(userRepository.save(user)).thenReturn(user);
-        VerificationToken token = verificationTokenService.sendEmailVerificationToken(user);
+        when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
+        VerificationToken token = verificationTokenService.sendEmailVerificationToken(user.getUuid().toString());
         when(tokenRepository.findByToken(token.getToken())).thenReturn(token);
         String encodedToken = new String(Base64.encodeBase64(token.getToken().getBytes()));
         VerificationToken verifiedToken = verificationTokenService.verify(encodedToken);

@@ -7,7 +7,6 @@ import com.incept5.rest.api.PasswordRequest;
 import com.incept5.rest.builder.ExternalUserBuilder;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
 import com.incept5.rest.repository.UserRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class BaseServiceTest {
     ApplicationConfig applicationConfig;
 
 
-    protected User createUserWithRandomUserName(Role role) {
+    protected ExternalUser createUserWithRandomUserName(Role role) {
         CreateUserRequest request = getDefaultCreateUserRequest();
         return userService.createUser(request, role);
     }

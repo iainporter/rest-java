@@ -1,5 +1,6 @@
 package com.incept5.rest.authorization;
 
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.filter.SecurityContextFilter;
 import com.incept5.rest.model.User;
 import com.incept5.rest.repository.UserRepository;
@@ -36,7 +37,7 @@ public class SecurityContextFilterTest {
         when(containerRequest.getHeaderValue("x-rest-incept5-date")).thenReturn(DateUtil.getCurrentDateAsIso8061String());
         when(containerRequest.getPath()).thenReturn("foo");
         when(containerRequest.getMethod()).thenReturn("GET");
-        AuthorizationRequest authRequest = new AuthorizationRequest(user, containerRequest.getPath(), containerRequest.getMethod(), DateUtil.getCurrentDateAsIso8061String(), "foo");
+        AuthorizationRequest authRequest = new AuthorizationRequest(new ExternalUser(user), containerRequest.getPath(), containerRequest.getMethod(), DateUtil.getCurrentDateAsIso8061String(), "foo");
         when(authorizationService.isAuthorized(any(AuthorizationRequest.class))).thenReturn(true);
         when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
         SecurityContextFilter filter = new SecurityContextFilter(userRepository, authorizationService);

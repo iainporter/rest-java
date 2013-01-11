@@ -1,8 +1,8 @@
 package com.incept5.rest.filter;
 
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.authorization.AuthorizationRequest;
 import com.incept5.rest.authorization.AuthorizationService;
-import com.incept5.rest.authorization.UserSession;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
 import com.incept5.rest.model.User;
 import com.incept5.rest.repository.UserRepository;
@@ -87,7 +87,7 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
         //find the Authorization header.
         String authToken = request.getHeaderValue(HEADER_AUTHORIZATION);
         String requestDateString = request.getHeaderValue(HEADER_DATE);
-        UserSession session = null;
+        ExternalUser externalUser = null;
         if (authToken != null && requestDateString != null) {
             //make sure date is valid
             Date dateFromHeader = ensureValidDateFromRequest(requestDateString);
@@ -96,18 +96,15 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
                 String userId = token[0];
                 String hashedToken = token[1];
                 User user = null;
-                    user = userRepository.findByUuid(userId);
-                    session = new UserSession(user);
-                AuthorizationRequest authRequest = new AuthorizationRequest(user, request.getPath(), request.getMethod(), requestDateString, hashedToken);
-                if (user != null && authorizationService.isAuthorized(authRequest)) {
-                    session.setLastUpdated(dateFromHeader);
-                } else {
-                    //will cause a isInRole() == false when SecurityContext is interrogated
-                    session.setAuthenticationFailure(true);
+                user = userRepository.findByUuid(userId);
+                externalUser = new ExternalUser(user);
+                AuthorizationRequest authRequest = new AuthorizationRequest(externalUser, request.getPath(), request.getMethod(), requestDateString, hashedToken);
+                if (user != null) {
+                    authorizationService.isAuthorized(authRequest);
                 }
             }
         }
-        request.setSecurityContext(new SecurityContextImpl(session));
+        request.setSecurityContext(new SecurityContextImpl(externalUser));
         return request;
     }
 

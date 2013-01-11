@@ -1,6 +1,5 @@
 package com.incept5.rest.service;
 
-import com.incept5.rest.model.User;
 import com.incept5.rest.model.VerificationToken;
 
 /**
@@ -11,9 +10,9 @@ import com.incept5.rest.model.VerificationToken;
  */
 public interface VerificationTokenService {
 
-    public VerificationToken sendEmailVerificationToken(User user);
+    public VerificationToken sendEmailVerificationToken(String userId);
 
-    public VerificationToken sendEmailRegistrationToken(User user);
+    public VerificationToken sendEmailRegistrationToken(String userId);
 
     public VerificationToken sendLostPasswordToken(String emailAddress);
 

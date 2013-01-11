@@ -28,9 +28,9 @@ slf4jVersion="1.6.1"
 logbackVersion="1.0.1"
 velocityVersion="1.7"
 groovyVersion="2.0.0"
-iTextVersion="2.1.7"
 environmentBase = 'src/main/config/'
 env = "ci"
+
 
 
 def properties = new Properties()
@@ -117,10 +117,6 @@ dependencies {
             "ch.qos.logback:logback-core:$logbackVersion",
             "org.mockito:mockito-all:1.8.5",
 
-            "com.google.zxing:core:2.0",
-            "com.google.zxing:javase:2.0",
-            "com.lowagie:itext:$iTextVersion",
-
             "org.springframework.integration:spring-integration-core:$springIntegrationVersion",
 			"org.springframework.integration:spring-integration-jdbc:$springIntegrationVersion",
             "org.springframework.integration:spring-integration-mail:$springIntegrationVersion",
@@ -182,7 +178,7 @@ dependencies {
 }
 
 war {
-    baseName = "incept5-rest"
+    baseName = "java-rest"
 }
 
 cargo {

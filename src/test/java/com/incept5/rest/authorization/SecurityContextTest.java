@@ -1,5 +1,6 @@
 package com.incept5.rest.authorization;
 
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
 import com.incept5.rest.model.Role;
 import com.incept5.rest.model.User;
@@ -46,9 +47,8 @@ public class SecurityContextTest {
     public void authenticationFailure() {
         User user = new User();
         user.setRole(Role.authenticated);
-        UserSession session = new UserSession(user);
-        session.setAuthenticationFailure(true);
-        SecurityContext context = new SecurityContextImpl(session);
+        ExternalUser externalUser = new ExternalUser(user);
+        SecurityContext context = new SecurityContextImpl(externalUser);
         context.isUserInRole(Role.authenticated.name());
     }
 
@@ -62,8 +62,9 @@ public class SecurityContextTest {
     private SecurityContext createSecurityContext(Role role) {
         User user = new User();
         user.setRole(role);
-        UserSession session = new UserSession(user);
-        SecurityContext context = new SecurityContextImpl(session);
+        ExternalUser externalUser = new ExternalUser(user);
+        externalUser.setActiveSession(externalUser.getSessions().get(0));
+        SecurityContext context = new SecurityContextImpl(externalUser);
         return context;
     }
 }

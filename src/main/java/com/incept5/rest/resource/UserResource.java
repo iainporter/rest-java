@@ -1,10 +1,8 @@
 package com.incept5.rest.resource;
 
 import com.incept5.rest.api.*;
-import com.incept5.rest.service.exception.AuthorizationException;
-import com.incept5.rest.api.CreateUserRequest;
 import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
+import com.incept5.rest.service.exception.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -53,7 +51,7 @@ public class UserResource extends BaseResource {
     @Path("{userId}")
     @DELETE
     public Response deleteUser(@Context SecurityContext sc, @PathParam("userId") String userId) {
-        User userMakingRequest = (User)sc.getUserPrincipal();
+        ExternalUser userMakingRequest = (ExternalUser)sc.getUserPrincipal();
         userService.deleteUser(userMakingRequest, userId);
         return Response.ok().build();
     }
@@ -62,7 +60,7 @@ public class UserResource extends BaseResource {
     @Path("login")
     @POST
     public Response login(LoginRequest request) {
-        User user = userService.login(request);
+        ExternalUser user = userService.login(request);
         return getLoginResponse(user);
     }
 
@@ -72,7 +70,7 @@ public class UserResource extends BaseResource {
     public Response socialLogin(@PathParam("providerId") String providerId, OAuth2Request request) {
         OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
         Connection<?> connection = connectionFactory.createConnection(new AccessGrant(request.getAccessToken()));
-        User user = userService.socialLogin(connection);
+        ExternalUser user = userService.socialLogin(connection);
         return getLoginResponse(user);
     }
 
@@ -80,36 +78,30 @@ public class UserResource extends BaseResource {
     @Path("{userId}")
     @GET
     public Response getUser(@Context SecurityContext sc, @PathParam("userId") String userId) {
-        User userMakingRequest = (User)sc.getUserPrincipal();
-        User user =  userService.getUser(userMakingRequest, userId);
-        return Response.ok().entity(transformToGetUserResponse(user)).build();
+        ExternalUser userMakingRequest = (ExternalUser)sc.getUserPrincipal();
+        ExternalUser user =  userService.getUser(userMakingRequest, userId);
+        return Response.ok().entity(user).build();
     }
 
     @RolesAllowed({"authenticated"})
     @Path("{userId}")
     @PUT
     public Response updateUser(@Context SecurityContext sc, @PathParam("userId") String userId, UpdateUserRequest request) {
-        User userMakingRequest = (User)sc.getUserPrincipal();
-        if(!userMakingRequest.getUuid().toString().equals(userId)) {
+        ExternalUser userMakingRequest = (ExternalUser)sc.getUserPrincipal();
+        if(!userMakingRequest.getId().equals(userId)) {
             throw new AuthorizationException("User not authorized to modify this profile");
         }
         boolean sendVerificationToken = StringUtils.hasLength(request.getEmailAddress()) &&
                 !request.getEmailAddress().equals(userMakingRequest.getEmailAddress());
-        User savedUser = userService.saveUser(userId, request);
+        ExternalUser savedUser = userService.saveUser(userId, request);
         if(sendVerificationToken) {
-            verificationTokenService.sendEmailVerificationToken(savedUser);
+            verificationTokenService.sendEmailVerificationToken(savedUser.getId());
         }
         return Response.ok().build();
     }
 
-    private Object transformToGetUserResponse(User user) {
-        GetUserResponse response = new GetUserResponse();
-        response.setUser(new ExternalUser(user));
-        return response;
-    }
-
-    private Response getLoginResponse(User user) {
-        URI location = uriInfo.getAbsolutePathBuilder().path(user.getUuid().toString()).build();
+    private Response getLoginResponse(ExternalUser user) {
+        URI location = uriInfo.getAbsolutePathBuilder().path(user.getId().toString()).build();
         AuthenticatedUserToken response = new AuthenticatedUserToken(user);
         return Response.ok().entity(response).contentLocation(location).build();
     }

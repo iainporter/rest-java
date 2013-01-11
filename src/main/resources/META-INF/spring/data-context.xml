@@ -43,7 +43,7 @@
 
         <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="org.h2.Driver"/>
-            <property name="url" value="jdbc:h2:mem:loyaltyDB"/>
+            <property name="url" value="jdbc:h2:mem:restDB"/>
             <property name="username" value="sa"/>
             <property name="password" value=""/>
         </bean>
@@ -54,7 +54,7 @@
 
         <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-            <property name="url" value="jdbc:mysql://localhost:3306/com.incept5.rest"/>
+            <property name="url" value="jdbc:mysql://localhost:3306/javarest"/>
             <property name="username" value="root"/>
             <property name="password" value="password"/>
             <property name="initialSize" value="10"/>
@@ -63,7 +63,6 @@
             <property name="minIdle" value="10"/>
             <property name="timeBetweenEvictionRunsMillis" value="30000"/>
             <property name="minEvictableIdleTimeMillis" value="6000"/>
-            <!--<property name="validationQuery" value="SELECT 1 FROM DUAL"/>-->
         </bean>
 
 

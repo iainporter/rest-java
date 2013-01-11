@@ -1,6 +1,7 @@
 package com.incept5.rest.service;
 
 
+import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.model.Role;
 import com.incept5.rest.model.User;
@@ -53,7 +54,8 @@ public class MailSenderServiceTest extends BaseServiceTest {
 
     @Test
     public void sendVerificationEmail() throws Exception {
-        User user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(externalUser.getId());
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailVerification);
         mailService.sendVerificationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
@@ -68,7 +70,8 @@ public class MailSenderServiceTest extends BaseServiceTest {
 
     @Test
     public void sendRegistrationEmail() throws Exception {
-        User user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(externalUser.getId());
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailRegistration);
         mailService.sendRegistrationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));

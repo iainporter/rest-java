@@ -26,9 +26,7 @@ import org.springframework.util.Assert;
  * @since 10/09/2012
  */
 @Service("verificationTokenService")
-public class VerificationTokenServiceImpl implements VerificationTokenService {
-
-    private final UserRepository userRepository;
+public class VerificationTokenServiceImpl extends BaseServiceImpl implements VerificationTokenService {
 
     private final VerificationTokenRepository tokenRepository;
 
@@ -46,7 +44,12 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken sendEmailVerificationToken(User user) {
+    public VerificationToken sendEmailVerificationToken(String userId) {
+        User user = ensureUserIsLoaded(userId);
+        return sendEmailVerificationToken(user);
+    }
+
+    private VerificationToken sendEmailVerificationToken(User user) {
         VerificationToken token = new VerificationToken(user, VerificationToken.VerificationTokenType.emailVerification);
         user.addVerificationToken(token);
         userRepository.save(user);
@@ -55,7 +58,8 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken sendEmailRegistrationToken(User user) {
+    public VerificationToken sendEmailRegistrationToken(String userId) {
+        User user = ensureUserIsLoaded(userId);
         VerificationToken token = new VerificationToken(user, VerificationToken.VerificationTokenType.emailRegistration);
         user.addVerificationToken(token);
         userRepository.save(user);

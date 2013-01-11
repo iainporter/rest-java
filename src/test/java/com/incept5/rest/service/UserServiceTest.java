@@ -1,6 +1,7 @@
 package com.incept5.rest.service;
 
 import com.incept5.rest.api.*;
+import com.incept5.rest.authorization.UserSession;
 import com.incept5.rest.builder.ExternalUserBuilder;
 import com.incept5.rest.model.Role;
 import com.incept5.rest.model.User;
@@ -13,9 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -30,13 +30,13 @@ public class UserServiceTest  extends BaseServiceTest {
 
     @Test
     public void createValidUser() throws Exception {
-        User user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
         assertOnCreatedUser(user);
     }
 
     @Test
     public void createDefaultUser() throws Exception {
-        User user = userService.createUser(Role.authenticated);
+        ExternalUser user = userService.createUser(Role.authenticated);
         assertOnCreatedUser(user);
 
     }
@@ -80,35 +80,18 @@ public class UserServiceTest  extends BaseServiceTest {
     }
 
     @Test
-    public void validLoginWithUsername() throws Exception {
-        CreateUserRequest request = getDefaultCreateUserRequest();
-        User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessions().first().getToken();
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(request.getUser().getEmailAddress());
-        loginRequest.setPassword(request.getPassword().getPassword());
-        User loggedInUser = userService.login(loginRequest);
-        assertThat(loggedInUser.getUuid().toString(), is(createdUser.getUuid().toString()));
-        assertThat(loggedInUser.getSessions().first(), is(notNullValue()));
-        //check that a new token was issued
-        assertThat(loggedInUser.getSessions().first().getToken(), is(not(sessionToken)));
-        assertThat(loggedInUser.getSessions().last().getToken(), is(sessionToken));
-        assertThat(loggedInUser.isVerified(), is(false));
-    }
-
-    @Test
     public void validLoginWithEmailAddress() throws Exception {
         CreateUserRequest request = getDefaultCreateUserRequest();
-        User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessions().first().getToken();
+        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        String sessionToken = createdUser.getSessions().get(0).getSessionToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        User loggedInUser = userService.login(loginRequest);
-        assertThat(loggedInUser.getUuid().toString(), is(createdUser.getUuid().toString()));
-        assertThat(loggedInUser.getSessions().first(), is(notNullValue()));
+        ExternalUser loggedInUser = userService.login(loginRequest);
+        assertThat(loggedInUser.getId().toString(), is(createdUser.getId().toString()));
+        assertThat(loggedInUser.getSessions().get(0), is(notNullValue()));
         //check that a new token was issued
-        assertThat(loggedInUser.getSessions().first().getToken(), is(not(sessionToken)));
+        assertThat(loggedInUser.getSessions().get(0).getSessionToken(), is(not(sessionToken)));
         assertThat(loggedInUser.isVerified(), is(false));
 
     }
@@ -116,13 +99,13 @@ public class UserServiceTest  extends BaseServiceTest {
     @Test
     public void multipleLoginsGetDifferentSessionToken() {
         CreateUserRequest request = getDefaultCreateUserRequest();
-        User createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessions().first().getToken();
+        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        String sessionToken = createdUser.getSessions().get(0).getSessionToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        String session1 = userService.login(loginRequest).getSessions().first().getToken();
-        String session2 =  userService.login(loginRequest).getSessions().first().getToken();
+        String session1 = userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        String session2 =  userService.login(loginRequest).getSessions().get(0).getSessionToken();
 
         assertThat(session1, is(not(session2)));
     }
@@ -167,7 +150,7 @@ public class UserServiceTest  extends BaseServiceTest {
     @Test(expected = AuthenticationException.class)
     public void invalidPassword() {
         CreateUserRequest request = getDefaultCreateUserRequest();
-        User user = userService.createUser(request, Role.authenticated);
+        ExternalUser user = userService.createUser(request, Role.authenticated);
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword("qwerty123");
@@ -186,59 +169,92 @@ public class UserServiceTest  extends BaseServiceTest {
 
     @Test (expected = AuthorizationException.class)
     public void userNotAuthorizedToDelete() {
-        User userOne = createUserWithRandomUserName(Role.authenticated);
-        User user = createUserWithRandomUserName(Role.authenticated);
-        userService.deleteUser(userOne, user.getUuid().toString());
+        ExternalUser userOne = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
+        userService.deleteUser(userOne, user.getId().toString());
     }
 
 
     @Test
     public void getValidUser() {
-        User user = createUserWithRandomUserName(Role.authenticated);
-        User foundUser = userService.getUser(user, user.getUuid().toString());
-        assertThat(foundUser, is(user));
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser foundUser = userService.getUser(user, user.getId().toString());
+        assertThat(foundUser.getId(), is(user.getId()));
     }
 
     @Test (expected = UserNotFoundException.class)
     public void getUserNotFound() {
-        userService.getUser(new User(), "123");
+        userService.getUser(new ExternalUser(), "123");
     }
 
     @Test
     public void getUserByEmailAddress() {
-        User user = createUserWithRandomUserName(Role.authenticated);
-        User foundUser = userService.getUser(user, user.getEmailAddress());
-        assertThat(foundUser, is(user));
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser foundUser = userService.getUser(user, user.getEmailAddress());
+        assertThat(foundUser.getId(), is(user.getId()));
     }
 
     @Test
     public void updateUser() {
-        User user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
         UpdateUserRequest request = new UpdateUserRequest();
         request.setFirstName("foo");
         request.setLastName("bar");
         request.setEmailAddress("foobar@example.com");
-        userService.saveUser(user.getUuid().toString(), request);
-        User loadedUser = userRepository.findByUuid(user.getUuid().toString());
-        assertThat(user.getFirstName(), is("foo"));
-        assertThat(user.getLastName(), is("bar"));
-        assertThat(user.getEmailAddress(), is("foobar@example.com"));
+        userService.saveUser(user.getId(), request);
+        User loadedUser = userRepository.findByUuid(user.getId());
+        assertThat(loadedUser.getFirstName(), is("foo"));
+        assertThat(loadedUser.getLastName(), is("bar"));
+        assertThat(loadedUser.getEmailAddress(), is("foobar@example.com"));
     }
 
     @Test (expected = ValidationException.class)
     public void updateUserWithInvalidEmailAddress() {
-        User user = createUserWithRandomUserName(Role.authenticated);
+        ExternalUser user = createUserWithRandomUserName(Role.authenticated);
         UpdateUserRequest request = new UpdateUserRequest();
         request.setEmailAddress("NotAValidEmailAddress");
-        userService.saveUser(user.getUuid().toString(), request);
+        userService.saveUser(user.getId().toString(), request);
     }
 
-    private void assertOnCreatedUser(User user) throws Exception {
+    @Test
+    public void getMostRecentSession() {
+        CreateUserRequest request = getDefaultCreateUserRequest();
+        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        String sessionToken = createdUser.getSessions().get(0).getSessionToken();
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername(request.getUser().getEmailAddress());
+        loginRequest.setPassword(request.getPassword().getPassword());
+        String session1 = userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        String session2 = userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        ExternalUser updatedUser = userService.getUser(createdUser, createdUser.getId());
+        assertThat(updatedUser.getSessions().size(), is(3));
+        assertThat(updatedUser.getActiveSession(), is(nullValue()));
+        assertThat(updatedUser.getSessions().get(0).getSessionToken(), is(session2));  //most recently updated session
+
+    }
+
+    @Test
+    public void saveActiveSession() {
+        CreateUserRequest request = getDefaultCreateUserRequest();
+        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        UserSession sessionToken1 = createdUser.getSessions().get(0);
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername(request.getUser().getEmailAddress());
+        loginRequest.setPassword(request.getPassword().getPassword());
+        UserSession sessionToken2 = userService.login(loginRequest).getSessions().get(0);
+        createdUser.setActiveSession(sessionToken1);
+        userService.saveUserSession(createdUser);
+        ExternalUser updatedUser = userService.getUser(createdUser, createdUser.getId());
+        //most recently used token
+        assertThat(updatedUser.getSessions().get(0).getSessionToken(), is(sessionToken1.getSessionToken()));
+    }
+
+    private void assertOnCreatedUser(ExternalUser user) throws Exception {
         assertThat(user, is(notNullValue()));
-        User foundUser = userRepository.findByUuid(user.getUuid().toString());
+        User foundUser = userRepository.findByUuid(user.getId().toString());
         assertThat(foundUser, is(notNullValue()));
         assertThat(foundUser.getSessions().last().getToken(), is(notNullValue()));
-        assertThat(foundUser.getSessions().last(), is(user.getSessions().last()));
+        assertThat(foundUser.getSessions().last().getToken(), is(user.getSessions().get(user.getSessions().size() - 1).getSessionToken()));
         assertThat(foundUser.hasRole(Role.anonymous), is(false));
         assertThat(foundUser.hasRole(Role.authenticated), is(true));
         assertThat(foundUser.isVerified(), is(false));
