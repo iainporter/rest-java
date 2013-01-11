@@ -60,7 +60,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public ExternalUser createUser(CreateUserRequest request, Role role) {
         if (!request.validate()) {
-            throw new ValidationException();
+            throw new ValidationException("The CreateUserRequest was invalid");
         }
         User searchedForUser = userRepository.findByEmailAddress(request.getUser().getEmailAddress());
         if (searchedForUser != null) {

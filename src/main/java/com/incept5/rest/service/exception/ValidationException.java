@@ -11,4 +11,8 @@ public class ValidationException extends BaseWebApplicationException {
         super(400, "40001", "Validation Error", "The data passed in the request was invalid. Please check and resubmit");
     }
 
+    public ValidationException(String message) {
+        super(400, "40001", "Validation Error", message);
+    }
+
 }
