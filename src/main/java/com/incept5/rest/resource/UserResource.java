@@ -14,10 +14,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.*;
 import java.net.URI;
 
 /**
@@ -101,8 +98,8 @@ public class UserResource extends BaseResource {
     }
 
     private Response getLoginResponse(ExternalUser user) {
-        URI location = uriInfo.getAbsolutePathBuilder().path(user.getId().toString()).build();
         AuthenticatedUserToken response = new AuthenticatedUserToken(user);
+        URI location = UriBuilder.fromPath(uriInfo.getBaseUri() + "user/" + response.getUserId()).build();
         return Response.ok().entity(response).contentLocation(location).build();
     }
 
