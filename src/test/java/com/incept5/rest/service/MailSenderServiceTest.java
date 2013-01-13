@@ -49,6 +49,7 @@ public class MailSenderServiceTest extends BaseServiceTest {
     public void setUpServices() {
         mailSender = new MockJavaMailSender();
         mailService = new MailSenderServiceImpl(mailSender, velocityEngine);
+        ((MailSenderServiceImpl)mailService).setConfig(config);
     }
 
 
@@ -57,7 +58,7 @@ public class MailSenderServiceTest extends BaseServiceTest {
         ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
         User user = userRepository.findByUuid(externalUser.getId());
         VerificationToken token = new VerificationToken(user,
-                VerificationToken.VerificationTokenType.emailVerification);
+                VerificationToken.VerificationTokenType.emailVerification, 120);
         mailService.sendVerificationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
         List<MimeMessage> messages = mailSender.getMessages();
         assertThat(messages.size(), is(1));
@@ -73,7 +74,7 @@ public class MailSenderServiceTest extends BaseServiceTest {
         ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
         User user = userRepository.findByUuid(externalUser.getId());
         VerificationToken token = new VerificationToken(user,
-                VerificationToken.VerificationTokenType.emailRegistration);
+                VerificationToken.VerificationTokenType.emailRegistration, 120);
         mailService.sendRegistrationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
         List<MimeMessage> messages = mailSender.getMessages();
         assertThat(messages.size(), is(1));

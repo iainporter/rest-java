@@ -184,6 +184,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return new ExternalUser(user);
     }
 
+    @Transactional
     public Integer deleteExpiredSessions(int timeSinceLastUpdatedInMinutes) {
         DateTime date = new DateTime();
         date = date.minusMinutes(timeSinceLastUpdatedInMinutes);
@@ -192,7 +193,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         for(User user : expiredUserSessions) {
             user.removeExpiredSessions(date.toDate());
         }
-        userRepository.save(expiredUserSessions);
+        if(count > 0) {
+            userRepository.save(expiredUserSessions);
+        }
         return count;
     }
 

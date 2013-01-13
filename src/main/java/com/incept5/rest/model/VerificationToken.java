@@ -21,8 +21,6 @@ public class VerificationToken extends BaseEntity {
 
     private static final int DEFAULT_EXPIRY_TIME_IN_MINS = 60 * 24; //24 hours
 
-    private static final int EMAIL_VERIFICATION_EXPIRY_TIME_IN_MINS = 60 * 48; //48 hours
-
     @Column(length=36)
     private final String token;
 
@@ -41,18 +39,6 @@ public class VerificationToken extends BaseEntity {
         super();
         this.token = UUID.randomUUID().toString();
         this.expiryDate = calculateExpiryDate(DEFAULT_EXPIRY_TIME_IN_MINS);
-    }
-
-    public VerificationToken(User user, VerificationTokenType tokenType) {
-        this();
-        this.user = user;
-        this.tokenType = tokenType;
-        if (tokenType.equals(VerificationTokenType.emailVerification)) {
-            this.expiryDate = calculateExpiryDate(EMAIL_VERIFICATION_EXPIRY_TIME_IN_MINS);
-        } else {
-            this.expiryDate = calculateExpiryDate(DEFAULT_EXPIRY_TIME_IN_MINS);
-        }
-
     }
 
     public VerificationToken(User user, VerificationTokenType tokenType, int expirationTimeInMinutes) {

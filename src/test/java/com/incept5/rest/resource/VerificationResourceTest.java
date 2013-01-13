@@ -39,7 +39,7 @@ public class VerificationResourceTest extends BaseResourceTst {
 
     @Test
     public void verify() {
-        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification);
+        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification, 120);
         when(verificationTokenService.verify("123")).thenReturn(token);
         ClientResponse response = super.resource().path("verify/tokens/" + UUID.randomUUID())
                 .accept(APPLICATION_JSON).post(ClientResponse.class);
@@ -48,7 +48,7 @@ public class VerificationResourceTest extends BaseResourceTst {
 
     @Test
     public void generateEmailToken() {
-        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification);
+        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification, 120);
         when(verificationTokenService.generateEmailVerificationToken("test@example.com")).thenReturn(token);
         ClientResponse response = super.resource().path("verify/tokens").entity(new EmailVerificationRequest("test@example.com"), APPLICATION_JSON)
                 .accept(APPLICATION_JSON).post(ClientResponse.class);

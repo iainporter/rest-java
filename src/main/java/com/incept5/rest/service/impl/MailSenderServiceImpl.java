@@ -1,5 +1,6 @@
 package com.incept5.rest.service.impl;
 
+import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.service.MailSenderService;
 import com.incept5.rest.service.data.EmailServiceTokenModel;
 import org.apache.velocity.app.VelocityEngine;
@@ -28,13 +29,11 @@ import java.util.Map;
 @Service("mailSenderService")
 public class MailSenderServiceImpl implements MailSenderService {
 
-    private static final String EMAIL_FROM_ADDRESS = "XXXXXXXXXXXXXX";
-
     private static Logger LOG = LoggerFactory.getLogger(MailSenderServiceImpl.class);
 
     private final JavaMailSender mailSender;
     private final VelocityEngine velocityEngine;
-
+    private ApplicationConfig config;
 
     @Autowired
     public MailSenderServiceImpl(JavaMailSender mailSender, VelocityEngine velocityEngine) {
@@ -45,19 +44,19 @@ public class MailSenderServiceImpl implements MailSenderService {
 
     public EmailServiceTokenModel sendVerificationEmail(final EmailServiceTokenModel emailVerificationModel) {
         Map<String, String> resources = new HashMap<String, String>();
-          return sendVerificationEmail(emailVerificationModel, "[XXXXXXXXXXXXX] Please verify your email Address",
+          return sendVerificationEmail(emailVerificationModel, config.getEmailVerificationSubjectText(),
                   "META-INF/velocity/VerifyEmail.vm", resources);
     }
 
     public EmailServiceTokenModel sendRegistrationEmail(final EmailServiceTokenModel emailVerificationModel) {
         Map<String, String> resources = new HashMap<String, String>();
-          return sendVerificationEmail(emailVerificationModel, "Welcome To XXXXXXXX",
+          return sendVerificationEmail(emailVerificationModel, config.getEmailRegistrationSubjectText(),
                   "META-INF/velocity/RegistrationEmail.vm", resources);
     }
 
     public EmailServiceTokenModel sendLostPasswordEmail(final EmailServiceTokenModel emailServiceTokenModel) {
         Map<String, String> resources = new HashMap<String, String>();
-         return sendVerificationEmail(emailServiceTokenModel, "[XXXXXXXXXX] Reset Password ",
+         return sendVerificationEmail(emailServiceTokenModel, config.getLostPasswordSubjectText(),
                  "META-INF/velocity/LostPasswordEmail.vm", resources);
     }
 
@@ -73,7 +72,8 @@ public class MailSenderServiceImpl implements MailSenderService {
             public void prepare(MimeMessage mimeMessage) throws Exception {
                 MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_RELATED, "UTF-8");
                 messageHelper.setTo(emailVerificationModel.getEmailAddress());
-                messageHelper.setFrom(EMAIL_FROM_ADDRESS);
+                messageHelper.setFrom(config.getEmailFromAddress());
+                messageHelper.setReplyTo(config.getEmailReplyToAddress());
                 messageHelper.setSubject(emailSubject);
                 Map model = new HashMap();
                 model.put("model", emailVerificationModel);
@@ -87,5 +87,14 @@ public class MailSenderServiceImpl implements MailSenderService {
         LOG.debug("Sending Verification Email to : {}", emailVerificationModel.getEmailAddress());
         this.mailSender.send(preparator);
         return emailVerificationModel;
+    }
+
+    @Autowired
+    public void setConfig(ApplicationConfig config) {
+        this.config = config;
+    }
+
+    public ApplicationConfig getConfig() {
+        return this.config;
     }
 }

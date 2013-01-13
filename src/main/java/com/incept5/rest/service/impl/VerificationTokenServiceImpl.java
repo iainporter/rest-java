@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- *
  * @version 1.0
  * @author: Iain Porter iain.porter@incept5.com
  * @since 10/09/2012
@@ -50,7 +49,8 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
     }
 
     private VerificationToken sendEmailVerificationToken(User user) {
-        VerificationToken token = new VerificationToken(user, VerificationToken.VerificationTokenType.emailVerification);
+        VerificationToken token = new VerificationToken(user, VerificationToken.VerificationTokenType.emailVerification,
+                config.getEmailVerificationTokenExpiryTimeInMinutes());
         user.addVerificationToken(token);
         userRepository.save(user);
         emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user, token, getConfig().getHostNameUrl()));
@@ -60,10 +60,13 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
     @Transactional
     public VerificationToken sendEmailRegistrationToken(String userId) {
         User user = ensureUserIsLoaded(userId);
-        VerificationToken token = new VerificationToken(user, VerificationToken.VerificationTokenType.emailRegistration);
+        VerificationToken token = new VerificationToken(user,
+                VerificationToken.VerificationTokenType.emailRegistration,
+                config.getEmailRegistrationTokenExpiryTimeInMinutes());
         user.addVerificationToken(token);
         userRepository.save(user);
-        emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user, token, getConfig().getHostNameUrl()));
+        emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user,
+                token, getConfig().getHostNameUrl()));
         return token;
     }
 
@@ -71,12 +74,13 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
     public VerificationToken sendLostPasswordToken(String emailAddress) {
         Assert.notNull(emailAddress);
         User user = userRepository.findByEmailAddress(emailAddress);
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException();
         }
         VerificationToken token = user.getActiveLostPasswordToken();
-        if(token == null) {
-            token = new VerificationToken(user, VerificationToken.VerificationTokenType.lostPassword);
+        if (token == null) {
+            token = new VerificationToken(user, VerificationToken.VerificationTokenType.lostPassword,
+                    config.getLostPasswordTokenExpiryTimeInMinutes());
             user.addVerificationToken(token);
             userRepository.save(user);
         }
@@ -87,7 +91,7 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
     @Transactional
     public VerificationToken verify(String base64EncodedToken) {
         VerificationToken token = loadToken(base64EncodedToken);
-        if(token.isVerified() || token.getUser().isVerified()) {
+        if (token.isVerified() || token.getUser().isVerified()) {
             throw new AlreadyVerifiedException();
         }
         token.setVerified(true);
@@ -100,16 +104,16 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
     public VerificationToken generateEmailVerificationToken(String emailAddress) {
         Assert.notNull(emailAddress);
         User user = userRepository.findByEmailAddress(emailAddress);
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException();
         }
-        if(user.isVerified()) {
+        if (user.isVerified()) {
             throw new AlreadyVerifiedException();
         }
         //if token still active resend that
         VerificationToken token = user.getActiveEmailVerificationToken();
-        if(token == null) {
-             token = sendEmailVerificationToken(user);
+        if (token == null) {
+            token = sendEmailVerificationToken(user);
         } else {
             emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user, token, getConfig().getHostNameUrl()));
         }
@@ -121,7 +125,7 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
         Assert.notNull(base64EncodedToken);
         Assert.notNull(password);
         VerificationToken token = loadToken(base64EncodedToken);
-        if(token.isVerified()) {
+        if (token.isVerified()) {
             throw new AlreadyVerifiedException();
         }
         token.setVerified(true);
@@ -129,7 +133,7 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
         user.setHashedPassword(user.hashPassword(password));
         //set user to verified if not already and authenticated role
         user.setVerified(true);
-        if(user.hasRole(Role.anonymous)) {
+        if (user.hasRole(Role.anonymous)) {
             user.setRole(Role.authenticated);
         }
         userRepository.save(user);
@@ -140,11 +144,11 @@ public class VerificationTokenServiceImpl extends BaseServiceImpl implements Ver
         Assert.notNull(base64EncodedToken);
         String rawToken = new String(Base64.decodeBase64(base64EncodedToken));
         VerificationToken token = tokenRepository.findByToken(rawToken);
-        if(token == null) {
+        if (token == null) {
             throw new TokenNotFoundException();
         }
-        if(token.hasExpired()) {
-             throw new TokenHasExpiredException();
+        if (token.hasExpired()) {
+            throw new TokenHasExpiredException();
         }
         return token;
     }

@@ -58,6 +58,9 @@ public class VerificationServiceTest {
                 emailServicesGateway);
         ((VerificationTokenServiceImpl)verificationTokenService).setConfig(config);
         when(config.getHostNameUrl()).thenReturn(new String("http://localhost:8080"));
+        when(config.getLostPasswordTokenExpiryTimeInMinutes()).thenReturn(120);
+        when(config.getEmailVerificationTokenExpiryTimeInMinutes()).thenReturn(120);
+        when(config.getEmailRegistrationTokenExpiryTimeInMinutes()).thenReturn(120);
     }
 
 
@@ -204,7 +207,7 @@ public class VerificationServiceTest {
 
     @Test (expected = TokenNotFoundException.class)
     public void tokenNotFound() {
-        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification);
+        VerificationToken token = new VerificationToken(new User(), VerificationToken.VerificationTokenType.emailVerification, 120);
         when(tokenRepository.findByToken(token.getToken())).thenReturn(null);
         String encodedToken = new String(Base64.encodeBase64(token.getToken().getBytes()));
         verificationTokenService.verify(encodedToken);

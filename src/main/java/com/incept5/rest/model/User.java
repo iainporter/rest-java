@@ -3,13 +3,13 @@ package com.incept5.rest.model;
 import com.incept5.rest.api.ExternalUser;
 import com.incept5.rest.authorization.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.*;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.*;
 
 
@@ -47,7 +47,7 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy="user",
                  targetEntity=SessionToken.class,
-                 cascade= CascadeType.ALL)
+                 cascade= CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Sort(type = SortType.NATURAL)
     private SortedSet<SessionToken> sessions = Collections.synchronizedSortedSet(new TreeSet<SessionToken>(Collections.<SessionToken>reverseOrder()));
@@ -169,7 +169,9 @@ public class User extends BaseEntity {
     }
 
     public SortedSet<SessionToken> getSessions() {
-        return Collections.unmodifiableSortedSet(this.sessions);
+        SortedSet copySet =  new TreeSet<SessionToken>(Collections.<SessionToken>reverseOrder());
+        copySet.addAll(this.sessions);
+        return Collections.unmodifiableSortedSet(copySet);
     }
 
     public void removeSession(SessionToken session) {
@@ -235,11 +237,9 @@ public class User extends BaseEntity {
     }
 
     public void removeExpiredSessions(Date expiryDate) {
-        Iterator<SessionToken> it = sessions.iterator();
-        while(it.hasNext()) {
-            SessionToken token = it.next();
+        for(SessionToken token : getSessions()) {
             if(token.getLastUpdated().before(expiryDate)) {
-                it.remove();
+                 removeSession(token);
             }
         }
     }
