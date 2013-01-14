@@ -17,6 +17,10 @@
     <beans profile="production, staging">
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
       <!-- Email provider here-->
+      <property name="host" value=""/>
+      <property name="port" value=""/>
+      <property name="username" value=""/>
+      <property name="password" value=""/>
 
         <property name="javaMailProperties">
           <props>

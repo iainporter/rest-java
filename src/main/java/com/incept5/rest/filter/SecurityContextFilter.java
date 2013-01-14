@@ -56,7 +56,7 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
 
-    private static final String HEADER_DATE = "x-rest-incept5-date";
+    private static final String HEADER_DATE = "x-javaRest-date";
 
     private final UserRepository userRepository;
 
