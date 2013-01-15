@@ -1,9 +1,9 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.api.ExternalUser;
-import com.incept5.rest.model.User;
-import com.incept5.rest.repository.UserRepository;
-import com.incept5.rest.service.UserService;
+import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.service.UserService;
 import com.incept5.rest.util.DateUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

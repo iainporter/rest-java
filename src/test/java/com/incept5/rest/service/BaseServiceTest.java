@@ -1,13 +1,14 @@
 package com.incept5.rest.service;
 
 
-import com.incept5.rest.api.CreateUserRequest;
-import com.incept5.rest.api.ExternalUser;
-import com.incept5.rest.api.PasswordRequest;
-import com.incept5.rest.builder.ExternalUserBuilder;
+import com.incept5.rest.user.api.CreateUserRequest;
+import com.incept5.rest.user.api.PasswordRequest;
+import com.incept5.rest.user.builder.*;
 import com.incept5.rest.config.ApplicationConfig;
-import com.incept5.rest.model.Role;
-import com.incept5.rest.repository.UserRepository;
+import com.incept5.rest.user.domain.Role;
+import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -24,13 +25,13 @@ import java.io.FileInputStream;
 public class BaseServiceTest {
 
     @Autowired
-    protected UserService userService;
+    public UserService userService;
 
     @Autowired
-    UserRepository userRepository;
+    public UserRepository userRepository;
 
     @Autowired
-    ApplicationConfig applicationConfig;
+    public ApplicationConfig applicationConfig;
 
 
     protected ExternalUser createUserWithRandomUserName(Role role) {

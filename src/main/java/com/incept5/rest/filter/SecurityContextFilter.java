@@ -1,11 +1,11 @@
 package com.incept5.rest.filter;
 
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.authorization.AuthorizationRequest;
 import com.incept5.rest.authorization.AuthorizationService;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
-import com.incept5.rest.model.User;
-import com.incept5.rest.repository.UserRepository;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.util.DateUtil;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
@@ -56,7 +56,7 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
 
-    private static final String HEADER_DATE = "x-javaRest-date";
+    private static final String HEADER_DATE = "x-java-rest-date";
 
     private final UserRepository userRepository;
 

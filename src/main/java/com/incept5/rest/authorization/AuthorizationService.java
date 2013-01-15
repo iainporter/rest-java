@@ -1,7 +1,7 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.api.ExternalUser;
-import com.incept5.rest.service.UserService;
+import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.user.service.UserService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;

@@ -1,17 +1,17 @@
 package com.incept5.rest.resource;
 
-import com.incept5.rest.api.CreateUserRequest;
-import com.incept5.rest.api.LoginRequest;
-import com.incept5.rest.api.PasswordRequest;
-import com.incept5.rest.api.UpdateUserRequest;
-import com.incept5.rest.builder.ExternalUserBuilder;
+import com.incept5.rest.user.api.LoginRequest;
+import com.incept5.rest.user.api.PasswordRequest;
+import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.gateway.EmailServicesGateway;
 import com.incept5.rest.mock.AppMockConfiguration;
-import com.incept5.rest.model.Role;
-import com.incept5.rest.model.SessionToken;
-import com.incept5.rest.model.User;
-import com.incept5.rest.service.UserService;
-import com.incept5.rest.service.VerificationTokenService;
+import com.incept5.rest.user.domain.Role;
+import com.incept5.rest.user.domain.SessionToken;
+import com.incept5.rest.user.service.UserService;
+import com.incept5.rest.user.service.VerificationTokenService;
+import com.incept5.rest.user.api.CreateUserRequest;
+import com.incept5.rest.user.api.UpdateUserRequest;
+import com.incept5.rest.user.domain.User;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.junit.Before;

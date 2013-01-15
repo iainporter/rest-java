@@ -1,6 +1,7 @@
 package com.incept5.rest.resource;
 
-import com.incept5.rest.model.User;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.domain.User;
 
 /**
  * User: porter

@@ -4,10 +4,10 @@
 
 <persistence-unit name="samplePersistenceUnit" transaction-type="RESOURCE_LOCAL">
        <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>com.incept5.rest.model.User</class>
-        <class>com.incept5.rest.model.SocialUser</class>
-        <class>com.incept5.rest.model.SessionToken</class>
-        <class>com.incept5.rest.model.VerificationToken</class>
+        <class>com.incept5.rest.user.domain.User</class>
+        <class>com.incept5.rest.user.domain.SocialUser</class>
+        <class>com.incept5.rest.user.domain.SessionToken</class>
+        <class>com.incept5.rest.user.domain.VerificationToken</class>
        <properties>
            <!-- value="create" to build a new database on each run; value="update" to modify an existing database; value="create-drop" means the same as "create" but also drops tables when Hibernate closes; value="validate" makes no changes to the database -->
            <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>

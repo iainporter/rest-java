@@ -2,7 +2,7 @@ package com.incept5.rest.service.impl;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.service.MailSenderService;
-import com.incept5.rest.service.data.EmailServiceTokenModel;
+import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

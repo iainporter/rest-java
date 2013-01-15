@@ -1,9 +1,9 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.filter.SecurityContextFilter;
-import com.incept5.rest.model.User;
-import com.incept5.rest.repository.UserRepository;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.util.DateUtil;
 import com.sun.jersey.spi.container.ContainerRequest;
 import org.junit.Before;

@@ -1,8 +1,9 @@
 package com.incept5.rest.authorization.impl;
 
-import com.incept5.rest.api.ExternalUser;
-import com.incept5.rest.model.Role;
+import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.service.exception.InvalidAuthorizationHeaderException;
+import com.incept5.rest.user.domain.Role;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;

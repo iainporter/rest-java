@@ -1,13 +1,13 @@
 package com.incept5.rest.resource;
 
-import com.incept5.rest.api.AuthenticatedUserToken;
-import com.incept5.rest.api.CreateUserRequest;
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.AuthenticatedUserToken;
+import com.incept5.rest.user.api.CreateUserRequest;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
-import com.incept5.rest.model.Role;
-import com.incept5.rest.service.UserService;
-import com.incept5.rest.service.VerificationTokenService;
+import com.incept5.rest.user.domain.Role;
+import com.incept5.rest.user.service.UserService;
+import com.incept5.rest.user.service.VerificationTokenService;
+import com.incept5.rest.user.api.ExternalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Context;

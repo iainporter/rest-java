@@ -1,6 +1,7 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.model.SessionToken;
+import com.incept5.rest.user.domain.SessionToken;
+import com.incept5.rest.user.domain.SessionToken;
 
 import javax.persistence.Cacheable;
 import java.io.Serializable;

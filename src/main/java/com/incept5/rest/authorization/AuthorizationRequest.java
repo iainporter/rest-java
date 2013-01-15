@@ -1,6 +1,6 @@
 package com.incept5.rest.authorization;
 
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.ExternalUser;
 
 /**
  * @author: Iain Porter

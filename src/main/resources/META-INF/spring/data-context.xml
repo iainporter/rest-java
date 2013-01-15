@@ -24,6 +24,7 @@
     </bean>
 
     <jpa:repositories base-package="com.incept5.rest.repository" />
+    <jpa:repositories base-package="com.incept5.rest.user.repository" />
 
     <bean class="org.springframework.orm.jpa.JpaTransactionManager"
           id="transactionManager">

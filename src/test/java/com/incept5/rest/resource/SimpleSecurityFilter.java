@@ -1,8 +1,9 @@
 package com.incept5.rest.resource;
 
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
-import com.incept5.rest.model.User;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.domain.User;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 

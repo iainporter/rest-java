@@ -1,13 +1,13 @@
 package com.incept5.rest.service;
 
 
-import com.incept5.rest.api.ExternalUser;
+import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.config.ApplicationConfig;
-import com.incept5.rest.model.Role;
-import com.incept5.rest.model.User;
-import com.incept5.rest.model.VerificationToken;
-import com.incept5.rest.service.data.EmailServiceTokenModel;
+import com.incept5.rest.user.domain.Role;
+import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import com.incept5.rest.service.impl.MailSenderServiceImpl;
+import com.incept5.rest.user.domain.VerificationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.Before;
