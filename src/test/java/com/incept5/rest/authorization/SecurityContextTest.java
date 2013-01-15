@@ -1,11 +1,9 @@
 package com.incept5.rest.authorization;
 
+import com.incept5.rest.authorization.exception.InvalidAuthorizationHeaderException;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
 import com.incept5.rest.user.domain.Role;
-import com.incept5.rest.user.domain.Role;
-import com.incept5.rest.user.domain.User;
-import com.incept5.rest.service.exception.InvalidAuthorizationHeaderException;
 import com.incept5.rest.user.domain.User;
 import org.junit.Test;
 

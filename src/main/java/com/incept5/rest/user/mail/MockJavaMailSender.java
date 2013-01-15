@@ -1,4 +1,4 @@
-package com.incept5.rest.service;
+package com.incept5.rest.user.mail;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;

@@ -1,4 +1,4 @@
-package com.incept5.rest.service;
+package com.incept5.rest.user.mail;
 
 import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 
