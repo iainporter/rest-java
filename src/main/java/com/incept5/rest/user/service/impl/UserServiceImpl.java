@@ -11,11 +11,8 @@ import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthenticationException;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.exception.DuplicateUserException;
-import com.incept5.rest.user.exception.UserNotFoundException;
-import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.service.UserService;
 import com.incept5.rest.user.social.JpaUsersConnectionRepository;
-import com.incept5.rest.util.StringUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +126,8 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             throw new AuthenticationException();
         }
         updateUserFromProfile(connection, user);
-        return new ExternalUser(user);
+        user.addSessionToken();
+        return new ExternalUser(user, user.getSessions().first());
 
     }
 

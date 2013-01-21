@@ -2,6 +2,74 @@ javaRest.user = {}
 
 
 /**
+ * Create a user
+ *
+ * @param {string}
+ * @param {string}
+ * @param {string}
+ * @param {string}
+ * @param {function}
+ */
+javaRest.user.create = function (firstName, emailAddress, password, lastName, callback) {
+
+
+  javaRest.post(
+    'user',
+    {user :
+      {
+        "firstName" : firstName,
+        "emailAddress" : emailAddress
+      },
+    "password" : password
+    },
+    function (response) {
+      javaRest.cookie.set('token', response.token)
+      javaRest.cookie.set('userId', response.userId)
+      javaRest.cookie.set('email', emailAddress)
+      callback()
+    },
+    function(jqXHR, textStatus) {
+      console.log(jqXHR)
+      callback(jqXHR)
+    })
+
+}
+
+
+/**
+ * Get user info
+ * @param {function}
+ */
+javaRest.user.download = function (callback) {
+
+  javaRest.get(
+    'user/' + javaRest.cookie.get('userId'),
+    {},
+    function (response) {
+      console.log(response)
+      // If the cached version is the same as the most recent
+      // version, just return. Else, we will run the callback.
+      if (store.get('userResponse') === JSON.stringify(response)) {
+        console.log('cached')
+        return false
+      }
+
+
+      store.set('userResponse', JSON.stringify(response))
+
+      javaRest.user.user = response
+
+      if (callback)
+        callback()
+    },
+    function(jqXHR, textStatus) {
+      if (callback)
+        callback(jqXHR)
+    })
+
+}
+
+/**
  * Get user info
  * @param {function}
  */
@@ -75,12 +143,12 @@ javaRest.user.loginSocial = function (accessToken, callback) {
       javaRest.cookie.set('token', response.token)
       javaRest.cookie.set('userId', response.userId)
       callback()
-      
+
     },
     function(jqXHR, textStatus) {
       callback(jqXHR)
     })
-  
+
 }
 
 
@@ -105,7 +173,7 @@ javaRest.user.reset_password = function (token, password, callback) {
       "password" : password
       },
     function (response) {
-      callback()      
+      callback()
     },
     function(jqXHR, textStatus) {
       callback(jqXHR)
@@ -123,11 +191,39 @@ javaRest.user.send_reset_email = function (email, callback) {
       },
     function (response) {
       callback()
-      
+
     },
     function(jqXHR, textStatus) {
       callback(jqXHR)
     })
 }
 
+
+
+/**
+ * Update first name
+ * @param {function}
+ */
+javaRest.user.updateName = function (value, callback) {
+
+  javaRest.put(
+    'user/' + javaRest.cookie.get('userId'),
+      {
+      "emailAddress" : javaRest.cookie.get('email'),
+      "firstName" : value
+      },
+    function (response) {
+      console.log(response)
+      if (callback)
+        callback()
+      // Clear user cache
+      javaRest.user.download()
+    },
+    function(jqXHR, textStatus) {
+      if (callback)
+        callback(jqXHR)
+      // Clear user cache
+      javaRest.user.download()
+    })
+}
 

@@ -97,9 +97,10 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
                 String hashedToken = token[1];
                 User user = null;
                 user = userRepository.findByUuid(userId);
-                externalUser = new ExternalUser(user);
-                AuthorizationRequest authRequest = new AuthorizationRequest(externalUser, request.getPath(), request.getMethod(), requestDateString, hashedToken);
                 if (user != null) {
+                    externalUser = new ExternalUser(user);
+                    AuthorizationRequest authRequest = new AuthorizationRequest(externalUser, request.getPath(), request.getMethod(),
+                            requestDateString, hashedToken);
                     authorizationService.isAuthorized(authRequest);
                 }
             }

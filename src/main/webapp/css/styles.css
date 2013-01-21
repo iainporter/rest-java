@@ -1,7 +1,7 @@
 /*---------------Site styles------------*/
 
 body {
-  background-color: #5882FA;
+  background-color: #5087A3;
   color: white;
   font-family: helvetica;
   margin: auto;
@@ -30,7 +30,7 @@ body {
 }
 
 .section {
-  background-color: #ffffff;
+  background-color: #D8E0E0;
   border-radius: 4px;
   width: 290px;
   padding: 10px;
@@ -39,7 +39,7 @@ body {
 }
 
 .section a {
-  color: #481267;
+  color: #DAFFFF;
 }
 
 /****Components ****/
@@ -74,7 +74,7 @@ input[type="password"], input[type="text"], input[type="email"] {
 
 button {
   font-size: 16px;
-  background-color: #77b300;
+  background-color: #E0F0FF;
   border: none;
   box-shadow: 0px 1px 3px rgba(0,0,0,.5);
   height: 45px;
@@ -217,25 +217,25 @@ a#account_tab:hover{
 }
 
 #or{
-  color: #A657DA;
+  color: #77b300;
   font-size: 36px;
   text-align: center;
   margin-bottom: 40px;
-  border-bottom: 1px solid #A657DA;
+  border-bottom: 1px solid #77b300;
   line-height:0.1em;
   width: 100%;
 }
 
 #or span{
   padding:0 10px;
-  background-color: #481267;
+  background-color: #5087A3;
 }
 
 .divider {
-  color: #A657DA;
+  color: #77b300;
   margin-top: 40px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #A657DA;
+  border-bottom: 1px solid #77b300;
   width: 100%;
 }
 
@@ -259,8 +259,6 @@ a#account_tab:hover{
   padding-left: 10px;
 }
 
-/****qr code ****/
-
 #name {
   color: #333333;
 }
@@ -271,25 +269,3 @@ a#account_tab:hover{
 }
 
 
-/**** ios header ****/
-#iosHeader {
-  display: none;
-  width: 244px;
-  height: 80px;
-  margin: 0 auto;
-  position: relative;
-  margin-top: 10px;
-}
-
-#iosHeader img {
-  height: 90px;
-}
-
-#closeIos {
-  color: white;
-  position: absolute;
-  top: 3px;
-  right: 12px;
-  font-size: 18px;
-  cursor: pointer;
-}

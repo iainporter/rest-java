@@ -21,7 +21,7 @@ javaRest.get = function (url, data, success, error) {
     data: data,
     headers: {
       'Authorization' : authorization,
-      'x-javaRest-date' : time
+      'x-java-rest-date' : time
     },
     dataType: "json"
   })
@@ -102,7 +102,7 @@ javaRest.post = function (url, data, success, error) {
 /**
  * Post with authentication
  */
-goloco.postAuth = function (url, data, success, error) {
+javaRest.postAuth = function (url, data, success, error) {
   
   var time = javaRest.get_iso_date()
   
@@ -116,7 +116,7 @@ goloco.postAuth = function (url, data, success, error) {
     data: JSON.stringify(data),
     headers: {
       'Authorization' : authorization,
-      'x-javaRest-date' : time
+      'x-java-rest-date' : time
     },
     dataType: "json",
     success : success,
@@ -143,7 +143,7 @@ javaRest.put = function (url, data, success, error) {
     data: JSON.stringify(data),
     headers: {
       'Authorization' : authorization,
-      'x-javaRest-date' : time
+      'x-java-rest-date' : time
     },
     dataType: "json",
     success : success,
@@ -153,15 +153,4 @@ javaRest.put = function (url, data, success, error) {
   
 }
 
-/**
- * Show App store ad if on ios device.
- */
-$(document).on('ready', function () {
-  if (javaRest.isIos() && javaRest.cookie.get('hideIosAd') != 'true')
-    $('#iosHeader').show()
-  $('#closeIos').on('click', function () {
-    javaRest.cookie.set('hideIosAd', 'true')
-    $('#iosHeader').hide()
-  })
-})
 
