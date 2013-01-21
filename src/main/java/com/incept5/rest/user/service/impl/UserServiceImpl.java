@@ -128,7 +128,6 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
         updateUserFromProfile(connection, user);
         user.addSessionToken();
         return new ExternalUser(user, user.getSessions().first());
-
     }
 
     /**
