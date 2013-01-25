@@ -70,21 +70,28 @@ public class VerificationTokenServiceImpl extends BaseUserServiceImpl implements
         return token;
     }
 
+    /**
+     * generate token if user found otherwise do nothing
+     *
+     * @param emailAddress
+     * @return  a token or null if user not found
+     */
     @Transactional
     public VerificationToken sendLostPasswordToken(String emailAddress) {
         Assert.notNull(emailAddress);
+        VerificationToken token = null;
         User user = userRepository.findByEmailAddress(emailAddress);
-        if (user == null) {
-            throw new UserNotFoundException();
+        if (user != null) {
+            token = user.getActiveLostPasswordToken();
+            if (token == null) {
+                token = new VerificationToken(user, VerificationToken.VerificationTokenType.lostPassword,
+                        config.getLostPasswordTokenExpiryTimeInMinutes());
+                user.addVerificationToken(token);
+                userRepository.save(user);
+            }
+            emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user, token, getConfig().getHostNameUrl()));
         }
-        VerificationToken token = user.getActiveLostPasswordToken();
-        if (token == null) {
-            token = new VerificationToken(user, VerificationToken.VerificationTokenType.lostPassword,
-                    config.getLostPasswordTokenExpiryTimeInMinutes());
-            user.addVerificationToken(token);
-            userRepository.save(user);
-        }
-        emailServicesGateway.sendVerificationToken(new EmailServiceTokenModel(user, token, getConfig().getHostNameUrl()));
+
         return token;
     }
 

@@ -84,7 +84,7 @@ public class MailSenderServiceImpl implements MailSenderService {
                 }
             }
         };
-        LOG.debug("Sending Verification Email to : {}", emailVerificationModel.getEmailAddress());
+        LOG.debug("Sending {} token to : {}",emailVerificationModel.getTokenType().toString(), emailVerificationModel.getEmailAddress());
         this.mailSender.send(preparator);
         return emailVerificationModel;
     }

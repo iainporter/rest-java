@@ -47,7 +47,7 @@
         if (error)
           return console.log(error)
         var name = javaRest.user.user.firstName + ' ' + (javaRest.user.user.lastName || '')
-        $('#name').html((name != ' ' ? name : 'Anonymous User'))
+        $('#name').html((name != ' ' ? name : javaRest.user.user.emailAddress))
 
         // facebook pic
         if (javaRest.user.user.socialProfiles.length && javaRest.user.user.socialProfiles[0].imageUrl) {
