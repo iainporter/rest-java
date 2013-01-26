@@ -258,12 +258,11 @@ public class UserServiceTest  extends BaseServiceTest {
 
         CreateUserRequest request = getDefaultCreateUserRequest();
         ExternalUser createdUser = userService.createUser(request, Role.authenticated);
-        String sessionToken = createdUser.getSessions().get(0).getSessionToken();
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        String session1 = userService.login(loginRequest).getSessions().get(0).getSessionToken();
-        String session2 =  userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        userService.login(loginRequest).getSessions().get(0).getSessionToken();
         userService.deleteExpiredSessions(-1);
         ExternalUser externalUser = userService.getUser(createdUser, createdUser.getId());
         assertThat(externalUser.getSessions().size(), is(0));

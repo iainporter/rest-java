@@ -21,8 +21,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -62,13 +64,7 @@ public class MailSenderServiceTest extends BaseServiceTest {
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailVerification, 120);
         mailService.sendVerificationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
-        List<MimeMessage> messages = mailSender.getMessages();
-        assertThat(messages.size(), is(1));
-        MimeMessage message = messages.get(0);
-        assertThat(message.getAllRecipients()[0].toString(), is((user.getEmailAddress())));
-        Multipart multipart = (Multipart)message.getContent();
-        String content = (String)multipart.getBodyPart(0).getContent();
-        assertThat(content, containsString(new String(Base64.encodeBase64(token.getToken().getBytes()))));
+        assertOnMailResult(user, token);
     }
 
     @Test
@@ -78,6 +74,20 @@ public class MailSenderServiceTest extends BaseServiceTest {
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailRegistration, 120);
         mailService.sendRegistrationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
+        assertOnMailResult(user, token);
+    }
+
+    @Test
+    public void sendLostPasswordEmail() throws Exception {
+        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(externalUser.getId());
+        VerificationToken token = new VerificationToken(user,
+                VerificationToken.VerificationTokenType.lostPassword, 120);
+        mailService.sendLostPasswordEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
+        assertOnMailResult(user, token);
+    }
+
+    private void assertOnMailResult(User user, VerificationToken token) throws MessagingException, IOException {
         List<MimeMessage> messages = mailSender.getMessages();
         assertThat(messages.size(), is(1));
         MimeMessage message = messages.get(0);

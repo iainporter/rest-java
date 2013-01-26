@@ -17,6 +17,7 @@ public class ApplicationConfig {
     private final static String HOSTNAME_PROPERTY = "hostNameUrl";
 
     private final static String SESSION_EXPIRY_DURATION = "session.timeToLive.inMinutes";
+    private final static String SESSION_DATE_OFFSET_IN_MINUTES = "session.date.offset.inMinutes";
     private final static String TOKEN_EMAIL_REGISTRATION_DURATION = "token.emailRegistration.timeToLive.inMinutes";
     private final static String TOKEN_EMAIL_VERIFICATION_DURATION = "token.emailVerification.timeToLive.inMinutes";
     private final static String TOKEN_LOST_PASSWORD_DURATION = "token.lostPassword.timeToLive.inMinutes";
@@ -44,6 +45,10 @@ public class ApplicationConfig {
 
     public int getSessionExpiryTimeInMinutes() {
         return Integer.parseInt(environment.getProperty(SESSION_EXPIRY_DURATION));
+    }
+
+    public int getSessionDateOffsetInMinutes() {
+        return Integer.parseInt(environment.getProperty(SESSION_DATE_OFFSET_IN_MINUTES));
     }
 
     public int getEmailRegistrationTokenExpiryTimeInMinutes() {

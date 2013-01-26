@@ -1,16 +1,21 @@
 package com.incept5.rest.filter;
 
+import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.authorization.AuthorizationRequest;
 import com.incept5.rest.authorization.AuthorizationService;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
 import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.util.DateUtil;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.sun.jersey.spi.container.ResourceFilter;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,13 +59,22 @@ import java.util.Date;
 @Provider
 public class SecurityContextFilter implements ResourceFilter, ContainerRequestFilter {
 
-    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityContextFilter.class);
 
-    private static final String HEADER_DATE = "x-java-rest-date";
+    protected static final String HEADER_AUTHORIZATION = "Authorization";
+
+    protected static final String HEADER_DATE = "x-java-rest-date";
+
+    /**
+     * Number of minutes greater than clock time on the server that we allow requests to be off
+     */
+    protected static final int REQUEST_TIME_OFFSET_FROM_SERVER_IN_MINUTES = 15;
 
     private final UserRepository userRepository;
 
     private final AuthorizationService authorizationService;
+
+    ApplicationConfig config;
 
     @Autowired
     public SecurityContextFilter(UserRepository userRepository, AuthorizationService authorizationService) {
@@ -90,7 +104,10 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
         ExternalUser externalUser = null;
         if (authToken != null && requestDateString != null) {
             //make sure date is valid
-            Date dateFromHeader = ensureValidDateFromRequest(requestDateString);
+            if(!isDateFromRequestValid(requestDateString)) {
+                LOG.error("Date in header is out of range: {}", requestDateString);
+                throw new AuthorizationException("Date in header is out of range: " + requestDateString);
+            }
             String[] token = authToken.split(":");
             if (token.length == 2) {
                 String userId = token[0];
@@ -109,10 +126,12 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
         return request;
     }
 
-    private Date ensureValidDateFromRequest(String requestDate) {
+    private boolean isDateFromRequestValid(String requestDate) {
         Date date = DateUtil.getDateFromIso8061DateString(requestDate);
-        //TODO: check against clock time
-        return date;
+        DateTime now = new DateTime();
+        DateTime offset = new DateTime(date);
+        return offset.isAfter(now.minusMinutes(config.getSessionDateOffsetInMinutes())) &&
+                offset.isBefore(now.plusMinutes(REQUEST_TIME_OFFSET_FROM_SERVER_IN_MINUTES));
     }
 
 
@@ -122,5 +141,10 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
 
     public ContainerResponseFilter getResponseFilter() {
         return null;
+    }
+
+    @Autowired
+    public void setConfig(ApplicationConfig config) {
+        this.config = config;
     }
 }
