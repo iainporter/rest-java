@@ -11,15 +11,17 @@ public class AuthorizationRequest {
     private final String requestUrl;
     private final String httpMethod;
     private final String requestDateString;
+    private final String nonceToken;
     private final String hashedToken;
 
 
-    public AuthorizationRequest(ExternalUser user, String requestUrl, String httpMethod, String requestDateString, String hashedToken) {
+    public AuthorizationRequest(ExternalUser user, String requestUrl, String httpMethod, String requestDateString, String hashedToken, String nonce) {
         this.user = user;
         this.requestUrl = requestUrl;
         this.httpMethod = httpMethod;
         this.requestDateString = requestDateString;
         this.hashedToken = hashedToken;
+        this.nonceToken = nonce;
     }
 
     public ExternalUser getUser() {
@@ -42,4 +44,7 @@ public class AuthorizationRequest {
         return hashedToken;
     }
 
+    public String getNonceToken() {
+        return nonceToken;
+    }
 }

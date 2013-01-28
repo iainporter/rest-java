@@ -34,24 +34,27 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
 
     protected Object httpGetUser(def sessionToken, def requestingUserId, def userToGet) {
        def path = "user/" + userToGet
-       def authToken = calculateAuthToken(sessionToken, path + ",GET")
+       def nonce = generateNonce()
+       def authToken = calculateAuthToken(sessionToken, path + ",GET", nonce)
        def userResponse = getRestClient().get(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': requestingUserId + ":" + authToken, "x-java-rest-date": DATE_STRING])
+               headers: ['Authorization': requestingUserId + ":" + authToken, "x-java-rest-date": DATE_STRING, "nonce": nonce])
        return userResponse
    }
 
     public Object httpUpdateUser(userToken, userId, updateRequest) {
         def path =  "user/"  + userId;
-       def authToken = calculateAuthToken(userToken, path +",PUT")
+        def nonce = generateNonce()
+       def authToken = calculateAuthToken(userToken, path +",PUT", nonce)
         return getRestClient().put(path: path, contentType: ContentType.JSON, body: updateRequest,
-                headers: ['Authorization': userId + ":" + authToken, "x-java-rest-date": DATE_STRING])
+                headers: ['Authorization': userId + ":" + authToken, "x-java-rest-date": DATE_STRING, "nonce": nonce])
     }
 
     protected Object httpDeleteUser(def userId, def sessionToken) {
        def path = "user/" + userId
-       def authToken = calculateAuthToken(sessionToken, path + ",DELETE")
+        def nonce = generateNonce()
+       def authToken = calculateAuthToken(sessionToken, path + ",DELETE", nonce)
        def response = getRestClient().delete(path: path, contentType: ContentType.JSON,
-               headers: ['Authorization': userId + ":" + authToken, "x-java-rest-date": DATE_STRING])
+               headers: ['Authorization': userId + ":" + authToken, "x-java-rest-date": DATE_STRING, "nonce": nonce])
        return response
    }
 
@@ -86,9 +89,13 @@ abstract class BaseIntegrationTst extends GroovyTestCase {
         return RandomStringUtils.randomAlphabetic(8) + "@example.com";
     }
 
-    protected String calculateAuthToken(String sessionToken, String stringToHash) {
-        byte[] digest = DigestUtils.sha256(sessionToken + ":" + stringToHash + "," + DATE_STRING);
+    protected String calculateAuthToken(String sessionToken, String stringToHash, String nonce) {
+        byte[] digest = DigestUtils.sha256(sessionToken + ":" + stringToHash + "," + DATE_STRING +"," + nonce);
         return new String(Base64.encodeBase64(digest));
+    }
+
+    private String generateNonce() {
+        return RandomStringUtils.randomAlphanumeric(8);
     }
 
 }

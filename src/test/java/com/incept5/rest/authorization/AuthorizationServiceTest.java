@@ -59,8 +59,8 @@ public class AuthorizationServiceTest {
     @Test
     public void authorizeUser() throws Exception {
         String dateString = DateUtil.getCurrentDateAsIso8061String();
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString)));
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,123", dateString));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString + ",123")));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,123", dateString, "123"));
         assertThat(isAuthorized, is(true));
     }
 
@@ -68,35 +68,50 @@ public class AuthorizationServiceTest {
     public void invalidUnencodedRequest() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":hash123,123")));
         User user = new User();
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,1234"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,1234", "123"));
         assertThat(isAuthorized, is(false));
     }
 
     @Test
     public void invalidSessionToken() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256("INVALID-SESSION-TOKEN:abcdef")));
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "abcdef"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "abcdef", "123"));
+        assertThat(isAuthorized, is(false));
+    }
+
+    @Test
+    public void missingNonce() {
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256("INVALID-SESSION-TOKEN:abcdef")));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "abcdef", null));
+        assertThat(isAuthorized, is(false));
+    }
+
+    @Test
+    public void wrongNonce() {
+        String dateString = DateUtil.getCurrentDateAsIso8061String();
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString + ",123")));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), hashedToken, "hash123,123", dateString, "567"));
         assertThat(isAuthorized, is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullUser() {
         String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":abcdef")));
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(null, hashedToken,  "abcdef"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(null, hashedToken,  "abcdef", "123"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullSessionToken() {
-        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), null,  "abcdef"));
+        boolean isAuthorized = authorziationService.isAuthorized(getAuthorizationRequest(new ExternalUser(USER), null,  "abcdef", "123"));
     }
 
-    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString) {
-        return getAuthorizationRequest(user, hashedToken, requestString, DateUtil.getCurrentDateAsIso8061String());
+    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString, String nonce) {
+        return getAuthorizationRequest(user, hashedToken, requestString, DateUtil.getCurrentDateAsIso8061String(), nonce);
     }
 
-    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString, String dateString) {
+    private AuthorizationRequest getAuthorizationRequest(ExternalUser user, String hashedToken, String requestString, String dateString, String nonce) {
         AuthorizationRequest authRequest = new AuthorizationRequest(user, requestString, "POST", dateString,
-                hashedToken);
+                hashedToken, nonce);
         return authRequest;
     }
 }

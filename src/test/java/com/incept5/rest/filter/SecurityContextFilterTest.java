@@ -43,9 +43,10 @@ public class SecurityContextFilterTest {
         userRepository = mock(UserRepository.class);
         authorizationService = mock(AuthorizationService.class);
         containerRequest = mock(ContainerRequest.class);
-        filter = new SecurityContextFilter(userRepository, authorizationService);
         applicationConfig = mock(ApplicationConfig.class);
-        filter.setConfig(applicationConfig);
+        when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
+        filter = new SecurityContextFilter(userRepository, authorizationService, applicationConfig);
+
     }
 
     @Test
@@ -58,10 +59,16 @@ public class SecurityContextFilterTest {
 
     @Test
     public void validAuthHeaders() {
+        setUpValidRequest();
+        containerRequest = filter.filter(containerRequest);
+    }
+
+    private void setUpValidRequest() {
         User user = new User();
         final ExternalUser externalUser = new ExternalUser(user);
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":123");
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(new DateTime().toString(ISODateTimeFormat.dateTimeNoMillis()));
+        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_NONCE)).thenReturn("123");
         when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
         when(authorizationService.isAuthorized(any(AuthorizationRequest.class))).thenReturn(true);
         when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
@@ -74,7 +81,6 @@ public class SecurityContextFilterTest {
                 return null;
             }
         }).when(containerRequest).setSecurityContext(any(SecurityContext.class));
-        containerRequest = filter.filter(containerRequest);
     }
 
     @Test (expected = AuthorizationException.class)
@@ -88,14 +94,14 @@ public class SecurityContextFilterTest {
     }
 
     @Test (expected = AuthorizationException.class)
-    public void dateHeaderIsGreaterThanServerOffset() {
-        User user = new User();
-        final ExternalUser externalUser = new ExternalUser(user);
-        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":123");
-        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(new DateTime().plusMinutes(SecurityContextFilter.REQUEST_TIME_OFFSET_FROM_SERVER_IN_MINUTES + 1).toString(ISODateTimeFormat.dateTimeNoMillis()));
-        when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
-        containerRequest = filter.filter(containerRequest);
+    public void duplicateNonce() throws Exception {
+        setUpValidRequest();
+        filter.filter(containerRequest);
+        Thread.sleep(20); //tolerance limit
+        //submit same request again with same nonce value
+        filter.filter(containerRequest);
     }
+
 
 
 }
