@@ -49,10 +49,10 @@ import java.util.concurrent.TimeUnit;
  * This will be SHA-256 hashed and then Base64 encoded to produce:
  * <p/>
  * <code>
- * UgphA7bAUVcH/RGhVZlNKBTykp0TtcUiPuG0xc71P3o=
+ * HR/3DJp8RCGo50Wu+/3cr7ibdoNXKg1eYMt3HO5QoP4=
  * </code>
  * <p/>
- * Authorization: 2e2ce9e8-798e-42b6-9326-fd2e56aef7aa:UgphA7bAUVcH/RGhVZlNKBTykp0TtcUiPuG0xc71P3o=
+ * Authorization: 2e2ce9e8-798e-42b6-9326-fd2e56aef7aa:HR/3DJp8RCGo50Wu+/3cr7ibdoNXKg1eYMt3HO5QoP4=
  *
  * The role of this filter class is to set a {@link javax.ws.rs.core.SecurityContext} in the {@link com.sun.jersey.spi.container.ContainerRequest}
  *
@@ -126,7 +126,7 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
         String requestDateString = request.getHeaderValue(HEADER_DATE);
         String nonce = request.getHeaderValue(HEADER_NONCE);
         ExternalUser externalUser = null;
-        if (authToken != null && requestDateString != null) {
+        if (authToken != null && requestDateString != null && nonce != null) {
             //make sure date and nonce is valid
             validateRequestDate(requestDateString);
             validateNonce(nonce);

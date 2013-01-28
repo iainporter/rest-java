@@ -89,6 +89,7 @@ public class SecurityContextFilterTest {
         final ExternalUser externalUser = new ExternalUser(user);
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":123");
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(new DateTime().minusMinutes(10).toString(ISODateTimeFormat.dateTimeNoMillis()));
+        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_NONCE)).thenReturn("123");
         when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(5);
         containerRequest = filter.filter(containerRequest);
     }
