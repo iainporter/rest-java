@@ -11,8 +11,8 @@ function javaRest() {
 javaRest.get = function (url, data, success, error) {
   
   var time = javaRest.get_iso_date()
-  
-  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',GET,' + time
+  var nonce = makeRandomString()
+  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',GET,' + time + "," + nonce
   var authorization = javaRest.cookie.get('userId') + ':' + javaRest.hash(string_to_hash)
   
   var request = $.ajax({
@@ -21,7 +21,8 @@ javaRest.get = function (url, data, success, error) {
     data: data,
     headers: {
       'Authorization' : authorization,
-      'x-java-rest-date' : time
+      'x-java-rest-date' : time,
+      'nonce' : nonce
     },
     dataType: "json"
   })
@@ -30,6 +31,11 @@ javaRest.get = function (url, data, success, error) {
 
   request.fail(error)
   
+}
+
+function makeRandomString() {
+    return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
 }
 
 /**
@@ -105,8 +111,8 @@ javaRest.post = function (url, data, success, error) {
 javaRest.postAuth = function (url, data, success, error) {
   
   var time = javaRest.get_iso_date()
-  
-  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',POST,' + time
+  var nonce = makeRandomString()
+  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',POST,' + time + "," + nonce
   var authorization = javaRest.cookie.get('userId') + ':' + javaRest.hash(string_to_hash)
   
   $.ajax({
@@ -132,8 +138,8 @@ javaRest.postAuth = function (url, data, success, error) {
 javaRest.put = function (url, data, success, error) {
   
   var time = javaRest.get_iso_date()
-  
-  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',PUT,' + time
+  var nonce = makeRandomString()
+  var string_to_hash = javaRest.cookie.get('token') + ':' + url + ',PUT,' + time + "," + nonce
   var authorization = javaRest.cookie.get('userId') + ':' + javaRest.hash(string_to_hash)
   
   $.ajax({
