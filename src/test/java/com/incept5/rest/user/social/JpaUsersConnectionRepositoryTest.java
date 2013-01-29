@@ -85,6 +85,26 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         assertThat(user.getRole().equalsIgnoreCase(Role.authenticated.toString()), is(true));
     }
 
+     @Test
+    public void updateFromSocialLogin() {
+        UserService userService = new UserServiceImpl(usersConnectionRepository);
+        ((UserServiceImpl)userService).setUserRepository(userRepository);
+        UserProfileBuilder builder = new UserProfileBuilder();
+        UserProfile profile = builder.setFirstName("Tom").setLastName("Tucker").setEmail("tt@example.com").setUsername("ttucker").build();
+        when(connection.fetchUserProfile()).thenReturn(profile);
+        userService.socialLogin(connection);
+        //login again and update
+        profile = builder.setFirstName("Foo").setLastName("Bar").setEmail("foobar@example.com").setUsername("foobar").build();
+        when(connection.fetchUserProfile()).thenReturn(profile);
+        ExternalUser user = userService.socialLogin(connection);
+        assertThat(user, is(notNullValue()));
+        assertThat(user.getEmailAddress(), is("foobar@example.com"));
+        assertThat(user.getFirstName(), is("Foo"));
+        assertThat(user.getLastName(), is("Bar"));
+        assertThat(user.isVerified(), is(true));
+        assertThat(user.getRole().equalsIgnoreCase(Role.authenticated.toString()), is(true));
+    }
+
      /**
      * Test to ensure that the social login is linked to the previously enrolled email address
      *
@@ -107,19 +127,6 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         assertThat(createdUser.getId(), is(socialLoginUser.getId()));
         assertThat(socialLoginUser.isVerified(), is(true));
     }
-//
-//    @Test(expected = UserAlreadyExists.class)
-//    public void userHasSocialProfile() {
-//        User user = new User();
-//        user.setEmailAddress("test@example.com");
-//        when(userRepository.findByUsername(any(String.class))).thenReturn(null);
-//        when(userRepository.findByEmailAddress(any(String.class))).thenReturn(user);
-//        when(socialUserRepository.findAllByUser(user)).thenReturn(socialUsers);
-//        UserService userService = new UserServiceImpl(usersConnectionRepository);
-//        ((UserServiceImpl) userService).setUserRepository(userRepository);
-//
-//        userService.createUser(getCreateUserRequest("test@example.com"), Role.authenticated);
-//    }
 
     private CreateUserRequest getCreateUserRequest(String emailAddress) {
         CreateUserRequest request = new CreateUserRequest();

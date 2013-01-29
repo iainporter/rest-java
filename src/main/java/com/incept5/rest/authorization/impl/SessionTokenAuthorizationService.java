@@ -41,11 +41,12 @@ public class SessionTokenAuthorizationService implements AuthorizationService {
             throw new AuthorizationException("Session token not valid");
         }
         for (SessionToken sessionToken : user.getSessions()) {
-            if (sessionToken.equals(token)) {
+            if (sessionToken.getToken().equals(token)) {
                 sessionToken.setLastUpdated(new Date());
                 userRepository.save(user);
+                externalUser = new ExternalUser(user, sessionToken);
             }
         }
-        return new ExternalUser(user);
+        return externalUser;
     }
 }

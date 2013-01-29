@@ -81,6 +81,7 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
 
     /**
      * Specify the AuthorizationService that the application should use
+     *
      * @param userRepository
      * @param userService
      * @param config
