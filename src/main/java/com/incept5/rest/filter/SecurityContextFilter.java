@@ -1,58 +1,28 @@
 package com.incept5.rest.filter;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.incept5.rest.authorization.AuthorizationRequest;
+import com.incept5.rest.authorization.AuthorizationRequestContext;
 import com.incept5.rest.authorization.AuthorizationService;
+import com.incept5.rest.authorization.impl.RequestSigningAuthorizationService;
 import com.incept5.rest.authorization.impl.SecurityContextImpl;
+import com.incept5.rest.authorization.impl.SessionTokenAuthorizationService;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.user.api.ExternalUser;
-import com.incept5.rest.user.domain.User;
-import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.util.DateUtil;
+import com.incept5.rest.user.service.UserService;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.sun.jersey.spi.container.ResourceFilter;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.ext.Provider;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A Servlet filter class for authorizing requests.
  *
- * Any Resource that requires a role must have a header property of the following format:
- * <p/>
- * <code>
- * Authorization: <uuid of user>:<session token hash>
- * </code>
- * <p/>
- * The session token hash is comprised of the session token + : +  the relative url + , + the Http method + , + Date + , + nonce
- * This string is then Sha-256 encoded and then Base64 encoded
- * <p/>
- * An example:
- * <code>
- * Example:
- * 9fbc6f9a-af1b-4767-a492-c8462fd2a4d9:user/2e2ce9e8-798e-42b6-9326-fd2e56aef7aa/cards,POST,2012-06-30T12:00:00+01:00,34e321a7c4
- * <p/>
- * </code>
- * <p/>
- * This will be SHA-256 hashed and then Base64 encoded to produce:
- * <p/>
- * <code>
- * HR/3DJp8RCGo50Wu+/3cr7ibdoNXKg1eYMt3HO5QoP4=
- * </code>
- * <p/>
- * Authorization: 2e2ce9e8-798e-42b6-9326-fd2e56aef7aa:HR/3DJp8RCGo50Wu+/3cr7ibdoNXKg1eYMt3HO5QoP4=
  *
  * The role of this filter class is to set a {@link javax.ws.rs.core.SecurityContext} in the {@link com.sun.jersey.spi.container.ContainerRequest}
  *
@@ -66,42 +36,20 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityContextFilter.class);
 
-    private static final int NONCE_CHECK_TOLERANCE_IN_MILLIS = 20;
-
-    private static final int NONCE_CACHE_SIZE = 10000;
-
     protected static final String HEADER_AUTHORIZATION = "Authorization";
 
     protected static final String HEADER_DATE = "x-java-rest-date";
 
     protected static final String HEADER_NONCE = "nonce";
 
-    private final UserRepository userRepository;
-
-    private final AuthorizationService authorizationService;
-
-    private LoadingCache<String, Nonce> nonceCache;
+    private AuthorizationService authorizationService;
 
     ApplicationConfig config;
 
     @Autowired
-    public SecurityContextFilter(UserRepository userRepository, AuthorizationService authorizationService, ApplicationConfig config) {
-        this.userRepository = userRepository;
-        this.authorizationService = authorizationService;
+    public SecurityContextFilter(UserRepository userRepository, UserService userService, ApplicationConfig config) {
+        delegateAuthorizationService(userRepository, userService, config);
         this.config = config;
-        initNonceCache();
-    }
-
-    private void initNonceCache() {
-       nonceCache = CacheBuilder.newBuilder()
-       .maximumSize(NONCE_CACHE_SIZE)
-       .expireAfterWrite(config.getSessionDateOffsetInMinutes(), TimeUnit.MINUTES)
-       .build(
-           new CacheLoader<String, Nonce>() {
-             public Nonce load(String key) throws Exception {
-               return new Nonce(new DateTime(), key);
-             }
-           });
 
     }
 
@@ -121,56 +69,27 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
      * @return the ContainerRequest with a SecurityContext added
      */
     public ContainerRequest filter(ContainerRequest request) {
-        //find the Authorization header.
         String authToken = request.getHeaderValue(HEADER_AUTHORIZATION);
         String requestDateString = request.getHeaderValue(HEADER_DATE);
         String nonce = request.getHeaderValue(HEADER_NONCE);
-        ExternalUser externalUser = null;
-        if (authToken != null && requestDateString != null && nonce != null) {
-            //make sure date and nonce is valid
-            validateRequestDate(requestDateString);
-            validateNonce(nonce);
-            String[] token = authToken.split(":");
-            if (token.length == 2) {
-                String userId = token[0];
-                String hashedToken = token[1];
-                User user = null;
-                user = userRepository.findByUuid(userId);
-                if (user != null) {
-                    externalUser = new ExternalUser(user);
-                    AuthorizationRequest authRequest = new AuthorizationRequest(externalUser, request.getPath(), request.getMethod(),
-                            requestDateString, hashedToken, nonce);
-                    authorizationService.isAuthorized(authRequest);
-                }
-            }
-        }
+        AuthorizationRequestContext context = new AuthorizationRequestContext(request.getPath(), request.getMethod(),
+                            requestDateString, nonce, authToken);
+        ExternalUser externalUser = authorizationService.authorize(context);
         request.setSecurityContext(new SecurityContextImpl(externalUser));
         return request;
     }
 
-    private void validateRequestDate(String requestDateString) {
-        Date date = DateUtil.getDateFromIso8061DateString(requestDateString);
-        DateTime now = new DateTime();
-        DateTime offset = new DateTime(date);
-        if(!(offset.isAfter(now.minusMinutes(config.getSessionDateOffsetInMinutes())) &&
-                offset.isBefore(now.plusMinutes(config.getSessionDateOffsetInMinutes())))) {
-              LOG.error("Date in header is out of range: {}", requestDateString);
-              throw new AuthorizationException("Date in header is out of range: " + requestDateString);
-        }
-    }
-
-    private void validateNonce(String nonceValue) {
-        try {
-            Nonce nonce = nonceCache.getUnchecked(nonceValue);
-            Duration tolerance = new Duration(nonce.timestamp, new DateTime());
-            Long size = nonceCache.size();
-            if(tolerance.isLongerThan(Duration.millis(NONCE_CHECK_TOLERANCE_IN_MILLIS))) {
-                LOG.error("Nonce value was not unique: {}", nonceValue);
-                throw new AuthorizationException("Nonce value is not unique");
-            }
-        } catch(Exception e) {
-            LOG.error("Error getting nonce from cache", e);
-            throw new AuthorizationException("Error getting nonce");
+    /**
+     * Specify the AuthorizationService that the application should use
+     * @param userRepository
+     * @param userService
+     * @param config
+     */
+    private void delegateAuthorizationService(UserRepository userRepository, UserService userService, ApplicationConfig config) {
+        if(config.requireSignedRequests()) {
+            this.authorizationService = new RequestSigningAuthorizationService(userRepository, userService, config);
+        } else {
+            this.authorizationService = new SessionTokenAuthorizationService(userRepository);
         }
     }
 
@@ -188,13 +107,4 @@ public class SecurityContextFilter implements ResourceFilter, ContainerRequestFi
         this.config = config;
     }
 
-    private static class Nonce {
-        private DateTime timestamp;
-        private String nonceValue;
-
-        Nonce(DateTime time, String nonce) {
-            this.timestamp = time;
-            this.nonceValue = nonce;
-        }
-    }
 }

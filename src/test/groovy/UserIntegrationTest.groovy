@@ -118,9 +118,9 @@ class UserIntegrationTest extends BaseIntegrationTst {
         def updateRequest = "{" + getJsonNameValue("firstName", "FOO") + "}"
         try {
             def updateUserResponse = httpUpdateUser(userToken, userId2, updateRequest)
-            fail("Expected 401 response")
+            fail("Expected 403 response")
         } catch (Exception e) {
-            assertEquals(401, e.response.status)
+            assertEquals(403, e.response.status)
         }
 
     }

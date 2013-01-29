@@ -1,7 +1,6 @@
 package com.incept5.rest.user.repository;
 
 import com.incept5.rest.user.domain.User;
-import com.incept5.rest.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,5 +22,8 @@ public interface UserRepository  extends JpaRepository<User, Long> {
 
     @Query("select u from User u where u in (select user from SessionToken where lastUpdated < ?)")
     List<User> findByExpiredSession(Date lastUpdated);
+
+    @Query("select u from User u where u = (select user from SessionToken where uuid = ?)")
+    User findBySession(String uuid);
 
 }

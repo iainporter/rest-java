@@ -16,6 +16,7 @@ public class ApplicationConfig {
 
     private final static String HOSTNAME_PROPERTY = "hostNameUrl";
 
+    private final static String SECURITY_AUTHORIZATION_REQUIRE_SIGNED_REQUESTS = "security.authorization.requireSignedRequests";
     private final static String SESSION_EXPIRY_DURATION = "session.timeToLive.inMinutes";
     private final static String SESSION_DATE_OFFSET_IN_MINUTES = "session.date.offset.inMinutes";
     private final static String TOKEN_EMAIL_REGISTRATION_DURATION = "token.emailRegistration.timeToLive.inMinutes";
@@ -81,5 +82,9 @@ public class ApplicationConfig {
 
     public String getEmailReplyToAddress() {
         return environment.getProperty(EMAIL_SERVICES_REPLYTO_ADDRESS);
+    }
+
+    public Boolean requireSignedRequests() {
+        return environment.getProperty(SECURITY_AUTHORIZATION_REQUIRE_SIGNED_REQUESTS).equalsIgnoreCase("true");
     }
 }

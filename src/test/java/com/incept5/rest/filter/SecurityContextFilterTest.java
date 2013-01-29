@@ -1,13 +1,14 @@
 package com.incept5.rest.filter;
 
-import com.incept5.rest.authorization.AuthorizationRequest;
-import com.incept5.rest.authorization.AuthorizationService;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.service.UserService;
 import com.sun.jersey.spi.container.ContainerRequest;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
@@ -34,18 +35,19 @@ public class SecurityContextFilterTest {
 
     private SecurityContextFilter filter;
     private UserRepository userRepository;
-    private AuthorizationService authorizationService;
+    private UserService userService;
     private ContainerRequest containerRequest;
     private ApplicationConfig applicationConfig;
 
     @Before
     public void setUp() {
         userRepository = mock(UserRepository.class);
-        authorizationService = mock(AuthorizationService.class);
+        userService = mock(UserService.class);
         containerRequest = mock(ContainerRequest.class);
         applicationConfig = mock(ApplicationConfig.class);
         when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
-        filter = new SecurityContextFilter(userRepository, authorizationService, applicationConfig);
+        when(applicationConfig.requireSignedRequests()).thenReturn(true);
+        filter = new SecurityContextFilter(userRepository, userService, applicationConfig);
 
     }
 
@@ -66,12 +68,14 @@ public class SecurityContextFilterTest {
     private void setUpValidRequest() {
         User user = new User();
         final ExternalUser externalUser = new ExternalUser(user);
-        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":123");
-        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(new DateTime().toString(ISODateTimeFormat.dateTimeNoMillis()));
+        String dateString = new DateTime().toString(ISODateTimeFormat.dateTimeNoMillis());
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(user.getSessions().first().getToken() + ":user/555,POST," + dateString + ",123")));
+        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":" + hashedToken);
+        when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(dateString);
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_NONCE)).thenReturn("123");
+        when(containerRequest.getPath()).thenReturn("user/555");
+        when(containerRequest.getMethod()).thenReturn("POST");
         when(userRepository.findByUuid(user.getUuid().toString())).thenReturn(user);
-        when(authorizationService.isAuthorized(any(AuthorizationRequest.class))).thenReturn(true);
-        when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
         doAnswer(new Answer() {
 
             public Object answer(InvocationOnMock invocation) throws Throwable {

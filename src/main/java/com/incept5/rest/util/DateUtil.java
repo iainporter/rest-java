@@ -21,4 +21,8 @@ public class DateUtil {
         DateTime today = new DateTime();
         return ISO8061_FORMATTER.print(today);
     }
+
+     public static String getDateDateAsIso8061String(DateTime date) {
+        return ISO8061_FORMATTER.print(date);
+    }
 }
