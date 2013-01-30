@@ -240,16 +240,11 @@ public class RequestSigningAuthorizationService implements AuthorizationService 
      * @param nonceValue
      */
     private void validateNonce(String nonceValue) {
-        try {
-            Nonce nonce = nonceCache.getUnchecked(nonceValue);
-            Duration tolerance = new Duration(nonce.timestamp, new DateTime());
-            if (tolerance.isLongerThan(Duration.millis(NONCE_CHECK_TOLERANCE_IN_MILLIS))) {
-                LOG.error("Nonce value was not unique: {}", nonceValue);
-                throw new AuthorizationException("Nonce value is not unique");
-            }
-        } catch (Exception e) {
-            LOG.error("Error getting nonce from cache", e);
-            throw new AuthorizationException("Error getting nonce");
+        Nonce nonce = nonceCache.getUnchecked(nonceValue);
+        Duration tolerance = new Duration(nonce.timestamp, new DateTime());
+        if (tolerance.isLongerThan(Duration.millis(NONCE_CHECK_TOLERANCE_IN_MILLIS))) {
+            LOG.error("Nonce value was not unique: {}", nonceValue);
+            throw new AuthorizationException("Nonce value is not unique");
         }
     }
 

@@ -58,7 +58,10 @@ public class UserResource {
     @PermitAll
     @POST
     public Response signupUser(CreateUserRequest request) {
-        return signUpUser(request, Role.authenticated);
+        AuthenticatedUserToken token = userService.createUser(request, Role.authenticated);
+        verificationTokenService.sendEmailRegistrationToken(token.getUserId());
+        URI location = uriInfo.getAbsolutePathBuilder().path(token.getUserId()).build();
+        return Response.created(location).entity(token).build();
     }
 
     @RolesAllowed("admin")
@@ -118,15 +121,5 @@ public class UserResource {
         URI location = UriBuilder.fromPath(uriInfo.getBaseUri() + "user/" + token.getUserId()).build();
         return Response.ok().entity(token).contentLocation(location).build();
     }
-
-    private Response signUpUser(CreateUserRequest request, Role role) {
-        AuthenticatedUserToken token = userService.createUser(request, role);
-        verificationTokenService.sendEmailRegistrationToken(token.getUserId());
-        URI location = uriInfo.getAbsolutePathBuilder().path(token.getUserId()).build();
-        return Response.created(location).entity(token).build();
-    }
-
-
-
 
 }
