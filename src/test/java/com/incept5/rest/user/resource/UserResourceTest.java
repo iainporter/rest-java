@@ -46,7 +46,8 @@ public class UserResourceTest extends BaseResourceTst {
 
     @Test
     public void signUp() {
-        when(userService.createUser(any(CreateUserRequest.class), any(Role.class))).thenReturn(new ExternalUser(TEST_USER, ACTIVE_SESSION));
+        when(userService.createUser(any(CreateUserRequest.class), any(Role.class))).thenReturn(
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
         WebResource webResource = resource();
         CreateUserRequest request = createSignupRequest();
         ClientResponse response = webResource.path("user").entity(request, APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
@@ -74,7 +75,8 @@ public class UserResourceTest extends BaseResourceTst {
 
     @Test
     public void login() {
-        when(userService.login(any(LoginRequest.class))).thenReturn(new ExternalUser(TEST_USER, ACTIVE_SESSION));
+        when(userService.login(any(LoginRequest.class))).thenReturn(
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
         ClientResponse response = super.resource().path("user/login").entity(createLoginRequest(), APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
         assertThat(response.getStatus(), is(200));
         AuthenticatedUserToken token = response.getEntity(AuthenticatedUserToken.class);
@@ -88,7 +90,8 @@ public class UserResourceTest extends BaseResourceTst {
         Connection<Facebook> connection = mock(Connection.class);
         when(connectionFactoryLocator.getConnectionFactory(any(String.class))).thenReturn(connectionFactory);
         when(connectionFactory.createConnection(any(AccessGrant.class))).thenReturn(connection);
-        when(userService.socialLogin(connection)).thenReturn(new ExternalUser(TEST_USER, ACTIVE_SESSION));
+        when(userService.socialLogin(connection)).thenReturn(
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
         OAuth2Request request = new OAuth2Request();
         request.setAccessToken("123");
         ClientResponse response = super.resource().path("user/login/facebook").entity(request, APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);

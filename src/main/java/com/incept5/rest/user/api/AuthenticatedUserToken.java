@@ -13,9 +13,9 @@ public class AuthenticatedUserToken {
 
     public AuthenticatedUserToken(){}
 
-    public AuthenticatedUserToken(ExternalUser user) {
-        this.userId = user.getId();
-        this.token = user.getActiveSession().getSessionToken();
+    public AuthenticatedUserToken(String userId, String sessionToken) {
+        this.userId = userId;
+        this.token = sessionToken;
     }
 
     public String getUserId() {

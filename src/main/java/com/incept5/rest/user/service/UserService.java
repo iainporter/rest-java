@@ -1,10 +1,7 @@
 package com.incept5.rest.user.service;
 
-import com.incept5.rest.user.api.CreateUserRequest;
-import com.incept5.rest.user.api.LoginRequest;
-import com.incept5.rest.user.api.UpdateUserRequest;
+import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
-import com.incept5.rest.user.api.ExternalUser;
 import org.springframework.social.connect.Connection;
 
 /**
@@ -20,18 +17,18 @@ public interface UserService {
      *
      * @param request
      * @param role
-     * @return User
+     * @return AuthenticatedUserToken
      */
-    public ExternalUser createUser(CreateUserRequest request, Role role);
+    public AuthenticatedUserToken createUser(CreateUserRequest request, Role role);
 
 
     /**
      * Create a Default User with a given role
      *
      * @param role
-     * @return User
+     * @return AuthenticatedUserToken
      */
-    public ExternalUser createUser(Role role);
+    public AuthenticatedUserToken createUser(Role role);
 
     /**
      * Login a User
@@ -39,7 +36,7 @@ public interface UserService {
      * @param request
      * @return AuthenticatedUserToken
      */
-    public ExternalUser login(LoginRequest request);
+    public AuthenticatedUserToken login(LoginRequest request);
 
     /**
      * Log in a User using Connection details from an authorized request from the User's supported Social provider
@@ -48,7 +45,7 @@ public interface UserService {
      * @param connection containing the details of the authorized user account form the Social provider
      * @return the User account linked to the {@link com.incept5.rest.user.domain.SocialUser} account
      */
-    public ExternalUser socialLogin(Connection<?> connection);
+    public AuthenticatedUserToken socialLogin(Connection<?> connection);
 
     /**
      * Get a User based on a unique identifier
@@ -75,12 +72,6 @@ public interface UserService {
      * @param request
      */
     public ExternalUser saveUser(String userId, UpdateUserRequest request);
-
-    /**
-     * Save the active session state of the externalUser
-     * @param user
-     */
-    public void saveUserSession(ExternalUser user);
 
     /**
      * Delete all SessionToken objects that have not been accessed within the duration specified by the argument timeSinceLastUpdatedInMinutes

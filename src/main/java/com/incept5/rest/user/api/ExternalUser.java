@@ -1,8 +1,6 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.authorization.UserSession;
 import com.incept5.rest.user.domain.SessionToken;
-import com.incept5.rest.user.domain.*;
 import com.incept5.rest.user.domain.SocialUser;
 import com.incept5.rest.user.domain.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -31,17 +29,15 @@ public class ExternalUser implements Principal {
     private boolean isVerified;
 
     @JsonIgnore
-    private List<UserSession> sessions = new ArrayList<UserSession>();
-
-    @JsonIgnore
-    private UserSession activeSession;
-
-    @JsonIgnore
     private String role;
 
     private List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
 
     public ExternalUser() {}
+
+    public ExternalUser(String userId) {
+        this.id = userId;
+    }
 
     public ExternalUser(User user) {
         this.id = user.getUuid().toString();
@@ -58,15 +54,11 @@ public class ExternalUser implements Principal {
             profile.setProviderUserId(socialUser.getProviderUserId());
             socialProfiles.add(profile);
         }
-        for(SessionToken session : user.getSessions()) {
-             sessions.add(new UserSession(session));
-        }
         role = user.getRole().toString();
     }
 
     public ExternalUser(User user, SessionToken activeSession) {
         this(user);
-        this.activeSession = new UserSession(activeSession);
     }
 
 
@@ -104,18 +96,6 @@ public class ExternalUser implements Principal {
 
     public boolean isVerified() {
         return isVerified;
-    }
-
-    public List<UserSession> getSessions() {
-        return sessions;
-    }
-
-    public UserSession getActiveSession() {
-        return activeSession;
-    }
-
-    public void setActiveSession(UserSession activeSession) {
-        this.activeSession = activeSession;
     }
 
     public boolean validate() {

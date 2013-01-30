@@ -44,7 +44,7 @@ public class SessionTokenAuthorizationService implements AuthorizationService {
             if (sessionToken.getToken().equals(token)) {
                 sessionToken.setLastUpdated(new Date());
                 userRepository.save(user);
-                externalUser = new ExternalUser(user, sessionToken);
+                externalUser = new ExternalUser(user);
             }
         }
         return externalUser;

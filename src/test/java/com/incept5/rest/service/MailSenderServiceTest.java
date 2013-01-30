@@ -1,15 +1,15 @@
 package com.incept5.rest.service;
 
 
-import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.config.ApplicationConfig;
+import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
+import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.mail.MailSenderService;
 import com.incept5.rest.user.mail.MockJavaMailSender;
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import com.incept5.rest.user.mail.impl.MailSenderServiceImpl;
-import com.incept5.rest.user.domain.VerificationToken;
+import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.Before;
@@ -27,7 +27,8 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -59,8 +60,8 @@ public class MailSenderServiceTest extends BaseServiceTest {
 
     @Test
     public void sendVerificationEmail() throws Exception {
-        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
-        User user = userRepository.findByUuid(externalUser.getId());
+        AuthenticatedUserToken userToken = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(userToken.getUserId());
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailVerification, 120);
         mailService.sendVerificationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
@@ -69,8 +70,8 @@ public class MailSenderServiceTest extends BaseServiceTest {
 
     @Test
     public void sendRegistrationEmail() throws Exception {
-        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
-        User user = userRepository.findByUuid(externalUser.getId());
+        AuthenticatedUserToken userToken = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(userToken.getUserId());
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.emailRegistration, 120);
         mailService.sendRegistrationEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));
@@ -79,8 +80,8 @@ public class MailSenderServiceTest extends BaseServiceTest {
 
     @Test
     public void sendLostPasswordEmail() throws Exception {
-        ExternalUser externalUser = createUserWithRandomUserName(Role.authenticated);
-        User user = userRepository.findByUuid(externalUser.getId());
+        AuthenticatedUserToken userToken = createUserWithRandomUserName(Role.authenticated);
+        User user = userRepository.findByUuid(userToken.getUserId());
         VerificationToken token = new VerificationToken(user,
                 VerificationToken.VerificationTokenType.lostPassword, 120);
         mailService.sendLostPasswordEmail(new EmailServiceTokenModel(user, token, config.getHostNameUrl()));

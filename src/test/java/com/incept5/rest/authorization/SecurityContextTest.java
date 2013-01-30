@@ -47,7 +47,7 @@ public class SecurityContextTest {
     public void authenticationFailure() {
         User user = new User();
         user.setRole(Role.authenticated);
-        ExternalUser externalUser = new ExternalUser(user);
+        ExternalUser externalUser = null;
         SecurityContext context = new SecurityContextImpl(externalUser);
         context.isUserInRole(Role.authenticated.name());
     }
@@ -63,7 +63,6 @@ public class SecurityContextTest {
         User user = new User();
         user.setRole(role);
         ExternalUser externalUser = new ExternalUser(user);
-        externalUser.setActiveSession(externalUser.getSessions().get(0));
         SecurityContext context = new SecurityContextImpl(externalUser);
         return context;
     }

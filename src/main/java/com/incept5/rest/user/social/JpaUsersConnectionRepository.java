@@ -63,7 +63,7 @@ public class JpaUsersConnectionRepository implements UsersConnectionRepository {
         User user = findUserFromSocialProfile(connection);
         String userId;
         if(user == null) {
-          userId = userService.createUser(Role.authenticated).getId();
+          userId = userService.createUser(Role.authenticated).getUserId();
         } else {
            userId = user.getUuid().toString();
         }

@@ -60,7 +60,6 @@ public class User extends BaseEntity {
     public User(UUID uuid) {
         super(uuid);
         setRole(Role.anonymous); //all users are anonymous until credentials are proved
-        addSessionToken();
     }
 
     public User(ExternalUser externalUser) {
@@ -165,8 +164,10 @@ public class User extends BaseEntity {
         return Collections.unmodifiableList(this.verificationTokens);
     }
 
-    public void addSessionToken() {
-        this.sessions.add(new SessionToken(this));
+    public SessionToken addSessionToken() {
+        SessionToken token = new SessionToken(this);
+        this.sessions.add(token);
+        return token;
     }
 
     public SortedSet<SessionToken> getSessions() {

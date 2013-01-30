@@ -2,10 +2,11 @@ package com.incept5.rest.user.service;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.service.BaseServiceTest;
+import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.api.CreateUserRequest;
-import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.api.LoginRequest;
 import com.incept5.rest.user.domain.Role;
+import com.incept5.rest.user.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,25 +45,25 @@ public class SessionReaperTest extends BaseServiceTest {
     public void sessionsStillActive() {
         when(config.getSessionExpiryTimeInMinutes()).thenReturn(1);
         CreateUserRequest request = getDefaultCreateUserRequest();
-        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        AuthenticatedUserToken userToken = userService.createUser(request, Role.authenticated);
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        userService.login(loginRequest).getSessions().get(0).getSessionToken();
-        userService.login(loginRequest).getSessions().get(0).getSessionToken();
+        userService.login(loginRequest);
+        userService.login(loginRequest);
         sessionReaper.cleanUpExpiredSessions();
-        ExternalUser externalUser = userService.getUser(createdUser, createdUser.getId());
-        assertThat(externalUser.getSessions().size(), is(3));
+        User user = userRepository.findByUuid(userToken.getUserId());
+        assertThat(user.getSessions().size(), is(3));
     }
 
     @Test
     public void sessionHasBeenReaped() {
         when(config.getSessionExpiryTimeInMinutes()).thenReturn(-1);
         CreateUserRequest request = getDefaultCreateUserRequest();
-        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        AuthenticatedUserToken userToken = userService.createUser(request, Role.authenticated);
         sessionReaper.cleanUpExpiredSessions();
-        ExternalUser externalUser = userService.getUser(createdUser, createdUser.getId());
-        assertThat(externalUser.getSessions().size(), is(0));
+        User user = userRepository.findByUuid(userToken.getUserId());
+        assertThat(user.getSessions().size(), is(0));
     }
 
 }

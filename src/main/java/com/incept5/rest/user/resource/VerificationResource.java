@@ -1,7 +1,8 @@
 package com.incept5.rest.user.resource;
 
-import com.incept5.rest.resource.BaseResource;
 import com.incept5.rest.user.api.EmailVerificationRequest;
+import com.incept5.rest.user.service.VerificationTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.security.PermitAll;
@@ -18,7 +19,10 @@ import javax.ws.rs.core.Response;
 @Component
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
-public class VerificationResource extends BaseResource {
+public class VerificationResource  {
+
+    @Autowired
+    protected VerificationTokenService verificationTokenService;
 
     @PermitAll
     @Path("tokens/{token}")

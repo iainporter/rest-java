@@ -30,7 +30,7 @@ public class SecurityContextImpl implements SecurityContext {
         if(role.equalsIgnoreCase(Role.anonymous.name())) {
              return true;
         }
-        if(user == null || user.getActiveSession() == null) {
+        if(user == null) {
             throw new InvalidAuthorizationHeaderException();
         }
         return user.getRole().equalsIgnoreCase(role);

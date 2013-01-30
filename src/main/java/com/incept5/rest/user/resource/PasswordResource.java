@@ -1,8 +1,9 @@
 package com.incept5.rest.user.resource;
 
-import com.incept5.rest.resource.BaseResource;
 import com.incept5.rest.user.api.LostPasswordRequest;
 import com.incept5.rest.user.api.PasswordRequest;
+import com.incept5.rest.user.service.VerificationTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.security.PermitAll;
@@ -20,7 +21,10 @@ import javax.ws.rs.core.Response;
 @Component
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
-public class PasswordResource extends BaseResource {
+public class PasswordResource {
+
+    @Autowired
+    protected VerificationTokenService verificationTokenService;
 
     @PermitAll
     @Path("tokens")

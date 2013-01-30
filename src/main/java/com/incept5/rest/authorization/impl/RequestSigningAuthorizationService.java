@@ -5,9 +5,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.incept5.rest.authorization.AuthorizationRequestContext;
 import com.incept5.rest.authorization.AuthorizationService;
-import com.incept5.rest.authorization.UserSession;
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.user.domain.SessionToken;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.repository.UserRepository;
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -135,7 +135,7 @@ public class RequestSigningAuthorizationService implements AuthorizationService 
                 User user = userRepository.findByUuid(userId);
                 if (user != null) {
                     externalUser = new ExternalUser(user);
-                    if (!isAuthorized(externalUser, context, hashedToken)) {
+                    if (!isAuthorized(user, context, hashedToken)) {
                         throw new AuthorizationException("Request rejected due to an authorization failure");
                     }
                 }
@@ -165,27 +165,23 @@ public class RequestSigningAuthorizationService implements AuthorizationService 
      * @param hashedToken the token to match against
      * @return true if the token is authorized
      */
-    private boolean isAuthorized(ExternalUser user, AuthorizationRequestContext authorizationRequest, String hashedToken) {
+    private boolean isAuthorized(User user, AuthorizationRequestContext authorizationRequest, String hashedToken) {
         Assert.notNull(user);
         Assert.notNull(authorizationRequest.getAuthorizationToken());
         String unEncodedString = composeUnEncodedRequest(authorizationRequest);
-        List<UserSession> sessionTokens = user.getSessions();
+        Set<SessionToken> sessionTokens = user.getSessions();
         String userTokenHash = null;
-        for (UserSession token : sessionTokens) {
-            userTokenHash = encodeAuthToken(token.getSessionToken(), unEncodedString);
+        for (SessionToken token : sessionTokens) {
+            userTokenHash = encodeAuthToken(token.getToken(), unEncodedString);
             if (hashedToken.equals(userTokenHash)) {
-                user.setActiveSession(token);
-                persistUser(user);
+                token.setLastUpdated(new Date());
+                userRepository.save(user);
                 return true;
             }
         }
         LOG.error("Hash check failed for hashed token: {} for the following request: {} for user: {}",
                 new Object[]{authorizationRequest.getAuthorizationToken(), unEncodedString, user.getId()});
         return false;
-    }
-
-    private void persistUser(ExternalUser user) {
-        userService.saveUserSession(user);
     }
 
     /**

@@ -2,10 +2,7 @@ package com.incept5.rest.user.service.impl;
 
 
 import com.incept5.rest.service.exception.ValidationException;
-import com.incept5.rest.user.api.CreateUserRequest;
-import com.incept5.rest.user.api.ExternalUser;
-import com.incept5.rest.user.api.LoginRequest;
-import com.incept5.rest.user.api.UpdateUserRequest;
+import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthenticationException;
@@ -57,7 +54,7 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
      *
      */
     @Transactional
-    public ExternalUser createUser(CreateUserRequest request, Role role) {
+    public AuthenticatedUserToken createUser(CreateUserRequest request, Role role) {
         if (!request.validate()) {
             throw new ValidationException("The CreateUserRequest was invalid");
         }
@@ -66,16 +63,16 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             throw new DuplicateUserException();
         }
 
-        User savedUser = createNewUser(request, role);
-        return new ExternalUser(savedUser, savedUser.getSessions().first());
+        User newUser = createNewUser(request, role);
+        return new AuthenticatedUserToken(newUser.getUuid().toString(), newUser.addSessionToken().getToken());
     }
 
     @Transactional
-    public ExternalUser createUser(Role role) {
+    public AuthenticatedUserToken createUser(Role role) {
         User user = new User();
         user.setRole(role);
         userRepository.save(user);
-        return new ExternalUser(user, user.getSessions().first());
+        return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
     }
 
     /**
@@ -86,7 +83,7 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
      *  and compared to the persisted password for the User account.
      */
     @Transactional
-    public ExternalUser login(LoginRequest request) {
+    public AuthenticatedUserToken login(LoginRequest request) {
         if (!request.validate()) {
             throw new ValidationException();
         }
@@ -96,8 +93,7 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             throw new AuthenticationException();
         }
         if (user.hashPassword(request.getPassword()).equals(user.getHashedPassword())) {
-            user.addSessionToken();
-            return new ExternalUser(user, user.getSessions().first());
+            return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
         } else {
             throw new AuthenticationException();
         }
@@ -115,7 +111,7 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
      *
      */
     @Transactional
-    public ExternalUser socialLogin(Connection<?> connection) {
+    public AuthenticatedUserToken socialLogin(Connection<?> connection) {
 
         List<String> userUuids = jpaUsersConnectionRepository.findUserIdsWithConnection(connection);
         if(userUuids.size() == 0) {
@@ -126,8 +122,7 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             throw new AuthenticationException();
         }
         updateUserFromProfile(connection, user);
-        user.addSessionToken();
-        return new ExternalUser(user, user.getSessions().first());
+        return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
     }
 
     /**
@@ -196,12 +191,6 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             userRepository.save(expiredUserSessions);
         }
         return count;
-    }
-
-    public void saveUserSession(ExternalUser externalUser) {
-        User user = ensureUserIsLoaded(externalUser.getId());
-        user.setActiveSession(externalUser.getActiveSession());
-        userRepository.save(user);
     }
 
     private User createNewUser(CreateUserRequest request, Role role) {

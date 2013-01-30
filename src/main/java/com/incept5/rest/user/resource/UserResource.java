@@ -1,9 +1,12 @@
 package com.incept5.rest.user.resource;
 
-import com.incept5.rest.resource.BaseResource;
+import com.incept5.rest.config.ApplicationConfig;
+import com.incept5.rest.gateway.EmailServicesGateway;
+import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.exception.AuthorizationException;
-import com.incept5.rest.user.api.*;
+import com.incept5.rest.user.service.UserService;
+import com.incept5.rest.user.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -27,11 +30,24 @@ import java.net.URI;
 @Component
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
-public class UserResource extends BaseResource {
+public class UserResource {
 
     private ConnectionFactoryLocator connectionFactoryLocator;
 
-    public UserResource(){}
+    @Autowired
+    protected UserService userService;
+
+    @Autowired
+    protected VerificationTokenService verificationTokenService;
+
+    @Autowired
+    protected EmailServicesGateway emailServicesGateway;
+
+    @Context
+    protected UriInfo uriInfo;
+
+    @Autowired
+    ApplicationConfig config;
 
     @Autowired
     public UserResource(ConnectionFactoryLocator connectionFactoryLocator) {
@@ -58,8 +74,8 @@ public class UserResource extends BaseResource {
     @Path("login")
     @POST
     public Response login(LoginRequest request) {
-        ExternalUser user = userService.login(request);
-        return getLoginResponse(user);
+        AuthenticatedUserToken token = userService.login(request);
+        return getLoginResponse(token);
     }
 
     @PermitAll
@@ -68,8 +84,8 @@ public class UserResource extends BaseResource {
     public Response socialLogin(@PathParam("providerId") String providerId, OAuth2Request request) {
         OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
         Connection<?> connection = connectionFactory.createConnection(new AccessGrant(request.getAccessToken()));
-        ExternalUser user = userService.socialLogin(connection);
-        return getLoginResponse(user);
+        AuthenticatedUserToken token = userService.socialLogin(connection);
+        return getLoginResponse(token);
     }
 
     @RolesAllowed({"authenticated"})
@@ -98,10 +114,16 @@ public class UserResource extends BaseResource {
         return Response.ok().build();
     }
 
-    private Response getLoginResponse(ExternalUser user) {
-        AuthenticatedUserToken response = new AuthenticatedUserToken(user);
-        URI location = UriBuilder.fromPath(uriInfo.getBaseUri() + "user/" + response.getUserId()).build();
-        return Response.ok().entity(response).contentLocation(location).build();
+    private Response getLoginResponse(AuthenticatedUserToken token) {
+        URI location = UriBuilder.fromPath(uriInfo.getBaseUri() + "user/" + token.getUserId()).build();
+        return Response.ok().entity(token).contentLocation(location).build();
+    }
+
+    private Response signUpUser(CreateUserRequest request, Role role) {
+        AuthenticatedUserToken token = userService.createUser(request, role);
+        verificationTokenService.sendEmailRegistrationToken(token.getUserId());
+        URI location = uriInfo.getAbsolutePathBuilder().path(token.getUserId()).build();
+        return Response.created(location).entity(token).build();
     }
 
 

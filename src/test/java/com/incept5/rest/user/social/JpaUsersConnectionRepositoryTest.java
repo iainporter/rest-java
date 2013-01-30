@@ -1,5 +1,6 @@
 package com.incept5.rest.user.social;
 
+import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.api.CreateUserRequest;
 import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
@@ -76,7 +77,8 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName("Tom").setLastName("Tucker").setEmail("tt@example.com").setUsername("ttucker").build();
         when(connection.fetchUserProfile()).thenReturn(profile);
-        ExternalUser user = userService.socialLogin(connection);
+        AuthenticatedUserToken token = userService.socialLogin(connection);
+        ExternalUser user = userService.getUser(new ExternalUser(token.getUserId()), token.getUserId());
         assertThat(user, is(notNullValue()));
         assertThat(user.getEmailAddress(), is("tt@example.com"));
         assertThat(user.getFirstName(), is("Tom"));
@@ -96,7 +98,8 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         //login again and update
         profile = builder.setFirstName("Foo").setLastName("Bar").setEmail("foobar@example.com").setUsername("foobar").build();
         when(connection.fetchUserProfile()).thenReturn(profile);
-        ExternalUser user = userService.socialLogin(connection);
+        AuthenticatedUserToken token = userService.socialLogin(connection);
+        ExternalUser user = userService.getUser(new ExternalUser(token.getUserId()), token.getUserId());
         assertThat(user, is(notNullValue()));
         assertThat(user.getEmailAddress(), is("foobar@example.com"));
         assertThat(user.getFirstName(), is("Foo"));
@@ -116,16 +119,16 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         ((UserServiceImpl) userService).setUserRepository(userRepository);
         //create email account
         CreateUserRequest request = getCreateUserRequest(RandomStringUtils.randomAlphabetic(8) + "@example.com");
-        ExternalUser createdUser = userService.createUser(request, Role.authenticated);
+        AuthenticatedUserToken token = userService.createUser(request, Role.authenticated);
 
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName(user.getFirstName()).setLastName(user.getLastName()).setEmail(user.getEmailAddress()).setUsername("jsmith.12").build();
         when(connection.fetchUserProfile()).thenReturn(profile);
-        when(userRepository.findByEmailAddress(any(String.class))).thenReturn(new User(UUID.fromString(createdUser.getId())));
-        when(userRepository.findByUuid(any(String.class))).thenReturn(new User(UUID.fromString(createdUser.getId())));
-        ExternalUser socialLoginUser = userService.socialLogin(connection);
-        assertThat(createdUser.getId(), is(socialLoginUser.getId()));
-        assertThat(socialLoginUser.isVerified(), is(true));
+        when(userRepository.findByEmailAddress(any(String.class))).thenReturn(new User(UUID.fromString(token.getUserId())));
+        when(userRepository.findByUuid(any(String.class))).thenReturn(new User(UUID.fromString(token.getUserId())));
+        AuthenticatedUserToken loginToken = userService.socialLogin(connection);
+        ExternalUser user = userService.getUser(new ExternalUser(token.getUserId()), token.getUserId());
+        assertThat(token.getUserId(), is(loginToken.getUserId()));
     }
 
     private CreateUserRequest getCreateUserRequest(String emailAddress) {
