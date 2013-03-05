@@ -8,7 +8,6 @@ import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.user.domain.Role;
-import com.incept5.rest.user.repository.UserRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

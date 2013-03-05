@@ -2,11 +2,11 @@ package com.incept5.rest.authorization.impl;
 
 import com.incept5.rest.authorization.AuthorizationRequestContext;
 import com.incept5.rest.authorization.AuthorizationService;
+import com.incept5.rest.user.UserRepository;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.domain.SessionToken;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthorizationException;
-import com.incept5.rest.user.repository.UserRepository;
 
 import java.util.Date;
 

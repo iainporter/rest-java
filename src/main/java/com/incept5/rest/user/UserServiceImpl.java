@@ -9,7 +9,6 @@ import com.incept5.rest.user.exception.AuthenticationException;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.exception.DuplicateUserException;
 import com.incept5.rest.user.exception.UserNotFoundException;
-import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.social.JpaUsersConnectionRepository;
 import com.incept5.rest.util.StringUtil;
 import org.joda.time.DateTime;

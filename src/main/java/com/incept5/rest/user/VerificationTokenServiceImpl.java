@@ -6,8 +6,6 @@ import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.exception.*;
-import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.user.repository.VerificationTokenRepository;
 import com.incept5.rest.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;

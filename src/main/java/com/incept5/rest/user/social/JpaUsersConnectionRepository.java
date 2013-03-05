@@ -1,10 +1,9 @@
 package com.incept5.rest.user.social;
 
-import com.incept5.rest.user.UserService;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.SocialUser;
-import com.incept5.rest.user.repository.SocialUserRepository;
-import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.SocialUserRepository;
+import com.incept5.rest.user.UserRepository;
 import com.incept5.rest.user.UserService;
 import com.incept5.rest.user.domain.User;
 import org.springframework.security.crypto.encrypt.TextEncryptor;

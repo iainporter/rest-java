@@ -1,4 +1,4 @@
-package com.incept5.rest.user.repository;
+package com.incept5.rest.user;
 
 import com.incept5.rest.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

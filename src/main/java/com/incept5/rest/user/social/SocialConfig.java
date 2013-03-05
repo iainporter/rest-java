@@ -1,8 +1,8 @@
 package com.incept5.rest.user.social;
 
 import com.incept5.rest.config.ApplicationConfig;
-import com.incept5.rest.user.repository.SocialUserRepository;
-import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.SocialUserRepository;
+import com.incept5.rest.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,8 +2,8 @@ package com.incept5.rest.authorization;
 
 import com.incept5.rest.authorization.impl.SessionTokenAuthorizationService;
 import com.incept5.rest.config.ApplicationConfig;
+import com.incept5.rest.user.UserRepository;
 import com.incept5.rest.user.domain.User;
-import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.util.DateUtil;
 import org.junit.Before;
 
