@@ -4,15 +4,14 @@ import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;
-import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.user.repository.VerificationTokenRepository;
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import com.incept5.rest.user.exception.AlreadyVerifiedException;
 import com.incept5.rest.user.exception.TokenHasExpiredException;
 import com.incept5.rest.user.exception.TokenNotFoundException;
 import com.incept5.rest.user.exception.UserNotFoundException;
+import com.incept5.rest.user.repository.UserRepository;
+import com.incept5.rest.user.repository.VerificationTokenRepository;
+import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import com.incept5.rest.user.service.impl.VerificationTokenServiceImpl;
-import com.incept5.rest.user.service.VerificationTokenService;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -94,7 +93,7 @@ public class VerificationServiceTest {
     }
 
     @Test
-    public void resetPassword() {
+    public void resetPassword() throws Exception {
         User user = generateTestUser();
         when(userRepository.save(user)).thenReturn(user);
         when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(user);

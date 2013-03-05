@@ -92,7 +92,13 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
         if (user == null) {
             throw new AuthenticationException();
         }
-        if (user.hashPassword(request.getPassword()).equals(user.getHashedPassword())) {
+        String hashedPassword = null;
+        try {
+            hashedPassword = user.hashPassword(request.getPassword());
+        } catch (Exception e) {
+            throw new AuthenticationException();
+        }
+        if (hashedPassword.equals(user.getHashedPassword())) {
             return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
         } else {
             throw new AuthenticationException();
@@ -195,7 +201,11 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
 
     private User createNewUser(CreateUserRequest request, Role role) {
         User userToSave = new User(request.getUser());
-        userToSave.setHashedPassword(userToSave.hashPassword(request.getPassword().getPassword()));
+        try {
+            userToSave.setHashedPassword(userToSave.hashPassword(request.getPassword().getPassword()));
+        }  catch (Exception e) {
+            throw new AuthenticationException();
+        }
         userToSave.setRole(role);
         return userRepository.save(userToSave);
     }

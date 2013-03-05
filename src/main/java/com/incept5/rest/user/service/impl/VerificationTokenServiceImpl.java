@@ -5,10 +5,7 @@ import com.incept5.rest.gateway.EmailServicesGateway;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;
-import com.incept5.rest.user.exception.AlreadyVerifiedException;
-import com.incept5.rest.user.exception.TokenHasExpiredException;
-import com.incept5.rest.user.exception.TokenNotFoundException;
-import com.incept5.rest.user.exception.UserNotFoundException;
+import com.incept5.rest.user.exception.*;
 import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.repository.VerificationTokenRepository;
 import com.incept5.rest.user.service.VerificationTokenService;
@@ -137,7 +134,11 @@ public class VerificationTokenServiceImpl extends BaseUserServiceImpl implements
         }
         token.setVerified(true);
         User user = token.getUser();
-        user.setHashedPassword(user.hashPassword(password));
+        try {
+            user.setHashedPassword(user.hashPassword(password));
+        } catch (Exception e) {
+            throw new AuthenticationException();
+        }
         //set user to verified if not already and authenticated role
         user.setVerified(true);
         if (user.hasRole(Role.anonymous)) {
