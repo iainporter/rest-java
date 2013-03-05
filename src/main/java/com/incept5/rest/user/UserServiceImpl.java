@@ -81,8 +81,8 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      *
-     *  Login supports authentication against a username or email attribute.
-     *  If a User is retrieved that matches against one of those attributes the password in the request is hashed
+     *  Login supports authentication against an email attribute.
+     *  If a User is retrieved that matches, the password in the request is hashed
      *  and compared to the persisted password for the User account.
      */
     @Transactional
