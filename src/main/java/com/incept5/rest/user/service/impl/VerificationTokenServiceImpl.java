@@ -10,6 +10,7 @@ import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.repository.VerificationTokenRepository;
 import com.incept5.rest.user.service.VerificationTokenService;
 import com.incept5.rest.user.service.data.EmailServiceTokenModel;
+import com.incept5.rest.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,13 @@ import org.springframework.util.Assert;
  * @since 10/09/2012
  */
 @Service("verificationTokenService")
-public class VerificationTokenServiceImpl extends BaseUserServiceImpl implements VerificationTokenService {
+public class VerificationTokenServiceImpl implements VerificationTokenService {
 
     private final VerificationTokenRepository tokenRepository;
 
     private final EmailServicesGateway emailServicesGateway;
+
+    private UserRepository userRepository;
 
     ApplicationConfig config;
 
@@ -166,7 +169,25 @@ public class VerificationTokenServiceImpl extends BaseUserServiceImpl implements
         this.config = config;
     }
 
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public ApplicationConfig getConfig() {
         return this.config;
+    }
+
+    private User ensureUserIsLoaded(String userIdentifier) {
+        User user = null;
+        if (StringUtil.isValidUuid(userIdentifier)) {
+            user = userRepository.findByUuid(userIdentifier);
+        } else {
+            user = userRepository.findByEmailAddress(userIdentifier);
+        }
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

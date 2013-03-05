@@ -8,8 +8,11 @@ import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthenticationException;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.exception.DuplicateUserException;
+import com.incept5.rest.user.exception.UserNotFoundException;
+import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.service.UserService;
 import com.incept5.rest.user.social.JpaUsersConnectionRepository;
+import com.incept5.rest.util.StringUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +32,14 @@ import java.util.List;
  * @author: Iain Porter
  */
 @Service("userService")
-public class UserServiceImpl extends BaseUserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     /**
      * For Social API handling
      */
     private final UsersConnectionRepository jpaUsersConnectionRepository;
+
+    private UserRepository userRepository;
 
     @Autowired
     public UserServiceImpl(UsersConnectionRepository usersConnectionRepository) {
@@ -221,6 +226,24 @@ public class UserServiceImpl extends BaseUserServiceImpl implements UserService 
             user.setRole(Role.authenticated);
         }
         userRepository.save(user);
+    }
+
+    private User ensureUserIsLoaded(String userIdentifier) {
+        User user = null;
+        if (StringUtil.isValidUuid(userIdentifier)) {
+            user = userRepository.findByUuid(userIdentifier);
+        } else {
+            user = userRepository.findByEmailAddress(userIdentifier);
+        }
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 }
