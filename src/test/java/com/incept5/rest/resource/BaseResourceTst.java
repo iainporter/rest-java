@@ -1,5 +1,7 @@
 package com.incept5.rest.resource;
 
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.api.LoginRequest;
 import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
@@ -7,8 +9,8 @@ import com.incept5.rest.gateway.EmailServicesGateway;
 import com.incept5.rest.mock.AppMockConfiguration;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.SessionToken;
-import com.incept5.rest.user.service.UserService;
-import com.incept5.rest.user.service.VerificationTokenService;
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.api.CreateUserRequest;
 import com.incept5.rest.user.api.UpdateUserRequest;
 import com.incept5.rest.user.domain.User;

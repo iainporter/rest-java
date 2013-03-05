@@ -1,6 +1,6 @@
 package com.incept5.rest.gateway;
 
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
+import com.incept5.rest.user.EmailServiceTokenModel;
 
 /**
  *

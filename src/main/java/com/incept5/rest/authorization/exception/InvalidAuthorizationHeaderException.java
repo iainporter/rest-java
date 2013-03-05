@@ -1,6 +1,6 @@
 package com.incept5.rest.authorization.exception;
 
-import com.incept5.rest.service.exception.BaseWebApplicationException;
+import com.incept5.rest.exception.BaseWebApplicationException;
 
 /**
  *

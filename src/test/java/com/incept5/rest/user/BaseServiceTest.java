@@ -1,4 +1,4 @@
-package com.incept5.rest.service;
+package com.incept5.rest.user;
 
 
 import com.incept5.rest.config.ApplicationConfig;
@@ -9,7 +9,6 @@ import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,9 +1,11 @@
 package com.incept5.rest.mock;
 
 import com.incept5.rest.gateway.EmailServicesGateway;
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.mail.MailSenderService;
-import com.incept5.rest.user.service.UserService;
-import com.incept5.rest.user.service.VerificationTokenService;
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

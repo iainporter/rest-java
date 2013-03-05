@@ -6,7 +6,7 @@ import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthenticationException;
 import com.incept5.rest.user.exception.DuplicateUserException;
-import com.incept5.rest.service.exception.ValidationException;
+import com.incept5.rest.exception.ValidationException;
 import com.incept5.rest.user.api.*;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;

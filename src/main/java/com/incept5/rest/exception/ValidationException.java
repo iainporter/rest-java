@@ -1,4 +1,4 @@
-package com.incept5.rest.service.exception;
+package com.incept5.rest.exception;
 
 /**
  * User: porter

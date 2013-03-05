@@ -1,4 +1,4 @@
-package com.incept5.rest.service;
+package com.incept5.rest.user;
 
 
 import com.incept5.rest.config.ApplicationConfig;
@@ -9,7 +9,6 @@ import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.mail.MailSenderService;
 import com.incept5.rest.user.mail.MockJavaMailSender;
 import com.incept5.rest.user.mail.impl.MailSenderServiceImpl;
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.Before;

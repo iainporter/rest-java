@@ -1,7 +1,7 @@
 package com.incept5.rest.user.resource;
 
+import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.api.EmailVerificationRequest;
-import com.incept5.rest.user.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

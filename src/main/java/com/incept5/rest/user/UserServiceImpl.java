@@ -1,7 +1,7 @@
-package com.incept5.rest.user.service.impl;
+package com.incept5.rest.user;
 
 
-import com.incept5.rest.service.exception.ValidationException;
+import com.incept5.rest.exception.ValidationException;
 import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
@@ -10,7 +10,6 @@ import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.exception.DuplicateUserException;
 import com.incept5.rest.user.exception.UserNotFoundException;
 import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.user.service.UserService;
 import com.incept5.rest.user.social.JpaUsersConnectionRepository;
 import com.incept5.rest.util.StringUtil;
 import org.joda.time.DateTime;

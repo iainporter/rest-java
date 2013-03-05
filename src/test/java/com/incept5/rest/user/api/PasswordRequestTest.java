@@ -1,7 +1,6 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.service.exception.ValidationException;
-import com.incept5.rest.user.api.PasswordRequest;
+import com.incept5.rest.exception.ValidationException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 

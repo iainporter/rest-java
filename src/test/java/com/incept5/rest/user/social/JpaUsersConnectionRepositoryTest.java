@@ -1,13 +1,13 @@
 package com.incept5.rest.user.social;
 
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.UserServiceImpl;
 import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.api.CreateUserRequest;
 import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.SocialUser;
-import com.incept5.rest.user.service.UserService;
-import com.incept5.rest.user.service.impl.UserServiceImpl;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.domain.User;
 import org.apache.commons.lang.RandomStringUtils;

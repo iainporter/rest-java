@@ -1,7 +1,6 @@
-package com.incept5.rest.user.service;
+package com.incept5.rest.user;
 
 import com.incept5.rest.config.ApplicationConfig;
-import com.incept5.rest.service.BaseServiceTest;
 import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.api.CreateUserRequest;
 import com.incept5.rest.user.api.LoginRequest;

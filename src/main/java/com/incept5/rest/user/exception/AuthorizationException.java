@@ -1,7 +1,7 @@
 package com.incept5.rest.user.exception;
 
 
-import com.incept5.rest.service.exception.BaseWebApplicationException;
+import com.incept5.rest.exception.BaseWebApplicationException;
 
 /**
  * User: porter

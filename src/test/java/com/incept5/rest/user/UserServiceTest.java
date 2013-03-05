@@ -1,7 +1,6 @@
-package com.incept5.rest.user.service;
+package com.incept5.rest.user;
 
-import com.incept5.rest.service.BaseServiceTest;
-import com.incept5.rest.service.exception.ValidationException;
+import com.incept5.rest.exception.ValidationException;
 import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.user.domain.Role;

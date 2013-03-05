@@ -9,10 +9,6 @@
     <context:component-scan base-package="com.incept5.rest.filter"/>
     <context:component-scan base-package="com.incept5.rest.config"/>
     <context:component-scan base-package="com.incept5.rest.resource"/>
-    <context:component-scan base-package="com.incept5.rest.service"/>
-    <context:component-scan base-package="com.incept5.rest.user.resource"/>
-    <context:component-scan base-package="com.incept5.rest.user.service"/>
-    <context:component-scan base-package="com.incept5.rest.user.social"/>
-    <context:component-scan base-package="com.incept5.rest.user.mail"/>
+    <context:component-scan base-package="com.incept5.rest.user"/>
 
 </beans>

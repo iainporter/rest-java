@@ -2,11 +2,13 @@ package com.incept5.rest.user.resource;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.exception.AuthorizationException;
-import com.incept5.rest.user.service.UserService;
-import com.incept5.rest.user.service.VerificationTokenService;
+import com.incept5.rest.user.UserService;
+import com.incept5.rest.user.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;

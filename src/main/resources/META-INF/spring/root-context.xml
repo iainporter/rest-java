@@ -13,7 +13,7 @@
     <import resource="data-context.xml"/>
     <import resource="email-template-context.xml"/>
 
-    <bean id="sessionReaperCronJob" class="com.incept5.rest.user.service.SessionReaper"/>
+    <bean id="sessionReaperCronJob" class="com.incept5.rest.user.SessionReaper"/>
     <task:scheduled-tasks scheduler="sessionReaperScheduler">
     <task:scheduled ref="sessionReaperCronJob" method="cleanUpExpiredSessions" cron="0 0/1 * * * *"/>
     </task:scheduled-tasks>

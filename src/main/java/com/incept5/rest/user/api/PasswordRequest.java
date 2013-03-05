@@ -1,6 +1,6 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.service.exception.ValidationException;
+import com.incept5.rest.exception.ValidationException;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

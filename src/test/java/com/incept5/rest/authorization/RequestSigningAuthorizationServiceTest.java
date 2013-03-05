@@ -1,9 +1,9 @@
 package com.incept5.rest.authorization;
 
 import com.incept5.rest.authorization.impl.RequestSigningAuthorizationService;
+import com.incept5.rest.user.UserService;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.exception.AuthorizationException;
-import com.incept5.rest.user.service.UserService;
 import com.incept5.rest.util.DateUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

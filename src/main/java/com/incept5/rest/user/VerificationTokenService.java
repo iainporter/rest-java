@@ -1,6 +1,5 @@
-package com.incept5.rest.user.service;
+package com.incept5.rest.user;
 
-import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.domain.VerificationToken;
 
 /**

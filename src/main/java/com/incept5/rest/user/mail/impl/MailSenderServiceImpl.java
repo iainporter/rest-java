@@ -1,8 +1,8 @@
 package com.incept5.rest.user.mail.impl;
 
 import com.incept5.rest.config.ApplicationConfig;
+import com.incept5.rest.user.EmailServiceTokenModel;
 import com.incept5.rest.user.mail.*;
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

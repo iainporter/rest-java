@@ -1,4 +1,4 @@
-package com.incept5.rest.user.service.impl;
+package com.incept5.rest.user;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
@@ -8,8 +8,6 @@ import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.exception.*;
 import com.incept5.rest.user.repository.UserRepository;
 import com.incept5.rest.user.repository.VerificationTokenRepository;
-import com.incept5.rest.user.service.VerificationTokenService;
-import com.incept5.rest.user.service.data.EmailServiceTokenModel;
 import com.incept5.rest.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;

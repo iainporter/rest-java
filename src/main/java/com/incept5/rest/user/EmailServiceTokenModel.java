@@ -1,4 +1,4 @@
-package com.incept5.rest.user.service.data;
+package com.incept5.rest.user;
 
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;

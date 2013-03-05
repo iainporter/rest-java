@@ -1,11 +1,12 @@
 package com.incept5.rest.filter;
 
 import com.incept5.rest.config.ApplicationConfig;
+import com.incept5.rest.user.UserService;
 import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.exception.AuthorizationException;
 import com.incept5.rest.user.repository.UserRepository;
-import com.incept5.rest.user.service.UserService;
+import com.incept5.rest.user.UserService;
 import com.sun.jersey.spi.container.ContainerRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

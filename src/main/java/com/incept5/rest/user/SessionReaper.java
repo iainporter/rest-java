@@ -1,4 +1,4 @@
-package com.incept5.rest.user.service;
+package com.incept5.rest.user;
 
 import com.incept5.rest.config.ApplicationConfig;
 import org.slf4j.Logger;
