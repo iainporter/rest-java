@@ -1,7 +1,6 @@
 package com.incept5.rest.user;
 
 import com.incept5.rest.user.domain.VerificationToken;
-import com.incept5.rest.user.domain.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

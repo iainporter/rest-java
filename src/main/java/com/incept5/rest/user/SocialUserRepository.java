@@ -1,8 +1,6 @@
 package com.incept5.rest.user;
 
 import com.incept5.rest.user.domain.SocialUser;
-import com.incept5.rest.user.domain.SocialUser;
-import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
