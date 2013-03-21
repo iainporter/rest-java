@@ -269,7 +269,7 @@ public class User extends BaseEntity {
     }
 
     public byte[] getHash(int iterationNb, String password, byte[] salt) throws Exception {
-       MessageDigest digest = MessageDigest.getInstance("SHA-1");
+       MessageDigest digest = MessageDigest.getInstance("SHA-256");
        digest.reset();
        digest.update(salt);
        byte[] input = digest.digest(password.getBytes("UTF-8"));
