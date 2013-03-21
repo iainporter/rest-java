@@ -3,16 +3,14 @@ package com.incept5.rest.user.domain;
 import com.incept5.rest.authorization.UserSession;
 import com.incept5.rest.model.BaseEntity;
 import com.incept5.rest.user.api.ExternalUser;
+import com.incept5.rest.util.HashUtil;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.springframework.util.StringUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.*;
 
@@ -264,42 +262,19 @@ public class User extends BaseEntity {
 
 
     private String hashToken(String token, String salt) throws Exception {
-        //return DigestUtils.sha256Hex(token + salt);
-        return byteToBase64(getHash(HASH_ITERATIONS, token, salt.getBytes()));
+        return HashUtil.byteToBase64(getHash(HASH_ITERATIONS, token, salt.getBytes()));
     }
 
-    public byte[] getHash(int iterationNb, String password, byte[] salt) throws Exception {
+    public byte[] getHash(int numberOfIterations, String password, byte[] salt) throws Exception {
        MessageDigest digest = MessageDigest.getInstance("SHA-256");
        digest.reset();
        digest.update(salt);
        byte[] input = digest.digest(password.getBytes("UTF-8"));
-       for (int i = 0; i < iterationNb; i++) {
+       for (int i = 0; i < numberOfIterations; i++) {
            digest.reset();
            input = digest.digest(input);
        }
        return input;
-   }
-
-     /**
-    * From a base 64 representation, returns the corresponding byte[]
-    * @param data String The base64 representation
-    * @return byte[]
-    * @throws java.io.IOException
-    */
-   public static byte[] base64ToByte(String data) throws IOException {
-       BASE64Decoder decoder = new BASE64Decoder();
-       return decoder.decodeBuffer(data);
-   }
-
-   /**
-    * From a byte[] returns a base 64 representation
-    * @param data byte[]
-    * @return String
-    * @throws IOException
-    */
-   public static String byteToBase64(byte[] data){
-       BASE64Encoder endecoder = new BASE64Encoder();
-       return endecoder.encode(data);
    }
 
 }
