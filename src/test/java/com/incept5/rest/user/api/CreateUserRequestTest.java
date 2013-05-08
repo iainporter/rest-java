@@ -1,20 +1,21 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.user.api.CreateUserRequest;
-import com.incept5.rest.user.api.ExternalUser;
-import com.incept5.rest.user.api.PasswordRequest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import javax.validation.ConstraintViolation;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @version 1.0
  * @author: Iain Porter iain.porter@incept5.com
  * @since 08/11/2012
  */
-public class CreateUserRequestTest {
+public class CreateUserRequestTest extends ValidationTst {
+
 
     @Test
     public void validRequest() {
@@ -24,23 +25,16 @@ public class CreateUserRequestTest {
         user.setLastName("Diddley");
         PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
-        assertTrue(createUserRequest.validate());
-    }
-
-    @Test
-    public void invalidEmail() {
-        ExternalUser user = new ExternalUser();
-        user.setEmailAddress(RandomStringUtils.random(8) + "example.com");
-        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
-        CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
-        assertFalse(createUserRequest.validate());
+        Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
+        assertThat(constraints.size(), is(0));
     }
 
     @Test
     public void nullUser() {
         PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(null, passwordRequest);
-        assertFalse(createUserRequest.validate());
+        Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
+        assertThat(constraints.size(), is(1));
     }
 
     @Test
@@ -50,7 +44,8 @@ public class CreateUserRequestTest {
         user.setFirstName(RandomStringUtils.random(101));
         PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
-        assertFalse(createUserRequest.validate());
+        Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
+        assertThat(constraints.size(), is(1));
     }
 
     @Test
@@ -60,7 +55,8 @@ public class CreateUserRequestTest {
         user.setLastName(RandomStringUtils.random(101));
         PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
-        assertFalse(createUserRequest.validate());
+        Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
+        assertThat(constraints.size(), is(1));
     }
 
 

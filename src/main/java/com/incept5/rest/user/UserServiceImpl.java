@@ -1,7 +1,7 @@
 package com.incept5.rest.user;
 
 
-import com.incept5.rest.exception.ValidationException;
+import com.incept5.rest.service.BaseService;
 import com.incept5.rest.user.api.*;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.validation.Validator;
 import java.util.List;
 
 /**
@@ -30,17 +31,22 @@ import java.util.List;
  * @author: Iain Porter
  */
 @Service("userService")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * For Social API handling
      */
-    private final UsersConnectionRepository jpaUsersConnectionRepository;
+    private UsersConnectionRepository jpaUsersConnectionRepository;
 
     private UserRepository userRepository;
 
+    public UserServiceImpl(Validator validator) {
+        super(validator);
+    }
+
     @Autowired
-    public UserServiceImpl(UsersConnectionRepository usersConnectionRepository) {
+    public UserServiceImpl(UsersConnectionRepository usersConnectionRepository, Validator validator) {
+        this(validator);
         this.jpaUsersConnectionRepository = usersConnectionRepository;
         ((JpaUsersConnectionRepository)this.jpaUsersConnectionRepository).setUserService(this);
     }
@@ -58,9 +64,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     public AuthenticatedUserToken createUser(CreateUserRequest request, Role role) {
-        if (!request.validate()) {
-            throw new ValidationException("The CreateUserRequest was invalid");
-        }
+        validate(request);
         User searchedForUser = userRepository.findByEmailAddress(request.getUser().getEmailAddress());
         if (searchedForUser != null) {
             throw new DuplicateUserException();
@@ -87,9 +91,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     public AuthenticatedUserToken login(LoginRequest request) {
-        if (!request.validate()) {
-            throw new ValidationException();
-        }
+        validate(request);
         User user = null;
         user = userRepository.findByEmailAddress(request.getUsername());
         if (user == null) {
@@ -167,9 +169,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public ExternalUser saveUser(String userId, UpdateUserRequest request) {
-        if (!request.validate()) {
-            throw new ValidationException();
-        }
+        validate(request);
         User user = ensureUserIsLoaded(userId);
         if(request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());

@@ -2,6 +2,9 @@ package com.incept5.rest.user;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
+import com.incept5.rest.service.BaseService;
+import com.incept5.rest.user.api.LostPasswordRequest;
+import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;
@@ -13,26 +16,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.validation.Validator;
+
 /**
  * @version 1.0
  * @author: Iain Porter iain.porter@incept5.com
  * @since 10/09/2012
  */
 @Service("verificationTokenService")
-public class VerificationTokenServiceImpl implements VerificationTokenService {
+public class VerificationTokenServiceImpl extends BaseService implements VerificationTokenService {
 
-    private final VerificationTokenRepository tokenRepository;
+    private VerificationTokenRepository tokenRepository;
 
-    private final EmailServicesGateway emailServicesGateway;
+    private EmailServicesGateway emailServicesGateway;
 
     private UserRepository userRepository;
 
     ApplicationConfig config;
 
+    public VerificationTokenServiceImpl(Validator validator) {
+        super(validator);
+    }
 
     @Autowired
     public VerificationTokenServiceImpl(UserRepository userRepository, VerificationTokenRepository tokenRepository,
-                                        EmailServicesGateway emailServicesGateway) {
+                                        EmailServicesGateway emailServicesGateway, Validator validator) {
+        this(validator);
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.emailServicesGateway = emailServicesGateway;
@@ -69,14 +78,14 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     /**
      * generate token if user found otherwise do nothing
      *
-     * @param emailAddress
+     * @param lostPasswordRequest
      * @return  a token or null if user not found
      */
     @Transactional
-    public VerificationToken sendLostPasswordToken(String emailAddress) {
-        Assert.notNull(emailAddress);
+    public VerificationToken sendLostPasswordToken(LostPasswordRequest lostPasswordRequest) {
+        validate(lostPasswordRequest);
         VerificationToken token = null;
-        User user = userRepository.findByEmailAddress(emailAddress);
+        User user = userRepository.findByEmailAddress(lostPasswordRequest.getEmailAddress());
         if (user != null) {
             token = user.getActiveLostPasswordToken();
             if (token == null) {
@@ -124,9 +133,9 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken resetPassword(String base64EncodedToken, String password) {
+    public VerificationToken resetPassword(String base64EncodedToken, PasswordRequest passwordRequest) {
         Assert.notNull(base64EncodedToken);
-        Assert.notNull(password);
+        validate(passwordRequest);
         VerificationToken token = loadToken(base64EncodedToken);
         if (token.isVerified()) {
             throw new AlreadyVerifiedException();
@@ -134,7 +143,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         token.setVerified(true);
         User user = token.getUser();
         try {
-            user.setHashedPassword(user.hashPassword(password));
+            user.setHashedPassword(user.hashPassword(passwordRequest.getPassword()));
         } catch (Exception e) {
             throw new AuthenticationException();
         }

@@ -48,12 +48,6 @@ public class PasswordResourceTest extends BaseResourceTst {
        assertThat(response.getStatus(), is(200));
     }
 
-    @Test
-    public void passwordTooShort() {
-       ClientResponse response = super.resource().path("password/tokens/" + UUID.randomUUID().toString()).entity(createPasswordRequest("123"), APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
-       assertThat(response.getStatus(), is(400));
-    }
-
     private LostPasswordRequest createLostPasswordRequest(String emailAddress) {
         LostPasswordRequest request = new LostPasswordRequest();
         request.setEmailAddress(emailAddress);

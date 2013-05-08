@@ -1,5 +1,6 @@
 package com.incept5.rest.user.api;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -12,6 +13,7 @@ public class OAuth2Request {
 
     private String accessToken;
 
+    @NotNull
     public String getAccessToken() {
         return accessToken;
     }

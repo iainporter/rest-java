@@ -1,11 +1,13 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.user.api.LoginRequest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import javax.validation.ConstraintViolation;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -13,30 +15,15 @@ import static org.junit.Assert.assertTrue;
  * @author: Iain Porter iain.porter@incept5.com
  * @since 09/11/2012
  */
-public class LoginRequestTest {
+public class LoginRequestTest extends ValidationTst {
 
     @Test
     public void validRequest() {
         LoginRequest request = new LoginRequest();
         request.setUsername(RandomStringUtils.random(8) + "@example.com");
         request.setPassword(RandomStringUtils.random(8));
-        assertTrue(request.validate());
-    }
-
-    @Test
-    public void spaceInEmailAddress() {
-        LoginRequest request = new LoginRequest();
-        request.setUsername(RandomStringUtils.random(8) + " @example.com");
-        request.setPassword(RandomStringUtils.random(8));
-        assertFalse(request.validate());
-    }
-
-    @Test
-    public void invalidEmailAddress() {
-        LoginRequest request = new LoginRequest();
-        request.setUsername(RandomStringUtils.random(8));
-        request.setPassword(RandomStringUtils.random(8));
-        assertFalse(request.validate());
+        Set<ConstraintViolation<LoginRequest>> constraints = validator.validate(request);
+        assertThat(constraints.size(), is(0));
     }
 
     @Test
@@ -44,6 +31,7 @@ public class LoginRequestTest {
         LoginRequest request = new LoginRequest();
         request.setUsername(RandomStringUtils.random(8) + "@example.com");
         request.setPassword(RandomStringUtils.random(7));
-        assertFalse(request.validate());
+        Set<ConstraintViolation<LoginRequest>> constraints = validator.validate(request);
+        assertThat(constraints.size(), is(1));
     }
 }

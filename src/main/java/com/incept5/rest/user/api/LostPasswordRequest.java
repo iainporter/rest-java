@@ -1,5 +1,6 @@
 package com.incept5.rest.user.api;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -15,6 +16,11 @@ public class LostPasswordRequest {
 
     public LostPasswordRequest() {}
 
+    public LostPasswordRequest(final String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

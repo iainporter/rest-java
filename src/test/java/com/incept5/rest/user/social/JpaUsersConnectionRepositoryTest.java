@@ -4,11 +4,11 @@ import com.incept5.rest.user.UserService;
 import com.incept5.rest.user.UserServiceImpl;
 import com.incept5.rest.user.api.AuthenticatedUserToken;
 import com.incept5.rest.user.api.CreateUserRequest;
+import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.builder.ExternalUserBuilder;
 import com.incept5.rest.user.domain.Role;
 import com.incept5.rest.user.domain.SocialUser;
-import com.incept5.rest.user.api.ExternalUser;
 import com.incept5.rest.user.domain.User;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
@@ -17,6 +17,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.*;
 public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
 
     private JpaUsersConnectionRepository usersConnectionRepository;
+    private Validator validator;
 
 
     public void setUpRepository() {
@@ -46,11 +49,12 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
                 return (User) args[0];
             }
         });
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Test
     public void firstTimeConnected() {
-        UserService userService = new UserServiceImpl(usersConnectionRepository);
+        UserService userService = new UserServiceImpl(usersConnectionRepository, validator);
         ((UserServiceImpl)userService).setUserRepository(userRepository);
         List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
         assertThat(userIds.size(), is(1));
@@ -72,7 +76,7 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
 
     @Test
     public void validSocialLogin() {
-        UserService userService = new UserServiceImpl(usersConnectionRepository);
+        UserService userService = new UserServiceImpl(usersConnectionRepository, validator);
         ((UserServiceImpl)userService).setUserRepository(userRepository);
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName("Tom").setLastName("Tucker").setEmail("tt@example.com").setUsername("ttucker").build();
@@ -89,7 +93,7 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
 
      @Test
     public void updateFromSocialLogin() {
-        UserService userService = new UserServiceImpl(usersConnectionRepository);
+        UserService userService = new UserServiceImpl(usersConnectionRepository, validator);
         ((UserServiceImpl)userService).setUserRepository(userRepository);
         UserProfileBuilder builder = new UserProfileBuilder();
         UserProfile profile = builder.setFirstName("Tom").setLastName("Tucker").setEmail("tt@example.com").setUsername("ttucker").build();
@@ -115,7 +119,7 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
     @Test
     public void loginWithEmailAddressThenSocialLogin() {
         //set up services
-        UserService userService = new UserServiceImpl(usersConnectionRepository);
+        UserService userService = new UserServiceImpl(usersConnectionRepository, validator);
         ((UserServiceImpl) userService).setUserRepository(userRepository);
         //create email account
         CreateUserRequest request = getCreateUserRequest(RandomStringUtils.randomAlphabetic(8) + "@example.com");

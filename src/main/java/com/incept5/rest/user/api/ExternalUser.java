@@ -4,15 +4,13 @@ import com.incept5.rest.user.domain.SessionToken;
 import com.incept5.rest.user.domain.SocialUser;
 import com.incept5.rest.user.domain.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.springframework.util.StringUtils;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.incept5.rest.util.StringUtil.maxLength;
-import static com.incept5.rest.util.StringUtil.validEmail;
 
 
 /**
@@ -61,7 +59,7 @@ public class ExternalUser implements Principal {
         this(user);
     }
 
-
+    @Length(max=50)
     public String getFirstName() {
         return firstName;
     }
@@ -70,6 +68,7 @@ public class ExternalUser implements Principal {
         this.firstName = firstName;
     }
 
+    @Length(max=50)
     public String getLastName() {
         return lastName;
     }
@@ -78,6 +77,7 @@ public class ExternalUser implements Principal {
         this.lastName = lastName;
     }
 
+    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -96,21 +96,6 @@ public class ExternalUser implements Principal {
 
     public boolean isVerified() {
         return isVerified;
-    }
-
-    public boolean validate() {
-        try {
-            validEmail(emailAddress);
-            if(StringUtils.hasText(firstName)) {
-                maxLength(firstName, 100);
-            }
-            if(StringUtils.hasText(lastName)) {
-                maxLength(lastName, 100);
-            }
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
     public String getName() {

@@ -132,22 +132,6 @@ public class UserServiceTest  extends BaseServiceTest {
         userService.login(request);
     }
 
-    @Test(expected = ValidationException.class)
-    public void invalidLoginRequestEmailHasSpace() {
-        LoginRequest request = new LoginRequest();
-        request.setPassword("password");
-        request.setUsername("my username");
-        userService.login(request);
-    }
-
-    @Test(expected = ValidationException.class)
-    public void invalidLoginRequestEmailMalformed() {
-        LoginRequest request = new LoginRequest();
-        request.setPassword("password");
-        request.setUsername("NOTaValidEmailAddress");
-        userService.login(request);
-    }
-
     @Test(expected = DuplicateUserException.class)
     public void emailAddressAlreadyExists() {
         CreateUserRequest request = getDefaultCreateUserRequest();

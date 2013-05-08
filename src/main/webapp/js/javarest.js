@@ -122,7 +122,8 @@ javaRest.postAuth = function (url, data, success, error) {
     data: JSON.stringify(data),
     headers: {
       'Authorization' : authorization,
-      'x-java-rest-date' : time
+      'x-java-rest-date' : time ,
+      'nonce' : nonce
     },
     dataType: "json",
     success : success,
@@ -149,7 +150,8 @@ javaRest.put = function (url, data, success, error) {
     data: JSON.stringify(data),
     headers: {
       'Authorization' : authorization,
-      'x-java-rest-date' : time
+      'x-java-rest-date' : time,
+      'nonce' : nonce
     },
     dataType: "json",
     success : success,

@@ -2,6 +2,8 @@ package com.incept5.rest.user;
 
 import com.incept5.rest.config.ApplicationConfig;
 import com.incept5.rest.gateway.EmailServicesGateway;
+import com.incept5.rest.user.api.LostPasswordRequest;
+import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.domain.User;
 import com.incept5.rest.user.domain.VerificationToken;
 import com.incept5.rest.user.exception.AlreadyVerifiedException;
@@ -13,6 +15,8 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,9 +38,10 @@ public class VerificationServiceTest {
     private VerificationTokenRepository tokenRepository;
     private List<String> tokens;
     private VerificationTokenService verificationTokenService;
+    private Validator validator;
 
     @Before
-    public void setUpMocks() {
+    public void setUp() {
         tokens = new ArrayList<String>();
 
         emailServicesGateway = new EmailServicesGateway() {
@@ -45,13 +50,13 @@ public class VerificationServiceTest {
 
             }
         };
-
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
 
         userRepository = mock(UserRepository.class);
         tokenRepository = mock(VerificationTokenRepository.class);
         ApplicationConfig config = mock(ApplicationConfig.class);
         verificationTokenService = new VerificationTokenServiceImpl(userRepository, tokenRepository,
-                emailServicesGateway);
+                emailServicesGateway, validator);
         ((VerificationTokenServiceImpl)verificationTokenService).setConfig(config);
         when(config.getHostNameUrl()).thenReturn(new String("http://localhost:8080"));
         when(config.getLostPasswordTokenExpiryTimeInMinutes()).thenReturn(120);
@@ -64,7 +69,7 @@ public class VerificationServiceTest {
     public void sendLostPasswordToken() {
         User user = generateTestUser();
         when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(user);
-        VerificationToken token = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
+        VerificationToken token = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
         assertThat(user.getVerificationTokens().size(), is(1));
         assertThat(user.getActiveLostPasswordToken(), is(token));
         assertThat(token, is(not(Matchers.<Object>nullValue())));
@@ -80,8 +85,8 @@ public class VerificationServiceTest {
     public void sendLostPasswordTokenAgain() {
         User user = generateTestUser();
         when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(user);
-        VerificationToken token1 = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
-        VerificationToken token2 = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
+        VerificationToken token1 = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
+        VerificationToken token2 = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
         assertThat(token1, is(token2));
         assertThat(user.getVerificationTokens().size(), is(1));
         assertThat(tokens.size(), is(2));  //gateway called twice
@@ -93,10 +98,10 @@ public class VerificationServiceTest {
         User user = generateTestUser();
         when(userRepository.save(user)).thenReturn(user);
         when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(user);
-        VerificationToken token = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
+        VerificationToken token = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
         when(tokenRepository.findByToken(token.getToken())).thenReturn(token);
         String encodedToken = new String(Base64.encodeBase64(token.getToken().getBytes()));
-        VerificationToken verifiedToken = verificationTokenService.resetPassword(encodedToken, "newpassword");
+        VerificationToken verifiedToken = verificationTokenService.resetPassword(encodedToken, new PasswordRequest("newpassword"));
         assertThat(verifiedToken.isVerified(), is(true));
         assertThat(user.getHashedPassword(), is(user.hashPassword("newpassword")));
         assertThat(user.getVerificationTokens().get(0).isVerified(), is(true));
@@ -109,11 +114,11 @@ public class VerificationServiceTest {
         User user = generateTestUser();
         when(userRepository.save(user)).thenReturn(user);
         when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(user);
-        VerificationToken token = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
+        VerificationToken token = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
         when(tokenRepository.findByToken(token.getToken())).thenReturn(token);
         String encodedToken = new String(Base64.encodeBase64(token.getToken().getBytes()));
-        VerificationToken verifiedToken = verificationTokenService.resetPassword(encodedToken, "newpassword");
-        VerificationToken token2 = verificationTokenService.sendLostPasswordToken(user.getEmailAddress());
+        VerificationToken verifiedToken = verificationTokenService.resetPassword(encodedToken, new PasswordRequest("newpassword"));
+        VerificationToken token2 = verificationTokenService.sendLostPasswordToken(new LostPasswordRequest(user.getEmailAddress()));
         assertThat(token2.getToken(), is(not(token.getToken())));
     }
 

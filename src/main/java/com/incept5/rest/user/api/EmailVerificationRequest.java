@@ -1,5 +1,6 @@
 package com.incept5.rest.user.api;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -19,6 +20,7 @@ public class EmailVerificationRequest {
         this.emailAddress = emailAddress;
     }
 
+    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

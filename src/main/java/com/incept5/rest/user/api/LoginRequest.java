@@ -1,11 +1,9 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.util.StringUtil;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import static com.incept5.rest.util.StringUtil.maxLength;
-import static com.incept5.rest.util.StringUtil.minLength;
 
 
 /**
@@ -21,6 +19,7 @@ public class LoginRequest {
 
     public LoginRequest(){}
 
+    @NotNull
     public String getUsername() {
         return username;
     }
@@ -29,23 +28,13 @@ public class LoginRequest {
         this.username = username;
     }
 
+    @Length(min=8, max=30)
+    @NotNull
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public boolean validate() {
-        try {
-            StringUtil.validEmail(username);
-            minLength(password, 8);
-            maxLength(password, 35);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-
     }
 }

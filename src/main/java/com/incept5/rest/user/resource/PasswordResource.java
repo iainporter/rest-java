@@ -3,7 +3,6 @@ package com.incept5.rest.user.resource;
 import com.incept5.rest.user.VerificationTokenService;
 import com.incept5.rest.user.api.LostPasswordRequest;
 import com.incept5.rest.user.api.PasswordRequest;
-import com.incept5.rest.user.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,7 @@ public class PasswordResource {
     @Path("tokens")
     @POST
     public Response sendEmailToken(LostPasswordRequest request) {
-        verificationTokenService.sendLostPasswordToken(request.getEmailAddress());
+        verificationTokenService.sendLostPasswordToken(request);
         return Response.ok().build();
     }
 
@@ -39,8 +38,7 @@ public class PasswordResource {
     @Path("tokens/{token}")
     @POST
     public Response resetPassword(@PathParam("token") String base64EncodedToken, PasswordRequest request) {
-        request.validate();
-        verificationTokenService.resetPassword(base64EncodedToken, request.getPassword());
+        verificationTokenService.resetPassword(base64EncodedToken, request);
         return Response.ok().build();
     }
 }

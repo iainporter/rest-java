@@ -1,8 +1,8 @@
 package com.incept5.rest.user.api;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import static org.springframework.util.Assert.notNull;
 
 /**
  * @author: Iain Porter
@@ -22,7 +22,8 @@ public class CreateUserRequest {
         this.password = password;
     }
 
-
+    @NotNull
+    @Valid
     public ExternalUser getUser() {
         return user;
     }
@@ -31,6 +32,8 @@ public class CreateUserRequest {
         this.user = user;
     }
 
+    @NotNull
+    @Valid
     public PasswordRequest getPassword() {
         return password;
     }
@@ -39,13 +42,4 @@ public class CreateUserRequest {
         this.password = password;
     }
 
-    public boolean validate() {
-        try {
-            password.validate();
-            notNull(user);
-            return user.validate();
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
 }

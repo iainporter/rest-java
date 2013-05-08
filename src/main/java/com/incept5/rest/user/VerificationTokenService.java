@@ -1,5 +1,7 @@
 package com.incept5.rest.user;
 
+import com.incept5.rest.user.api.LostPasswordRequest;
+import com.incept5.rest.user.api.PasswordRequest;
 import com.incept5.rest.user.domain.VerificationToken;
 
 /**
@@ -14,11 +16,11 @@ public interface VerificationTokenService {
 
     public VerificationToken sendEmailRegistrationToken(String userId);
 
-    public VerificationToken sendLostPasswordToken(String emailAddress);
+    public VerificationToken sendLostPasswordToken(LostPasswordRequest lostPasswordRequest);
 
     public VerificationToken verify(String base64EncodedToken);
 
     public VerificationToken generateEmailVerificationToken(String emailAddress);
 
-    public VerificationToken resetPassword(String base64EncodedToken, String password);
+    public VerificationToken resetPassword(String base64EncodedToken, PasswordRequest passwordRequest);
 }

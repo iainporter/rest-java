@@ -13,6 +13,9 @@
     <import resource="data-context.xml"/>
     <import resource="email-template-context.xml"/>
 
+    <bean id="validatorFactory" class="javax.validation.Validation" factory-method="buildDefaultValidatorFactory"/>
+    <bean id="validator" factory-bean="validatorFactory" factory-method="getValidator"/>
+
     <bean id="sessionReaperCronJob" class="com.incept5.rest.user.SessionReaper"/>
     <task:scheduled-tasks scheduler="sessionReaperScheduler">
     <task:scheduled ref="sessionReaperCronJob" method="cleanUpExpiredSessions" cron="0 0/1 * * * *"/>

@@ -1,8 +1,13 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.exception.ValidationException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
+
+import javax.validation.ConstraintViolation;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -10,23 +15,24 @@ import org.junit.Test;
  * @author: Iain Porter iain.porter@incept5.com
  * @since 30/09/2012
  */
-public class PasswordRequestTest {
+public class PasswordRequestTest extends ValidationTst {
 
     @Test
     public void validPassword() {
         PasswordRequest request = new PasswordRequest("password");
-        request.validate();
+        Set<ConstraintViolation<PasswordRequest>> constraints = validator.validate(request);
+        assertThat(constraints.size(), is(0));
     }
 
-    @Test(expected = ValidationException.class)
     public void passwordTooShort() {
         PasswordRequest request = new PasswordRequest(RandomStringUtils.random(7));
-        request.validate();
+        Set<ConstraintViolation<PasswordRequest>> constraints = validator.validate(request);
+        assertThat(constraints.size(), is(1));
     }
 
-    @Test(expected = ValidationException.class)
     public void passwordTooLong() {
         PasswordRequest request = new PasswordRequest(RandomStringUtils.random(36));
-        request.validate();
+        Set<ConstraintViolation<PasswordRequest>> constraints = validator.validate(request);
+        assertThat(constraints.size(), is(1));
     }
 }

@@ -29,6 +29,7 @@ logbackVersion="1.0.1"
 velocityVersion="1.7"
 groovyVersion="2.0.0"
 guavaVersion="12.0"
+hibernateValidatorVersion="4.3.0.Final"
 environmentBase = 'src/main/config/'
 env = "ci"
 
@@ -112,6 +113,7 @@ dependencies {
 			"org.aspectj:aspectjweaver:1.5.4",
 			"cglib:cglib:2.2",
             "com.google.guava:guava:$guavaVersion",
+            "org.hibernate:hibernate-validator:$hibernateValidatorVersion",
 
             "org.slf4j:slf4j-api:$slf4jVersion",
             "ch.qos.logback:logback-classic:$logbackVersion",

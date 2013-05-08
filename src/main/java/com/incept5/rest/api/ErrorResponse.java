@@ -1,6 +1,8 @@
 package com.incept5.rest.api;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,6 +16,8 @@ public class ErrorResponse {
     private String errorCode;
     private String consumerMessage;
     private String applicationMessage;
+    private List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+
 
     public String getErrorCode() {
         return errorCode;
@@ -37,5 +41,13 @@ public class ErrorResponse {
 
     public void setApplicationMessage(String applicationMessage) {
         this.applicationMessage = applicationMessage;
+    }
+
+    public List<ValidationError> getValidationErrors() {
+        return validationErrors;
+    }
+
+    public void setValidationErrors(List<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors;
     }
 }

@@ -1,9 +1,9 @@
 package com.incept5.rest.user.api;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.validator.constraints.Email;
 
-import static com.incept5.rest.util.StringUtil.maxLength;
-import static com.incept5.rest.util.StringUtil.validEmail;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -36,27 +36,13 @@ public class UpdateUserRequest {
         this.lastName = lastName;
     }
 
+    @Email
+    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-
-    public boolean validate() {
-        try {
-            validEmail(emailAddress);
-            if(firstName != null) {
-                maxLength(firstName, 100);
-            }
-            if(lastName != null) {
-                maxLength(lastName, 100);
-            }
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 }

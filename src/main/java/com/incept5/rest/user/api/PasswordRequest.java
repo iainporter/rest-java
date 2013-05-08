@@ -1,11 +1,9 @@
 package com.incept5.rest.user.api;
 
-import com.incept5.rest.exception.ValidationException;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import static com.incept5.rest.util.StringUtil.maxLength;
-import static com.incept5.rest.util.StringUtil.minLength;
 
 /**
  *
@@ -24,6 +22,8 @@ public class PasswordRequest {
         this.password = password;
     }
 
+    @Length(min=8, max=30)
+    @NotNull
     public String getPassword() {
         return password;
     }
@@ -32,13 +32,4 @@ public class PasswordRequest {
         this.password = password;
     }
 
-    public void validate() {
-        try {
-            minLength(password, 8);
-            maxLength(password, 35);
-        } catch (IllegalArgumentException ex) {
-            throw new ValidationException();
-        }
-
-    }
 }
