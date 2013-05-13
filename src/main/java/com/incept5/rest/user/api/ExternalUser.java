@@ -4,6 +4,7 @@ import com.incept5.rest.user.domain.SessionToken;
 import com.incept5.rest.user.domain.SocialUser;
 import com.incept5.rest.user.domain.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -21,9 +22,17 @@ import java.util.List;
 public class ExternalUser implements Principal {
 
     private String id;
+
+    @Length(max=50)
     private String firstName;
+
+    @Length(max=50)
     private String lastName;
+
+    @NotNull
+    @Email
     private String emailAddress;
+
     private boolean isVerified;
 
     @JsonIgnore
@@ -59,7 +68,6 @@ public class ExternalUser implements Principal {
         this(user);
     }
 
-    @Length(max=50)
     public String getFirstName() {
         return firstName;
     }
@@ -68,7 +76,6 @@ public class ExternalUser implements Principal {
         this.firstName = firstName;
     }
 
-    @Length(max=50)
     public String getLastName() {
         return lastName;
     }
@@ -77,7 +84,6 @@ public class ExternalUser implements Principal {
         this.lastName = lastName;
     }
 
-    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

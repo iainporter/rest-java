@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class PasswordRequest {
 
+    @Length(min=8, max=30)
+    @NotNull
     private String password;
 
     public PasswordRequest() {}
@@ -22,8 +24,6 @@ public class PasswordRequest {
         this.password = password;
     }
 
-    @Length(min=8, max=30)
-    @NotNull
     public String getPassword() {
         return password;
     }

@@ -16,6 +16,9 @@ public class UpdateUserRequest {
 
     private String firstName;
     private String lastName;
+
+    @Email
+    @NotNull
     private String emailAddress;
 
     public UpdateUserRequest(){}
@@ -36,8 +39,6 @@ public class UpdateUserRequest {
         this.lastName = lastName;
     }
 
-    @Email
-    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

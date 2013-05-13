@@ -25,13 +25,13 @@ public class PasswordRequestTest extends ValidationTst {
     }
 
     public void passwordTooShort() {
-        PasswordRequest request = new PasswordRequest(RandomStringUtils.random(7));
+        PasswordRequest request = new PasswordRequest(RandomStringUtils.randomAlphanumeric(7));
         Set<ConstraintViolation<PasswordRequest>> constraints = validator.validate(request);
         assertThat(constraints.size(), is(1));
     }
 
     public void passwordTooLong() {
-        PasswordRequest request = new PasswordRequest(RandomStringUtils.random(36));
+        PasswordRequest request = new PasswordRequest(RandomStringUtils.randomAlphanumeric(36));
         Set<ConstraintViolation<PasswordRequest>> constraints = validator.validate(request);
         assertThat(constraints.size(), is(1));
     }

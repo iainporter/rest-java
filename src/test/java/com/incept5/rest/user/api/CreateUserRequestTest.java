@@ -20,10 +20,10 @@ public class CreateUserRequestTest extends ValidationTst {
     @Test
     public void validRequest() {
         ExternalUser user = new ExternalUser();
-        user.setEmailAddress(RandomStringUtils.random(8) + "@example.com");
+        user.setEmailAddress(RandomStringUtils.randomAlphanumeric(8) + "@example.com");
         user.setFirstName("Bo");
         user.setLastName("Diddley");
-        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
+        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.randomAlphanumeric(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
         Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
         assertThat(constraints.size(), is(0));
@@ -31,7 +31,7 @@ public class CreateUserRequestTest extends ValidationTst {
 
     @Test
     public void nullUser() {
-        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
+        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.randomAlphanumeric(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(null, passwordRequest);
         Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
         assertThat(constraints.size(), is(1));
@@ -40,9 +40,9 @@ public class CreateUserRequestTest extends ValidationTst {
     @Test
     public void firstNameTooLong() {
         ExternalUser user = new ExternalUser();
-        user.setEmailAddress(RandomStringUtils.random(8) + "@example.com");
-        user.setFirstName(RandomStringUtils.random(101));
-        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
+        user.setEmailAddress(RandomStringUtils.randomAlphabetic(8) + "@example.com");
+        user.setFirstName(RandomStringUtils.randomAlphabetic(101));
+        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.randomAlphanumeric(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
         Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
         assertThat(constraints.size(), is(1));
@@ -51,9 +51,9 @@ public class CreateUserRequestTest extends ValidationTst {
     @Test
     public void lastNameTooLong() {
         ExternalUser user = new ExternalUser();
-        user.setEmailAddress(RandomStringUtils.random(8) + "@example.com");
-        user.setLastName(RandomStringUtils.random(101));
-        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.random(10));
+        user.setEmailAddress(RandomStringUtils.randomAlphabetic(8) + "@example.com");
+        user.setLastName(RandomStringUtils.randomAlphabetic(101));
+        PasswordRequest passwordRequest = new PasswordRequest(RandomStringUtils.randomAlphanumeric(10));
         CreateUserRequest createUserRequest = new CreateUserRequest(user, passwordRequest);
         Set<ConstraintViolation<CreateUserRequest>> constraints = validator.validate(createUserRequest);
         assertThat(constraints.size(), is(1));

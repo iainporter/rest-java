@@ -10,7 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CreateUserRequest {
 
+    @NotNull
+    @Valid
     private ExternalUser user;
+
+    @NotNull
+    @Valid
     private PasswordRequest password;
 
 
@@ -22,8 +27,6 @@ public class CreateUserRequest {
         this.password = password;
     }
 
-    @NotNull
-    @Valid
     public ExternalUser getUser() {
         return user;
     }
@@ -32,8 +35,6 @@ public class CreateUserRequest {
         this.user = user;
     }
 
-    @NotNull
-    @Valid
     public PasswordRequest getPassword() {
         return password;
     }

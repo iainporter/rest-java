@@ -20,8 +20,8 @@ public class LoginRequestTest extends ValidationTst {
     @Test
     public void validRequest() {
         LoginRequest request = new LoginRequest();
-        request.setUsername(RandomStringUtils.random(8) + "@example.com");
-        request.setPassword(RandomStringUtils.random(8));
+        request.setUsername(RandomStringUtils.randomAlphabetic(8) + "@example.com");
+        request.setPassword(RandomStringUtils.randomAlphanumeric(8));
         Set<ConstraintViolation<LoginRequest>> constraints = validator.validate(request);
         assertThat(constraints.size(), is(0));
     }
@@ -29,8 +29,8 @@ public class LoginRequestTest extends ValidationTst {
     @Test
     public void invalidPassword() {
         LoginRequest request = new LoginRequest();
-        request.setUsername(RandomStringUtils.random(8) + "@example.com");
-        request.setPassword(RandomStringUtils.random(7));
+        request.setUsername(RandomStringUtils.randomAlphanumeric(8) + "@example.com");
+        request.setPassword(RandomStringUtils.randomAlphanumeric(7));
         Set<ConstraintViolation<LoginRequest>> constraints = validator.validate(request);
         assertThat(constraints.size(), is(1));
     }

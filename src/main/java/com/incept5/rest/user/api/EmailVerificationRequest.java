@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class EmailVerificationRequest {
 
+    @NotNull
     private String emailAddress;
 
     public EmailVerificationRequest() {}
@@ -20,7 +21,6 @@ public class EmailVerificationRequest {
         this.emailAddress = emailAddress;
     }
 
-    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

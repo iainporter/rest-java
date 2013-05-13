@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class LostPasswordRequest {
 
+    @NotNull
     private String emailAddress;
 
     public LostPasswordRequest() {}
@@ -20,7 +21,6 @@ public class LostPasswordRequest {
         this.emailAddress = emailAddress;
     }
 
-    @NotNull
     public String getEmailAddress() {
         return emailAddress;
     }

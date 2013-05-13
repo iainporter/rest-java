@@ -71,7 +71,7 @@ public class UserServiceTest  extends BaseServiceTest {
     public void badNameRequest() {
         CreateUserRequest request = new CreateUserRequest();
         ExternalUser user = getUser();
-        user.setFirstName(RandomStringUtils.random(101));
+        user.setFirstName(RandomStringUtils.randomAlphanumeric(101));
         request.setUser(user);
         request.setPassword(new PasswordRequest());
         userService.createUser(request, Role.authenticated);
