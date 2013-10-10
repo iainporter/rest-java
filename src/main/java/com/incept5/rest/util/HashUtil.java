@@ -2,8 +2,6 @@ package com.incept5.rest.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 
@@ -32,8 +30,7 @@ public class HashUtil {
      * @throws java.io.IOException
      */
     public static byte[] base64ToByte(String data) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        return decoder.decodeBuffer(data);
+        return Base64.decodeBase64(data);
     }
 
     /**
@@ -44,8 +41,7 @@ public class HashUtil {
      * @throws IOException
      */
     public static String byteToBase64(byte[] data) {
-        BASE64Encoder endecoder = new BASE64Encoder();
-        return endecoder.encode(data);
+        return new String(Base64.encodeBase64(data));
     }
 
     private static String signString(String request) {

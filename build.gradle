@@ -9,41 +9,42 @@ apply plugin: 'eclipse'
 apply plugin: 'jetty'
 
 
+ext {
+    springVersion = "3.2.1.RELEASE"
+    h2Version = "1.3.155"
+    springDataVersion = "1.1.0.RELEASE"
+    springSocialVersion = "1.0.2.RELEASE"
+    springSocialFacebookVersion = "1.0.1.RELEASE"
+    springSocialTwitterVersion = "1.0.2.RELEASE"
+    springSecurity = "3.1.2.RELEASE"
+    springIntegrationVersion = "2.2.1.RELEASE"
+    aspectjrtVersion = "1.6.11"
+    jacksonVersion = "1.9.3"
+    commonsIoVersion = "1.4"
+    jerseyVersion = "1.9.1"
+    hibernateVersion = "3.6.7.Final"
+    h2Version = "1.3.154"
+    slf4jVersion = "1.6.1"
+    logbackVersion = "1.0.1"
+    velocityVersion = "1.7"
+    groovyVersion = "2.0.0"
+    guavaVersion = "12.0"
+    hibernateValidatorVersion = "4.3.1.Final"
+    environmentBase = 'src/main/config/'
+    env = "ci"
 
-springVersion = "3.2.1.RELEASE"
-h2Version = "1.3.155"
-springDataVersion = "1.1.0.RELEASE"
-springSocialVersion = "1.0.2.RELEASE"
-springSocialFacebookVersion =  "1.0.1.RELEASE"
-springSocialTwitterVersion =  "1.0.2.RELEASE"
-springSecurity = "3.1.2.RELEASE"
-springIntegrationVersion = "2.2.1.RELEASE"
-aspectjrtVersion = "1.6.11"
-jacksonVersion = "1.9.3"
-commonsIoVersion = "1.4"
-jerseyVersion="1.9.1"
-hibernateVersion="3.6.7.Final"
-h2Version="1.3.154"
-slf4jVersion="1.6.1"
-logbackVersion="1.0.1"
-velocityVersion="1.7"
-groovyVersion="2.0.0"
-guavaVersion="12.0"
-hibernateValidatorVersion="4.3.1.Final"
-environmentBase = 'src/main/config/'
-env = "ci"
-
+}
 
 
 def properties = new Properties()
-    file(environmentBase + env + '/gradle.properties').withReader {
+file(environmentBase + env + '/gradle.properties').withReader {
     properties.load(it)
     properties.each { String name, value -> project.setProperty(name, value) }
 }
 
-    configurations {
-       emma
-    }
+configurations {
+    emma
+}
 
 
 buildscript {
@@ -60,7 +61,7 @@ buildscript {
         classpath 'no.entitas.gradle:gradle-jaxb-plugin:1.5',
                 'bmuschko:gradle-tomcat-plugin:0.8.2',
                 'bmuschko:gradle-cargo-plugin:0.3'
-                'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+        'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
     }
 }
 
@@ -68,7 +69,7 @@ repositories {
     mavenCentral()
     maven {
         url "http://maven.springframework.org/milestone"
-        }
+    }
 }
 
 // A list of all of our project dependencies.
@@ -94,24 +95,24 @@ dependencies {
             "org.codehaus.jackson:jackson-core-asl:$jacksonVersion",
             "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion",
             "org.codehaus.jackson:jackson-xc:$jacksonVersion",
-			"commons-io:commons-io:$commonsIoVersion",
+            "commons-io:commons-io:$commonsIoVersion",
             "javax.ws.rs:jsr311-api:1.1",
             "javax.annotation:jsr250-api:1.0",
-			"com.sun.jersey:jersey-core:$jerseyVersion",
-			"com.sun.jersey:jersey-server:$jerseyVersion",
-			"com.sun.jersey:jersey-json:$jerseyVersion",
-			"com.sun.jersey.contribs:jersey-spring:$jerseyVersion",
-			"org.springframework:spring-core:$springVersion",
-			"org.springframework:spring-beans:$springVersion",
-			"org.springframework:spring-context:$springVersion",
-			"org.springframework:spring-aop:$springVersion",
+            "com.sun.jersey:jersey-core:$jerseyVersion",
+            "com.sun.jersey:jersey-server:$jerseyVersion",
+            "com.sun.jersey:jersey-json:$jerseyVersion",
+            "com.sun.jersey.contribs:jersey-spring:$jerseyVersion",
+            "org.springframework:spring-core:$springVersion",
+            "org.springframework:spring-beans:$springVersion",
+            "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-aop:$springVersion",
             "org.springframework:spring-webmvc:$springVersion",
             "org.springframework:spring-tx:$springVersion",
             "org.springframework:spring-orm:$springVersion",
             "org.springframework:spring-jdbc:$springVersion",
             "org.springframework:spring-aspects:$springVersion",
-			"org.aspectj:aspectjweaver:1.5.4",
-			"cglib:cglib:2.2",
+            "org.aspectj:aspectjweaver:1.5.4",
+            "cglib:cglib:2.2",
             "com.google.guava:guava:$guavaVersion",
             "org.hibernate:hibernate-validator:$hibernateValidatorVersion",
             "javax.validation:validation-api:1.1.0.Final",
@@ -122,7 +123,7 @@ dependencies {
             "org.mockito:mockito-all:1.8.5",
 
             "org.springframework.integration:spring-integration-core:$springIntegrationVersion",
-			"org.springframework.integration:spring-integration-jdbc:$springIntegrationVersion",
+            "org.springframework.integration:spring-integration-jdbc:$springIntegrationVersion",
             "org.springframework.integration:spring-integration-mail:$springIntegrationVersion",
             "org.springframework.integration:spring-integration-http:$springIntegrationVersion",
             "org.apache.velocity:velocity:$velocityVersion",
@@ -140,18 +141,18 @@ dependencies {
 
 
 
-			"com.sun.jersey:jersey-test-framework:$jerseyVersion",
+            "com.sun.jersey:jersey-test-framework:$jerseyVersion",
             "com.sun.jersey.jersey-test-framework:jersey-test-framework-grizzly2:$jerseyVersion",
-            	"com.sun.jersey.jersey-test-framework:jersey-test-framework-core:$jerseyVersion",
-            	"com.sun.jersey:jersey-grizzly2:$jerseyVersion",
-            		"org.glassfish.grizzly:grizzly-http:2.1.2",
-						"org.glassfish.gmbal:gmbal-api-only:3.0.0-b023",
-							"org.glassfish.external:management-api:3.0.0-b012",
-					"org.glassfish.grizzly:grizzly-http-server:2.1.2",
-						"org.glassfish.grizzly:grizzly-rcm:2.1.2",
-					"org.glassfish.grizzly:grizzly-http-servlet:2.1.2",
-					"org.glassfish:javax.servlet:3.1",
-			"com.sun.jersey:jersey-client:$jerseyVersion"
+            "com.sun.jersey.jersey-test-framework:jersey-test-framework-core:$jerseyVersion",
+            "com.sun.jersey:jersey-grizzly2:$jerseyVersion",
+            "org.glassfish.grizzly:grizzly-http:2.1.2",
+            "org.glassfish.gmbal:gmbal-api-only:3.0.0-b023",
+            "org.glassfish.external:management-api:3.0.0-b012",
+            "org.glassfish.grizzly:grizzly-http-server:2.1.2",
+            "org.glassfish.grizzly:grizzly-rcm:2.1.2",
+            "org.glassfish.grizzly:grizzly-http-servlet:2.1.2",
+            "org.glassfish:javax.servlet:3.1",
+            "com.sun.jersey:jersey-client:$jerseyVersion"
 
     testCompile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
         exclude group: 'org.codehaus.groovy'
@@ -164,7 +165,6 @@ dependencies {
     cargo "org.codehaus.cargo:cargo-core-uberjar:1.1.1",
             "org.codehaus.cargo:cargo-ant:1.1.1",
             "jaxen:jaxen:1.1.1"
-
 
     // Pull in tomcat dependencies
     def tomcatVersion = '7.0.25'
@@ -200,52 +200,52 @@ cargo {
 
 test {
     exclude("**/*IntegrationTest*")
-        jvmArgs "-XX:-UseSplitVerifier", "-Demma.coverage.out.file=$buildDir/tmp/emma/metadata.emma", "-Demma.coverage.out.merge=true"
+    jvmArgs "-XX:-UseSplitVerifier", "-Demma.coverage.out.file=$buildDir/tmp/emma/metadata.emma", "-Demma.coverage.out.merge=true"
 
-        doFirst {
-           println "Instrumenting the classes at " + sourceSets.main.output.classesDir.absolutePath
-           // define the custom EMMA ant tasks
-           ant.taskdef( resource:"emma_ant.properties", classpath: configurations.emma.asPath)
+    doFirst {
+        println "Instrumenting the classes at " + sourceSets.main.output.classesDir.absolutePath
+        // define the custom EMMA ant tasks
+        ant.taskdef(resource: "emma_ant.properties", classpath: configurations.emma.asPath)
 
-           ant.path(id:"run.classpath") {
-              pathelement(location:sourceSets.main.output.classesDir.absolutePath)
-           }
-           def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma/instr")
-           emmaInstDir.mkdirs()
-           println "Creating $emmaInstDir to instrument from " +       sourceSets.main.output.classesDir.absolutePath
-           // instruct our compiled classes and store them at $buildDir/tmp/emma/instr
-           ant.emma(enabled: 'true', verbosity:'trace1'){
-              instr(filter: "-com.incept5.com.incept5.rest.command.*", merge:"true", destdir: emmaInstDir.absolutePath, instrpathref:"run.classpath",
+        ant.path(id: "run.classpath") {
+            pathelement(location: sourceSets.main.output.classesDir.absolutePath)
+        }
+        def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma/instr")
+        emmaInstDir.mkdirs()
+        println "Creating $emmaInstDir to instrument from " + sourceSets.main.output.classesDir.absolutePath
+        // instruct our compiled classes and store them at $buildDir/tmp/emma/instr
+        ant.emma(enabled: 'true', verbosity: 'trace1') {
+            instr(filter: "-com.incept5.com.incept5.rest.command.*", merge: "true", destdir: emmaInstDir.absolutePath, instrpathref: "run.classpath",
                     metadatafile: new File(emmaInstDir, '/metadata.emma').absolutePath) {
-                 instrpath {
-                 fileset(dir:sourceSets.main.output.classesDir.absolutePath, includes:"**/*.class")
-                 }
-              }
-           }
-           setClasspath(files("$buildDir/tmp/emma/instr") + configurations.emma +    getClasspath())
+                instrpath {
+                    fileset(dir: sourceSets.main.output.classesDir.absolutePath, includes: "**/*.class")
+                }
+            }
         }
-
-        doLast {
-           def srcDir = sourceSets.main.java.srcDirs.toArray()[0]
-           println "Creating test coverage reports for classes " + srcDir
-           def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma")
-           ant.emma(enabled:"true", verbosity:'trace1'){
-              new File("$buildDir/reports/emma").mkdirs()
-              report(sourcepath: srcDir){
-                 fileset(dir: emmaInstDir.absolutePath){
-                    include(name:"**/*.emma")
-                 }
-                 txt(outfile:"$buildDir/reports/emma/coverage.txt")
-                 html(outfile:"$buildDir/reports/emma/coverage.html")
-                 xml(outfile:"$buildDir/reports/emma/coverage.xml")
-              }
-           }
-           println "Test coverage reports available at $buildDir/reports/emma."
-           println "txt: $buildDir/reports/emma/coverage.txt"
-           println "Test $buildDir/reports/emma/coverage.html"
-           println "Test $buildDir/reports/emma/coverage.xml"
-        }
+        setClasspath(files("$buildDir/tmp/emma/instr") + configurations.emma + getClasspath())
     }
+
+    doLast {
+        def srcDir = sourceSets.main.java.srcDirs.toArray()[0]
+        println "Creating test coverage reports for classes " + srcDir
+        def emmaInstDir = new File(sourceSets.main.output.classesDir.parentFile.parentFile, "tmp/emma")
+        ant.emma(enabled: "true", verbosity: 'trace1') {
+            new File("$buildDir/reports/emma").mkdirs()
+            report(sourcepath: srcDir) {
+                fileset(dir: emmaInstDir.absolutePath) {
+                    include(name: "**/*.emma")
+                }
+                txt(outfile: "$buildDir/reports/emma/coverage.txt")
+                html(outfile: "$buildDir/reports/emma/coverage.html")
+                xml(outfile: "$buildDir/reports/emma/coverage.xml")
+            }
+        }
+        println "Test coverage reports available at $buildDir/reports/emma."
+        println "txt: $buildDir/reports/emma/coverage.txt"
+        println "Test $buildDir/reports/emma/coverage.html"
+        println "Test $buildDir/reports/emma/coverage.xml"
+    }
+}
 
 
 [jettyRun, jettyRunWar, jettyStop]*.stopPort = 8081
