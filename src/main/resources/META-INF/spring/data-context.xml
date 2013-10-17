@@ -23,7 +23,7 @@
 
     </bean>
 
-    <jpa:repositories base-package="com.incept5.rest.user" />
+    <jpa:repositories base-package="com.porterhead.rest.user" />
 
     <bean class="org.springframework.orm.jpa.JpaTransactionManager"
           id="transactionManager">

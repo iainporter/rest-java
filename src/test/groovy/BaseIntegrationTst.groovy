@@ -12,7 +12,7 @@ import org.apache.commons.lang.RandomStringUtils
 abstract class BaseIntegrationTst extends GroovyTestCase {
 
 
-    protected static final String DATE_STRING = com.incept5.rest.util.DateUtil.currentDateAsIso8061String;
+    protected static final String DATE_STRING = com.porterhead.rest.util.DateUtil.currentDateAsIso8061String;
 
     private static final BASE_URL = "http://localhost:" + System.getProperty("tomcatPort", "8080") + "/java-rest/";
 

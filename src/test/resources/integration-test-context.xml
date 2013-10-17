@@ -7,10 +7,10 @@
 
 
 
-	<bean class="com.incept5.rest.resource.BaseResourceTst$ApplicationContextAccess"/>
-    <context:component-scan base-package="com.incept5.rest.resource" />
-    <context:component-scan base-package="com.incept5.rest.mock" />
-    <context:component-scan base-package="com.incept5.rest.config" />
-    <context:component-scan base-package="com.incept5.rest.user.resource" />
+	<bean class="com.porterhead.rest.resource.BaseResourceTst$ApplicationContextAccess"/>
+    <context:component-scan base-package="com.porterhead.rest.resource" />
+    <context:component-scan base-package="com.porterhead.rest.mock" />
+    <context:component-scan base-package="com.porterhead.rest.config" />
+    <context:component-scan base-package="com.porterhead.rest.user.resource" />
 
 </beans>

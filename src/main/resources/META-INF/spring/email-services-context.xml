@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <int:gateway id="emailServicesGateway" service-interface="com.incept5.rest.gateway.EmailServicesGateway"
+    <int:gateway id="emailServicesGateway" service-interface="com.porterhead.rest.gateway.EmailServicesGateway"
                  default-reply-timeout="3000">
         <int:method name="sendVerificationToken" request-channel="emailVerificationRouterChannel"
                     request-timeout="3000"/>
