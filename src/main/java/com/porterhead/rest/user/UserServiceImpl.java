@@ -71,15 +71,18 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         User newUser = createNewUser(request, role);
-        return new AuthenticatedUserToken(newUser.getUuid().toString(), newUser.addSessionToken().getToken());
+        AuthenticatedUserToken token = new AuthenticatedUserToken(newUser.getUuid().toString(), newUser.addSessionToken().getToken());
+        userRepository.save(newUser);
+        return token;
     }
 
     @Transactional
     public AuthenticatedUserToken createUser(Role role) {
         User user = new User();
         user.setRole(role);
+        AuthenticatedUserToken token = new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
         userRepository.save(user);
-        return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
+        return token;
     }
 
     /**
@@ -210,7 +213,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new AuthenticationException();
         }
         userToSave.setRole(role);
-        return userRepository.save(userToSave);
+        return userToSave;
     }
 
     private void updateUserFromProfile(Connection<?> connection, User user) {
