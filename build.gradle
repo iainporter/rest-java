@@ -251,7 +251,7 @@ test {
 [jettyRun, jettyRunWar, jettyStop]*.stopPort = 8081
 [jettyRun, jettyRunWar, jettyStop]*.stopKey = 'stopKey'
 
-task integrationTest(type: Test, depends: test) {
+task integrationTest(type: Test) {
     include '**/*IntegrationTest*.*'
     doFirst {
         jettyRun.daemon = true
