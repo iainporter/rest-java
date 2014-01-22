@@ -9,6 +9,10 @@ to build:
 
 gradle clean build integrationTest
 
+or use the gradle wrapper:
+
+./gradlew clean build integrationTest
+
 to run:
 
 gradle tomcatRun
