@@ -3,15 +3,15 @@ JAVA REST Application
 
 sample web project that demonstrates the use of:
 
- Jersey + JAX-RS
- Spring Integration
- Spring Data + Hibernate
- OAuth
- Velocity + Java Mail
- Facebook Login
- Password Reset
- Login/Sign Up + Email Verification
- JSR 303 Validation
+ * Jersey + JAX-RS
+ * Spring Integration
+ * Spring Data + Hibernate
+ * OAuth
+ * Velocity + Java Mail
+ * Facebook Login
+ * Password Reset
+ * Login/Sign Up + Email Verification
+ * JSR 303 Validation
 
 Fork for use
 
