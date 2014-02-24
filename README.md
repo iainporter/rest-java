@@ -27,5 +27,7 @@ to run:
 
 gradle tomcatRun
 
+navigate to http://localhost:8080/java-rest/
+
 see http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-1.html for full details
 
