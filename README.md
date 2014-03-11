@@ -30,5 +30,16 @@ gradle tomcatRun
 
 navigate to http://localhost:8080/java-rest/
 
-see http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-1.html for full details
+see blog posts:
+
+<ul>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-1.html">Part 1: An introduction to writing REST Services in Java</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-2.html">Part 2: User sign up and login</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-3.html">Part 3: Email Verification</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-4.html">Part 4: Facebook Authentication</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-5.html">Part 5: Lost Password</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-6.html">Part 6: Security &amp; Authorization</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/03/writing-rest-services-in-java-part-7.html">Part 7: Moving to Production</a></li>
+<li><a href="http://porterhead.blogspot.co.uk/2013/05/writing-rest-services-in-java-part-8.html">Part 8: JSR 303 Validation</a></li>
+</ul>
 
