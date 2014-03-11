@@ -6,14 +6,13 @@ sample web project that demonstrates the use of:
  * Jersey + JAX-RS
  * Spring Integration
  * Spring Data + Hibernate
+ * Groovy Integration tests
  * OAuth
  * Velocity + Java Mail
  * Facebook Login
  * Password Reset
  * Login/Sign Up + Email Verification
  * JSR 303 Validation
-
-Fork for use
 
 to build:
 
@@ -22,6 +21,8 @@ gradle clean build integrationTest
 or use the gradle wrapper:
 
 ./gradlew clean build integrationTest
+
+go to /build/reports/emma for test coverage reports
 
 to run:
 
