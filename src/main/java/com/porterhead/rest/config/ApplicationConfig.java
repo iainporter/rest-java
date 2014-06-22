@@ -17,7 +17,7 @@ public class ApplicationConfig {
     private final static String HOSTNAME_PROPERTY = "hostNameUrl";
 
     private final static String SECURITY_AUTHORIZATION_REQUIRE_SIGNED_REQUESTS = "security.authorization.requireSignedRequests";
-    private final static String SESSION_EXPIRY_DURATION = "session.timeToLive.inMinutes";
+    private final static String AUTHORIZATION_EXPIRY_DURATION = "authorization.timeToLive.inSeconds";
     private final static String SESSION_DATE_OFFSET_IN_MINUTES = "session.date.offset.inMinutes";
     private final static String TOKEN_EMAIL_REGISTRATION_DURATION = "token.emailRegistration.timeToLive.inMinutes";
     private final static String TOKEN_EMAIL_VERIFICATION_DURATION = "token.emailVerification.timeToLive.inMinutes";
@@ -44,8 +44,8 @@ public class ApplicationConfig {
         return environment.getProperty("facebook.clientSecret");
     }
 
-    public int getSessionExpiryTimeInMinutes() {
-        return Integer.parseInt(environment.getProperty(SESSION_EXPIRY_DURATION));
+    public int getAuthorizationExpiryTimeInSeconds() {
+        return Integer.parseInt(environment.getProperty(AUTHORIZATION_EXPIRY_DURATION));
     }
 
     public int getSessionDateOffsetInMinutes() {

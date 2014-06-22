@@ -3,6 +3,7 @@ package com.porterhead.rest.authorization;
 import com.porterhead.rest.authorization.impl.SessionTokenAuthorizationService;
 import com.porterhead.rest.config.ApplicationConfig;
 import com.porterhead.rest.user.UserRepository;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.util.DateUtil;
 import org.junit.Before;
@@ -18,11 +19,11 @@ import static org.mockito.Mockito.when;
  */
 public class BaseAuthorizationTst {
 
-    protected static String SESSION_TOKEN;
+    protected static String AUTH_TOKEN;
     protected static final User USER = new User();
     {
-        USER.addSessionToken();
-        SESSION_TOKEN = USER.getSessions().first().getToken();
+        USER.setAuthorizationToken(new AuthorizationToken(USER));
+        AUTH_TOKEN = USER.getAuthorizationToken().getToken();
     }
 
     protected AuthorizationService authorizationService;
@@ -33,7 +34,7 @@ public class BaseAuthorizationTst {
     public void setUp() {
          userRepository = mock(UserRepository.class);
          when(userRepository.findByUuid(eq(USER.getUuid().toString()))).thenReturn(USER);
-         when(userRepository.findBySession(eq(SESSION_TOKEN))).thenReturn(USER);
+         when(userRepository.findBySession(eq(AUTH_TOKEN))).thenReturn(USER);
          applicationConfig = mock(ApplicationConfig.class);
          when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(30);
          authorizationService = new SessionTokenAuthorizationService(userRepository);

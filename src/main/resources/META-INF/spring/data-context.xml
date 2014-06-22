@@ -56,7 +56,7 @@
             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
             <property name="url" value="jdbc:mysql://localhost:3306/javarest"/>
             <property name="username" value="root"/>
-            <property name="password" value="password"/>
+            <property name="password" value=""/>
             <property name="initialSize" value="10"/>
             <property name="maxActive" value="100"/>
             <property name="maxIdle" value="50"/>

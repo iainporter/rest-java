@@ -4,7 +4,7 @@ import com.porterhead.rest.authorization.AuthorizationRequestContext;
 import com.porterhead.rest.authorization.AuthorizationService;
 import com.porterhead.rest.user.UserRepository;
 import com.porterhead.rest.user.api.ExternalUser;
-import com.porterhead.rest.user.domain.SessionToken;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.user.exception.AuthorizationException;
 
@@ -40,13 +40,10 @@ public class SessionTokenAuthorizationService implements AuthorizationService {
         if(user == null) {
             throw new AuthorizationException("Session token not valid");
         }
-        for (SessionToken sessionToken : user.getSessions()) {
-            if (sessionToken.getToken().equals(token)) {
-                sessionToken.setLastUpdated(new Date());
-                userRepository.save(user);
+        AuthorizationToken authorizationToken = user.getAuthorizationToken();
+            if (authorizationToken.getToken().equals(token)) {
                 externalUser = new ExternalUser(user);
             }
-        }
         return externalUser;
     }
 }

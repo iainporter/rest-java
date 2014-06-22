@@ -3,8 +3,8 @@ package com.porterhead.rest.user;
 import com.porterhead.rest.exception.ValidationException;
 import com.porterhead.rest.user.api.*;
 import com.porterhead.rest.user.builder.ExternalUserBuilder;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.Role;
-import com.porterhead.rest.user.domain.SessionToken;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.user.exception.AuthenticationException;
 import com.porterhead.rest.user.exception.AuthorizationException;
@@ -98,24 +98,24 @@ public class UserServiceTest  extends BaseServiceTest {
         AuthenticatedUserToken loginUserToken = userService.login(loginRequest);
         assertThat(loginUserToken.getUserId(), is(createdUserToken.getUserId()));
         User user = userRepository.findByUuid(loginUserToken.getUserId());
-        //check that a new token was issued
-        assertThat(user.getSessions().first().getToken(), is(not(createdUserToken.getToken())));
-        assertThat(user.getSessions().first().getToken(), is(loginUserToken.getToken()));
+        assertThat(user.getAuthorizationToken().getToken(), is(createdUserToken.getToken()));
+        //check that the same token is returned
+        assertThat(user.getAuthorizationToken().getToken(), is(loginUserToken.getToken()));
         assertThat(user.isVerified(), is(false));
 
     }
 
     @Test
-    public void multipleLoginsGetDifferentSessionToken() {
+    public void multipleLoginsGetSameAuthToken() {
         CreateUserRequest request = getDefaultCreateUserRequest();
         AuthenticatedUserToken createdUserToken = userService.createUser(request, Role.authenticated);
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(request.getUser().getEmailAddress());
         loginRequest.setPassword(request.getPassword().getPassword());
-        String session1 = userService.login(loginRequest).getToken();
-        String session2 =  userService.login(loginRequest).getToken();
+        String token1 = userService.login(loginRequest).getToken();
+        String token2 =  userService.login(loginRequest).getToken();
 
-        assertThat(session1, is(not(session2)));
+        assertThat(token1, is(token2));
     }
 
     @Test(expected = ValidationException.class)
@@ -210,54 +210,6 @@ public class UserServiceTest  extends BaseServiceTest {
         UpdateUserRequest request = new UpdateUserRequest();
         request.setEmailAddress("NotAValidEmailAddress");
         userService.saveUser(token.getUserId().toString(), request);
-    }
-
-    @Test
-    public void getMostRecentSession() {
-        CreateUserRequest request = getDefaultCreateUserRequest();
-        AuthenticatedUserToken token = userService.createUser(request, Role.authenticated);
-        String sessionToken = token.getToken();
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(request.getUser().getEmailAddress());
-        loginRequest.setPassword(request.getPassword().getPassword());
-        String session1 = userService.login(loginRequest).getToken();
-        String session2 = userService.login(loginRequest).getToken();
-        User user = userRepository.findByUuid(token.getUserId());
-        assertThat(user.getSessions().size(), is(3));
-        assertThat(user.getSessions().first().getToken(), is(session2));  //most recently updated session
-
-    }
-
-    @Test
-    public void saveActiveSession() {
-        CreateUserRequest request = getDefaultCreateUserRequest();
-        AuthenticatedUserToken token = userService.createUser(request, Role.authenticated);
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(request.getUser().getEmailAddress());
-        loginRequest.setPassword(request.getPassword().getPassword());
-        AuthenticatedUserToken loginToken = userService.login(loginRequest);
-        User user = userRepository.findByUuid(token.getUserId());
-        SessionToken oldestToken = user.getSessions().last();
-        oldestToken.setLastUpdated(new Date());
-        userRepository.save(user);
-        user = userRepository.findByUuid(token.getUserId());
-        //most recently used token is now the login token
-        assertThat(user.getSessions().first().getToken(), is(oldestToken.getToken()));
-    }
-
-    @Test
-    public void cleanUpExpiredSessions() {
-
-        CreateUserRequest request = getDefaultCreateUserRequest();
-        AuthenticatedUserToken token = userService.createUser(request, Role.authenticated);
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(request.getUser().getEmailAddress());
-        loginRequest.setPassword(request.getPassword().getPassword());
-        userService.login(loginRequest);
-        userService.login(loginRequest);
-        userService.deleteExpiredSessions(-1);
-        User user = userRepository.findByUuid(token.getUserId());
-        assertThat(user.getSessions().size(), is(0));
     }
 
 }

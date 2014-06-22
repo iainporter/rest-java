@@ -13,27 +13,37 @@ import java.util.UUID;
  * @since 28/12/2012
  */
 @Entity
-@Table(name="rest_session_token")
-public class SessionToken extends AbstractPersistable<Long> implements Comparable<SessionToken>{
+@Table(name="rest_authorization_token")
+public class AuthorizationToken extends AbstractPersistable<Long> {
+
+    private final static Integer DEFAULT_TIME_TO_LIVE_IN_SECONDS = (60 * 60 * 24 * 30); //30 Days
 
     @Column(length=36)
     private String token;
 
     private Date timeCreated;
 
-    private Date lastUpdated;
+    private Date expirationDate;
 
-    @ManyToOne
     @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public SessionToken() {}
+    public AuthorizationToken() {}
 
-    public SessionToken(User user) {
+    public AuthorizationToken(User user) {
+        this(user, DEFAULT_TIME_TO_LIVE_IN_SECONDS);
+    }
+
+    public AuthorizationToken(User user, Integer timeToLiveInSeconds) {
         this.token = UUID.randomUUID().toString();
         this.user = user;
         this.timeCreated = new Date();
-        this.lastUpdated = new Date();
+        this.expirationDate = new Date(System.currentTimeMillis() + (timeToLiveInSeconds * 1000L));
+    }
+
+    public boolean hasExpired() {
+        return this.expirationDate != null && this.expirationDate.before(new Date());
     }
 
     public String getToken() {
@@ -46,17 +56,5 @@ public class SessionToken extends AbstractPersistable<Long> implements Comparabl
 
     public Date getTimeCreated() {
         return timeCreated;
-    }
-
-    public int compareTo(SessionToken userSession) {
-        return this.lastUpdated.compareTo(userSession.getLastUpdated());
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 }

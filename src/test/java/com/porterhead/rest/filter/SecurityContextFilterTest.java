@@ -4,6 +4,7 @@ import com.porterhead.rest.config.ApplicationConfig;
 import com.porterhead.rest.user.UserRepository;
 import com.porterhead.rest.user.UserService;
 import com.porterhead.rest.user.api.ExternalUser;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.user.exception.AuthorizationException;
 import com.sun.jersey.spi.container.ContainerRequest;
@@ -61,10 +62,10 @@ public class SecurityContextFilterTest {
 
     private void setUpValidRequest() {
         User user = new User();
-        user.addSessionToken();
+        user.setAuthorizationToken(new AuthorizationToken(user));
         final ExternalUser externalUser = new ExternalUser(user);
         String dateString = new DateTime().toString(ISODateTimeFormat.dateTimeNoMillis());
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(user.getSessions().first().getToken() + ":user/555,POST," + dateString + ",123")));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(user.getAuthorizationToken().getToken() + ":user/555,POST," + dateString + ",123")));
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_AUTHORIZATION)).thenReturn(externalUser.getId() + ":" + hashedToken);
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_DATE)).thenReturn(dateString);
         when(containerRequest.getHeaderValue(SecurityContextFilter.HEADER_NONCE)).thenReturn("123");

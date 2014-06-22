@@ -47,7 +47,7 @@ public class UserResourceTest extends BaseResourceTst {
     @Test
     public void signUp() {
         when(userService.createUser(any(CreateUserRequest.class), any(Role.class))).thenReturn(
-                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), AUTH_TOKEN.getToken()));
         WebResource webResource = resource();
         CreateUserRequest request = createSignupRequest();
         ClientResponse response = webResource.path("user").entity(request, APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
@@ -76,7 +76,7 @@ public class UserResourceTest extends BaseResourceTst {
     @Test
     public void login() {
         when(userService.login(any(LoginRequest.class))).thenReturn(
-                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), AUTH_TOKEN.getToken()));
         ClientResponse response = super.resource().path("user/login").entity(createLoginRequest(), APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
         assertThat(response.getStatus(), is(200));
         AuthenticatedUserToken token = response.getEntity(AuthenticatedUserToken.class);
@@ -91,7 +91,7 @@ public class UserResourceTest extends BaseResourceTst {
         when(connectionFactoryLocator.getConnectionFactory(any(String.class))).thenReturn(connectionFactory);
         when(connectionFactory.createConnection(any(AccessGrant.class))).thenReturn(connection);
         when(userService.socialLogin(connection)).thenReturn(
-                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), ACTIVE_SESSION.getToken()));
+                new AuthenticatedUserToken(TEST_USER.getUuid().toString(), AUTH_TOKEN.getToken()));
         OAuth2Request request = new OAuth2Request();
         request.setAccessToken("123");
         ClientResponse response = super.resource().path("user/login/facebook").entity(request, APPLICATION_JSON).accept(APPLICATION_JSON).post(ClientResponse.class);
@@ -117,7 +117,7 @@ public class UserResourceTest extends BaseResourceTst {
 
     @Test
     public void getUser() {
-        when(userService.getUser(any(ExternalUser.class), any(String.class))).thenReturn(new ExternalUser(TEST_USER, ACTIVE_SESSION));
+        when(userService.getUser(any(ExternalUser.class), any(String.class))).thenReturn(new ExternalUser(TEST_USER, AUTH_TOKEN));
         ClientResponse response = super.resource().path("user/" + TEST_USER.getUuid().toString()).accept(APPLICATION_JSON).get(ClientResponse.class);
         assertThat(response.getStatus(), is(200));
         ExternalUser userResponse = response.getEntity(ExternalUser.class);
@@ -135,7 +135,7 @@ public class UserResourceTest extends BaseResourceTst {
 
     @Test
     public void updateUserWithNewEmailAddress() {
-        when(userService.saveUser(any(String.class), any(UpdateUserRequest.class))).thenReturn(new ExternalUser(TEST_USER, ACTIVE_SESSION));
+        when(userService.saveUser(any(String.class), any(UpdateUserRequest.class))).thenReturn(new ExternalUser(TEST_USER, AUTH_TOKEN));
         ClientResponse response = super.resource().path("user/" + TEST_USER.getUuid().toString()).entity(createUpdateUserRequest("foobar@example.com"),
                 APPLICATION_JSON).accept(APPLICATION_JSON).put(ClientResponse.class);
         assertThat(response.getStatus(), is(200));

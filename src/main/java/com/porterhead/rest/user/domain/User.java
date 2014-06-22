@@ -1,13 +1,10 @@
 package com.porterhead.rest.user.domain;
 
-import com.porterhead.rest.authorization.UserSession;
 import com.porterhead.rest.model.BaseEntity;
 import com.porterhead.rest.user.api.ExternalUser;
 import com.porterhead.rest.util.HashUtil;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -49,12 +46,10 @@ public class User extends BaseEntity {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<VerificationToken> verificationTokens = new ArrayList<VerificationToken>();
 
-    @OneToMany(mappedBy="user",
-                 targetEntity=SessionToken.class,
-                 cascade= CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @Sort(type = SortType.NATURAL)
-    private SortedSet<SessionToken> sessions = Collections.synchronizedSortedSet(new TreeSet<SessionToken>(Collections.<SessionToken>reverseOrder()));
+    @OneToOne(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            cascade = CascadeType.ALL)
+    private AuthorizationToken authorizationToken;
 
     public User() {
         this(UUID.randomUUID());
@@ -167,20 +162,14 @@ public class User extends BaseEntity {
         return Collections.unmodifiableList(this.verificationTokens);
     }
 
-    public SessionToken addSessionToken() {
-        SessionToken token = new SessionToken(this);
-        this.sessions.add(token);
-        return token;
+    public synchronized void setAuthorizationToken(AuthorizationToken token) {
+
+
+        this.authorizationToken = token;
     }
 
-    public SortedSet<SessionToken> getSessions() {
-        SortedSet copySet =  new TreeSet<SessionToken>(Collections.<SessionToken>reverseOrder());
-        copySet.addAll(this.sessions);
-        return Collections.unmodifiableSortedSet(copySet);
-    }
-
-    public void removeSession(SessionToken session) {
-        this.sessions.remove(session);
+    public synchronized AuthorizationToken getAuthorizationToken() {
+        return authorizationToken;
     }
 
     /**
@@ -231,22 +220,6 @@ public class User extends BaseEntity {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
-    }
-
-    public void setActiveSession(UserSession session) {
-        for(SessionToken token : getSessions()) {
-             if(token.getToken().equals(session.getSessionToken())) {
-                 token.setLastUpdated(new Date());
-             }
-        }
-    }
-
-    public void removeExpiredSessions(Date expiryDate) {
-        for(SessionToken token : getSessions()) {
-            if(token.getLastUpdated().before(expiryDate)) {
-                 removeSession(token);
-            }
-        }
     }
 
     /**

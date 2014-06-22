@@ -26,8 +26,7 @@ public class SessionTokenAuthorizationServiceTest extends BaseAuthorizationTst {
 
     @Test
     public void authorizeUser() throws Exception {
-        String sessionToken = "123456789";
-        ExternalUser user = authorizationService.authorize(getAuthorizationRequest(SESSION_TOKEN, "user/123", null));
+        ExternalUser user = authorizationService.authorize(getAuthorizationRequest(AUTH_TOKEN, "user/123", null));
         assertThat(user.getId(), is(USER.getUuid().toString()));
     }
 

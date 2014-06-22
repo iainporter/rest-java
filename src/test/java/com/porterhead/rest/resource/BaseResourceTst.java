@@ -8,7 +8,7 @@ import com.porterhead.rest.user.builder.ExternalUserBuilder;
 import com.porterhead.rest.gateway.EmailServicesGateway;
 import com.porterhead.rest.mock.AppMockConfiguration;
 import com.porterhead.rest.user.domain.Role;
-import com.porterhead.rest.user.domain.SessionToken;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.api.CreateUserRequest;
 import com.porterhead.rest.user.api.UpdateUserRequest;
 import com.porterhead.rest.user.domain.User;
@@ -54,10 +54,10 @@ public class BaseResourceTst extends JerseyTest {
         PASSWORD_REQUEST.setPassword(PASSWORD);
     }
 
-    protected static SessionToken ACTIVE_SESSION;
+    protected static AuthorizationToken AUTH_TOKEN;
     {
-        TEST_USER.addSessionToken();
-        ACTIVE_SESSION = TEST_USER.getSessions().first();
+        TEST_USER.setAuthorizationToken(new AuthorizationToken(TEST_USER));
+        AUTH_TOKEN = TEST_USER.getAuthorizationToken();
     }
 
     protected static ApplicationContext appCtx;

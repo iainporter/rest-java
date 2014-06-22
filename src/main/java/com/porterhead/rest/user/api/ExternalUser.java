@@ -1,6 +1,6 @@
 package com.porterhead.rest.user.api;
 
-import com.porterhead.rest.user.domain.SessionToken;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.SocialUser;
 import com.porterhead.rest.user.domain.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -64,7 +64,7 @@ public class ExternalUser implements Principal {
         role = user.getRole().toString();
     }
 
-    public ExternalUser(User user, SessionToken activeSession) {
+    public ExternalUser(User user, AuthorizationToken activeSession) {
         this(user);
     }
 

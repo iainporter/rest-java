@@ -1,7 +1,9 @@
 package com.porterhead.rest.user;
 
 import com.porterhead.rest.user.api.*;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.Role;
+import com.porterhead.rest.user.domain.User;
 import org.springframework.social.connect.Connection;
 
 /**
@@ -74,11 +76,11 @@ public interface UserService {
     public ExternalUser saveUser(String userId, UpdateUserRequest request);
 
     /**
-     * Delete all SessionToken objects that have not been accessed within the duration specified by the argument timeSinceLastUpdatedInMinutes
+     * Create an AuthorizationToken for the User
      *
-     * @param timeSinceLastUpdatedInMinutes
-     * @return the number of sessions removed
+     * @return
      */
-    public Integer deleteExpiredSessions(int timeSinceLastUpdatedInMinutes);
+    public AuthorizationToken createAuthorizationToken(User user);
+
 
 }

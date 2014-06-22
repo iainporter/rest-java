@@ -20,10 +20,10 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     @Query("select u from User u where uuid = ?")
     User findByUuid(String uuid);
 
-    @Query("select u from User u where u in (select user from SessionToken where lastUpdated < ?)")
+    @Query("select u from User u where u in (select user from AuthorizationToken where lastUpdated < ?)")
     List<User> findByExpiredSession(Date lastUpdated);
 
-    @Query("select u from User u where u = (select user from SessionToken where token = ?)")
+    @Query("select u from User u where u = (select user from AuthorizationToken where token = ?)")
     User findBySession(String token);
 
 }

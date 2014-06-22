@@ -37,14 +37,14 @@ public class RequestSigningAuthorizationServiceTest extends BaseAuthorizationTst
     @Test
     public void authorizeUser() throws Exception {
         String dateString = DateUtil.getCurrentDateAsIso8061String();
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":user/555,POST," + dateString + ",123")));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getAuthorizationToken().getToken() + ":user/555,POST," + dateString + ",123")));
         ExternalUser user = authorizationService.authorize(getAuthorizationRequest(USER.getUuid().toString() + ":" + hashedToken, "user/555", dateString, "123"));
         assertThat(user.getId(), is(USER.getUuid().toString()));
     }
 
     @Test (expected = AuthorizationException.class)
     public void invalidUnEncodedRequest() {
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(SESSION_TOKEN + ":hash123,123")));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(AUTH_TOKEN + ":hash123,123")));
         authorizationService.authorize(getAuthorizationRequest(USER.getUuid().toString() + ":" + hashedToken, "hash123,1234", "123"));
     }
 
@@ -64,7 +64,7 @@ public class RequestSigningAuthorizationServiceTest extends BaseAuthorizationTst
     @Test (expected = AuthorizationException.class)
     public void wrongNonce() {
         String dateString = DateUtil.getCurrentDateAsIso8061String();
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString + ",123")));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getAuthorizationToken().getToken() + ":hash123,123,POST," + dateString + ",123")));
         authorizationService.authorize(getAuthorizationRequest(USER.getUuid().toString() + ":" + hashedToken, "hash123,123", dateString, "567"));
     }
 
@@ -72,7 +72,7 @@ public class RequestSigningAuthorizationServiceTest extends BaseAuthorizationTst
     public void dateOutOfRange() {
         when(applicationConfig.getSessionDateOffsetInMinutes()).thenReturn(5);
         String dateString = DateUtil.getDateDateAsIso8061String(new DateTime().minusMinutes(20));
-        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getSessions().first().getToken() + ":hash123,123,POST," + dateString + ",123")));
+        String hashedToken = new String(Base64.encodeBase64(DigestUtils.sha256(USER.getAuthorizationToken().getToken() + ":hash123,123,POST," + dateString + ",123")));
         authorizationService.authorize(getAuthorizationRequest(USER.getUuid().toString() + ":" + hashedToken, "hash123,123", dateString, "567"));
     }
 

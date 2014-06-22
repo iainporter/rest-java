@@ -9,7 +9,7 @@ import com.porterhead.rest.config.ApplicationConfig;
 import com.porterhead.rest.user.UserRepository;
 import com.porterhead.rest.user.UserService;
 import com.porterhead.rest.user.api.ExternalUser;
-import com.porterhead.rest.user.domain.SessionToken;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.user.exception.AuthorizationException;
 import com.porterhead.rest.util.DateUtil;
@@ -169,16 +169,11 @@ public class RequestSigningAuthorizationService implements AuthorizationService 
         Assert.notNull(user);
         Assert.notNull(authorizationRequest.getAuthorizationToken());
         String unEncodedString = composeUnEncodedRequest(authorizationRequest);
-        Set<SessionToken> sessionTokens = user.getSessions();
-        String userTokenHash = null;
-        for (SessionToken token : sessionTokens) {
-            userTokenHash = encodeAuthToken(token.getToken(), unEncodedString);
+        AuthorizationToken authorizationToken = user.getAuthorizationToken();
+        String userTokenHash = encodeAuthToken(authorizationToken.getToken(), unEncodedString);
             if (hashedToken.equals(userTokenHash)) {
-                token.setLastUpdated(new Date());
-                userRepository.save(user);
                 return true;
             }
-        }
         LOG.error("Hash check failed for hashed token: {} for the following request: {} for user: {}",
                 new Object[]{authorizationRequest.getAuthorizationToken(), unEncodedString, user.getId()});
         return false;

@@ -1,8 +1,10 @@
 package com.porterhead.rest.user;
 
 
+import com.porterhead.rest.config.ApplicationConfig;
 import com.porterhead.rest.service.BaseService;
 import com.porterhead.rest.user.api.*;
+import com.porterhead.rest.user.domain.AuthorizationToken;
 import com.porterhead.rest.user.domain.Role;
 import com.porterhead.rest.user.domain.User;
 import com.porterhead.rest.user.exception.AuthenticationException;
@@ -11,7 +13,6 @@ import com.porterhead.rest.user.exception.DuplicateUserException;
 import com.porterhead.rest.user.exception.UserNotFoundException;
 import com.porterhead.rest.user.social.JpaUsersConnectionRepository;
 import com.porterhead.rest.util.StringUtil;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +41,19 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     private UserRepository userRepository;
 
+    private ApplicationConfig applicationConfig;
+
     public UserServiceImpl(Validator validator) {
         super(validator);
     }
 
     @Autowired
-    public UserServiceImpl(UsersConnectionRepository usersConnectionRepository, Validator validator) {
+    public UserServiceImpl(UsersConnectionRepository usersConnectionRepository,
+                           Validator validator, ApplicationConfig applicationConfig) {
         this(validator);
         this.jpaUsersConnectionRepository = usersConnectionRepository;
         ((JpaUsersConnectionRepository)this.jpaUsersConnectionRepository).setUserService(this);
+        this.applicationConfig = applicationConfig;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -59,7 +64,7 @@ public class UserServiceImpl extends BaseService implements UserService {
      * This method creates a User with the given Role. A check is made to see if the username already exists and a duplication
      * check is made on the email address if it is present in the request.
      * <P></P>
-     * The password is hashed and a SessionToken generated for subsequent authorization of role-protected requests.
+     * The password is hashed and a AuthorizationToken generated for subsequent authorization of role-protected requests.
      *
      */
     @Transactional
@@ -71,7 +76,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         User newUser = createNewUser(request, role);
-        AuthenticatedUserToken token = new AuthenticatedUserToken(newUser.getUuid().toString(), newUser.addSessionToken().getToken());
+        AuthenticatedUserToken token = new AuthenticatedUserToken(newUser.getUuid().toString(), createAuthorizationToken(newUser).getToken());
         userRepository.save(newUser);
         return token;
     }
@@ -80,7 +85,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     public AuthenticatedUserToken createUser(Role role) {
         User user = new User();
         user.setRole(role);
-        AuthenticatedUserToken token = new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
+        AuthenticatedUserToken token = new AuthenticatedUserToken(user.getUuid().toString(),
+                createAuthorizationToken(user).getToken());
         userRepository.save(user);
         return token;
     }
@@ -107,7 +113,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new AuthenticationException();
         }
         if (hashedPassword.equals(user.getHashedPassword())) {
-            return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
+            return new AuthenticatedUserToken(user.getUuid().toString(), createAuthorizationToken(user).getToken());
         } else {
             throw new AuthenticationException();
         }
@@ -121,7 +127,7 @@ public class UserServiceImpl extends BaseService implements UserService {
      *
      * <P></P>
      *
-     * A SessionToken is generated and any Profile data that can be collected from the Social account is propagated to the User object.
+     * A AuthorizationToken is generated and any Profile data that can be collected from the Social account is propagated to the User object.
      *
      */
     @Transactional
@@ -136,7 +142,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             throw new AuthenticationException();
         }
         updateUserFromProfile(connection, user);
-        return new AuthenticatedUserToken(user.getUuid().toString(), user.addSessionToken().getToken());
+        return new AuthenticatedUserToken(user.getUuid().toString(), createAuthorizationToken(user).getToken());
     }
 
     /**
@@ -190,19 +196,12 @@ public class UserServiceImpl extends BaseService implements UserService {
         return new ExternalUser(user);
     }
 
-    @Transactional
-    public Integer deleteExpiredSessions(int timeSinceLastUpdatedInMinutes) {
-        DateTime date = new DateTime();
-        date = date.minusMinutes(timeSinceLastUpdatedInMinutes);
-        List<User> expiredUserSessions = userRepository.findByExpiredSession(date.toDate());
-        int count = expiredUserSessions.size();
-        for(User user : expiredUserSessions) {
-            user.removeExpiredSessions(date.toDate());
+    @Override
+    public AuthorizationToken createAuthorizationToken(User user) {
+        if(user.getAuthorizationToken() == null || user.getAuthorizationToken().hasExpired()) {
+            user.setAuthorizationToken(new AuthorizationToken(user, applicationConfig.getAuthorizationExpiryTimeInSeconds()));
         }
-        if(count > 0) {
-            userRepository.save(expiredUserSessions);
-        }
-        return count;
+        return user.getAuthorizationToken();
     }
 
     private User createNewUser(CreateUserRequest request, Role role) {
