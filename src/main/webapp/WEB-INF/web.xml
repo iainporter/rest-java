@@ -28,7 +28,7 @@
         <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>com.porterhead.rest.resource, cporterheadpt5.rest.user.resource</param-value>
+            <param-value>com.porterhead.rest.resource, com.porterhead.rest.user.resource</param-value>
         </init-param>
 
         <init-param>
