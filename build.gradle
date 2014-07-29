@@ -1,9 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'java'
-apply plugin: 'jaxb'
 apply plugin: 'tomcat'
 apply plugin: 'war'
-apply plugin: 'cargo'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'jetty'
@@ -32,14 +30,8 @@ ext {
     hibernateValidatorVersion = "4.3.1.Final"
     environmentBase = 'src/main/config/'
     env = "ci"
+    tomcatVersion = '7.0.25'
 
-}
-
-
-def properties = new Properties()
-file(environmentBase + env + '/gradle.properties').withReader {
-    properties.load(it)
-    properties.each { String name, value -> project.setProperty(name, value) }
 }
 
 configurations {
@@ -48,20 +40,17 @@ configurations {
 
 
 buildscript {
+
     repositories {
         mavenCentral()
-
-        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
-            name = 'GitHub'
-            addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
-        }
+        jcenter()
 
     }
+
     dependencies {
-        classpath 'no.entitas.gradle:gradle-jaxb-plugin:1.5',
-                'bmuschko:gradle-tomcat-plugin:0.8.2',
-                'bmuschko:gradle-cargo-plugin:0.3'
-        'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+
+        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.0'
+
     }
 }
 
@@ -74,7 +63,6 @@ repositories {
 
 // A list of all of our project dependencies.
 dependencies {
-    jaxb 'com.sun.xml.bind:jaxb-xjc:2.1.12'
 
     compile "org.hibernate:hibernate-core:$hibernateVersion",
             "org.hibernate:hibernate-entitymanager:$hibernateVersion",
@@ -157,24 +145,20 @@ dependencies {
     testCompile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") {
         exclude group: 'org.codehaus.groovy'
     }
+    testCompile "org.codehaus.groovy:groovy-all:2.0.0"
 
 
 
     providedCompile "javax.servlet:servlet-api:2.5"
 
-    cargo "org.codehaus.cargo:cargo-core-uberjar:1.1.1",
-            "org.codehaus.cargo:cargo-ant:1.1.1",
-            "jaxen:jaxen:1.1.1"
 
     // Pull in tomcat dependencies
-    def tomcatVersion = '7.0.25'
+
     tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
             "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
     tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
         exclude group: "org.eclipse.jdt.core.compiler", module: "ecj"
     }
-
-    groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
 
     emma "emma:emma:2.1.5320"
     emma "emma:emma_ant:2.1.5320"
@@ -183,18 +167,6 @@ dependencies {
 
 war {
     baseName = "java-rest"
-}
-
-cargo {
-    containerId = tomcatContainerId
-    port = Integer.parseInt(tomcatPort)
-    //context = 'mycontext' set the name of context or default of war name will be used
-    context = tomcatContext
-    remote {
-        hostname = tomcatHostname
-        username = tomcatUsername
-        password = tomcatPassword
-    }
 }
 
 
@@ -245,6 +217,10 @@ test {
         println "Test $buildDir/reports/emma/coverage.html"
         println "Test $buildDir/reports/emma/coverage.xml"
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
 }
 
 
