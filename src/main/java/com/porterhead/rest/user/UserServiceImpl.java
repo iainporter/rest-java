@@ -200,6 +200,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public AuthorizationToken createAuthorizationToken(User user) {
         if(user.getAuthorizationToken() == null || user.getAuthorizationToken().hasExpired()) {
             user.setAuthorizationToken(new AuthorizationToken(user, applicationConfig.getAuthorizationExpiryTimeInSeconds()));
+            userRepository.save(user);
         }
         return user.getAuthorizationToken();
     }
