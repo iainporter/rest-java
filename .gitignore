@@ -12,3 +12,10 @@ out/*
 *.ipr
 
 *.iws
+/build/
+/bin/
+
+# eclipse
+.settings/
+.project
+.classpath
