@@ -19,3 +19,8 @@ out/*
 .settings/
 .project
 .classpath
+
+# Intellij
+.idea/
+*.iml
+*.iws
