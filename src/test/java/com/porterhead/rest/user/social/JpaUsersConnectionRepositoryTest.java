@@ -64,7 +64,7 @@ public class JpaUsersConnectionRepositoryTest extends AbstractSocialTst {
         List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
         assertThat(userIds.size(), is(1));
         assertThat(userIds.get(0), is(user.getUuid().toString()));
-        verify(userRepository).save(any(User.class));
+        verify(userRepository, times(2)).save(any(User.class));
         verify(socialUserRepository).save(any(SocialUser.class));
     }
 
