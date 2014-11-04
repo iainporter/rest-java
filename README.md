@@ -14,6 +14,9 @@ sample web project that demonstrates the use of:
  * Login/Sign Up + Email Verification
  * JSR 303 Validation
 
+ NOTE. For a similar project that uses most of the same components but is built around OAuth2 see
+  <a href="http://porterhead.blogspot.co.uk/2014/05/securing-rest-services-with-spring.html">Securing Rest Services with OAuth2 and Spring Security</a>
+
 to build:
 
 gradle clean build integrationTest
