@@ -34,6 +34,7 @@ gradle tomcatRun
 navigate to http://localhost:8080/java-rest/
 
 see blog posts:
+THANK YOU
 
 <ul>
 <li><a href="http://porterhead.blogspot.co.uk/2013/01/writing-rest-services-in-java-part-1.html">Part 1: An introduction to writing REST Services in Java</a></li>
