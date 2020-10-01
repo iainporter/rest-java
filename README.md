@@ -1,7 +1,7 @@
 JAVA REST Application
 ====================
 
-sample and easily understandable web project that demonstrates the use of:
+sample and easy to understand web project that demonstrates the use of:
 
  * Jersey + JAX-RS
  * Spring Integration
