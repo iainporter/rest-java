@@ -1,6 +1,6 @@
 JAVA REST Application
 ====================
-
+#ReadThis
 sample web project that demonstrates the use of:
 
  * Jersey + JAX-RS
