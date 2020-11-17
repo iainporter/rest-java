@@ -1,4 +1,4 @@
-JAVA REST Application
+JAVA REST Application(JRA)
 ====================
 
 Simple and easily understandable web project that demonstrates the use of:
